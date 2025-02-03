@@ -1,5 +1,4 @@
-# 📋 Clipboard Saver
-
+# 📋 Shelf
 A simple and powerful **Flutter** app to save and manage clipboard data effortlessly. Store **text, images, documents, and passwords** securely and access them anytime.
 
 ## ✨ Features
