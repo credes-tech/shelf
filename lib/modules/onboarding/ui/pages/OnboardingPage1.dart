@@ -4,8 +4,29 @@ import 'package:shelf/core/theme/app_colors.dart';
 import 'package:shelf/core/theme/app_spacing.dart';
 import 'package:shelf/core/theme/app_text_styles.dart';
 
-class OnboardingPage1 extends StatelessWidget {
+class OnboardingPage1 extends StatefulWidget {
   const OnboardingPage1({super.key});
+
+  @override
+  State<OnboardingPage1> createState() => _OnboardingPage1State();
+}
+
+class _OnboardingPage1State extends State<OnboardingPage1> {
+  double bottomPosition = -250;
+  double rightPosition = -250;
+  double ovalSize = 650;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(milliseconds: 500), () {
+      setState(() {
+        bottomPosition = -250;
+        rightPosition = -250;
+        ovalSize = 700;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,14 +40,20 @@ class OnboardingPage1 extends StatelessWidget {
         body: Stack(
           clipBehavior: Clip.none,
           children: [
-            Positioned(
-              bottom: -260,
-              right: -250,
+            AnimatedPositioned(
+              curve: Curves.easeInOut,
+              duration: Duration(seconds: 2),
+              bottom: bottomPosition,
+              right: rightPosition,
               child: ClipOval(
-                child: Container(
-                    width: 700,
-                    height: 700,
-                    color: AppColors.onboardLightGreen),
+                child: AnimatedContainer(
+                  curve: Curves.easeInOut,
+                  duration: Duration(seconds: 1),
+                  width: ovalSize,
+                  height: ovalSize,
+                  color: AppColors.onboardLightGreen,
+
+                ),
               ),
             ),
             Positioned(
@@ -36,7 +63,6 @@ class OnboardingPage1 extends StatelessWidget {
               child: Image.asset(
                 "assets/vector/file1.png",
                 fit: BoxFit.contain,
-
               ),
             ),
             Column(

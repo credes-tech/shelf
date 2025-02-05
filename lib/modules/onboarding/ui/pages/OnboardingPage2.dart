@@ -4,8 +4,30 @@ import 'package:shelf/core/theme/app_colors.dart';
 import 'package:shelf/core/theme/app_spacing.dart';
 import 'package:shelf/core/theme/app_text_styles.dart';
 
-class OnboardingPage2 extends StatelessWidget {
+class OnboardingPage2 extends StatefulWidget {
   const OnboardingPage2({super.key});
+
+  @override
+  State<OnboardingPage2> createState() => _OnboardingPage2State();
+}
+
+class _OnboardingPage2State extends State<OnboardingPage2> {
+  double topPosition = -250;
+  double rightPosition = -250;
+  double ovalSize = 650;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(milliseconds: 500), () {
+      setState(() {
+        topPosition = -250;
+        rightPosition = -250;
+        ovalSize = 700;
+      });
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -19,13 +41,17 @@ class OnboardingPage2 extends StatelessWidget {
         body: Stack(
           clipBehavior: Clip.none,
           children: [
-            Positioned(
-              top: -300,
-              right: -250,
+            AnimatedPositioned(
+              top: topPosition,
+              right: rightPosition,
+              duration: Duration(seconds: 2),
+              curve: Curves.easeInOut,
               child: ClipOval(
-                child: Container(
-                    width: 700,
-                    height: 700,
+                child: AnimatedContainer(
+                    curve: Curves.easeInOut,
+                    duration: Duration(seconds: 1),
+                    width: ovalSize,
+                    height: ovalSize,
                     color: AppColors.onboardDarkOrange),
               ),
             ),
