@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:shelf/core/routes/routes_transitions.dart';
 import 'package:shelf/modules/onboarding/ui/onboarding_screen.dart';
 import 'package:shelf/modules/onboarding/ui/pages/OnboardingPage1.dart';
 import 'package:shelf/modules/onboarding/ui/pages/OnboardingPage2.dart';
@@ -12,15 +13,16 @@ class OnboardingRoutes {
     ),
     GoRoute(
       path: '/onboarding/page1',
-      builder: (context, state) => OnboardingPage1(),
+      pageBuilder: (context, state) => buildSlideTransition(state, OnboardingPage1()),
     ),
     GoRoute(
       path: '/onboarding/page2',
-      builder: (context, state) => OnboardingPage2(),
+      pageBuilder: (context, state) => buildSlideTransition(state, OnboardingPage2()),
     ),
     GoRoute(
       path: '/onboarding/page3',
       builder: (context, state) => OnboardingPage3(),
+      pageBuilder: (context, state) => buildSlideTransition(state, OnboardingPage3()),
     ),
   ];
 }

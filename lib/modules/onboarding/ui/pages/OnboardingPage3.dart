@@ -3,6 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:shelf/core/theme/app_colors.dart';
 import 'package:shelf/core/theme/app_spacing.dart';
 import 'package:shelf/core/theme/app_text_styles.dart';
+import 'package:shelf/modules/onboarding/ui/widgets/OnboardCaption.dart';
+import 'package:shelf/modules/onboarding/ui/widgets/OnboardImage.dart';
+import 'package:shelf/modules/onboarding/ui/widgets/OnboardTitle.dart';
 
 class OnboardingPage3 extends StatefulWidget {
   const OnboardingPage3({super.key});
@@ -31,6 +34,10 @@ class _OnboardingPage3State extends State<OnboardingPage3> {
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
+    final String title = 'Faster Access !';
+    final String caption = 'Find what you need instantly with smart search, quick shortcuts, and multiple widgets.';
+    final String imageURL = 'assets/vector/file3.png';
+
     return GestureDetector(
       onTap: () {
         context.go("/onboarding/page1");
@@ -59,39 +66,16 @@ class _OnboardingPage3State extends State<OnboardingPage3> {
               top: screenHeight * 0.1,
               left: 50,
               right: 50,
-              child: Image.asset(
-                "assets/vector/file3.png",
-                fit: BoxFit.contain,
-              ),
+              child: OnboardImage(imageURL: imageURL)
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: AppSpacing.xLarge),
-                  child: Text(
-                    "Faster Access !",
-                    style: AppTextStyles.onBoardingHeading,
-                    textAlign: TextAlign.start,
-                    softWrap: true,
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: AppSpacing.xLarge),
-                  child: Text(
-                    "Find what you need instantly with smart search, quick shortcuts, and multiple widgets.",
-                    style: AppTextStyles.onBoardingBody,
-                    textAlign: TextAlign.start,
-                    softWrap: true,
-                  ),
-                ),
-                SizedBox(
-                  height: 80,
-                ),
+                OnboardTitle(title: title),
+                SizedBox(height: 10),
+                OnboardCaption(caption: caption),
+                SizedBox(height: 80),
               ],
             ),
           ],

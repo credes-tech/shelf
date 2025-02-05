@@ -36,7 +36,7 @@ class AppTextStyles {
   );
 
   static const TextStyle onBoardingBody = TextStyle(
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: FontWeight.w400,
     color: Colors.white,
     fontFamily: 'Inter'
