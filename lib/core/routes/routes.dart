@@ -6,8 +6,8 @@ import 'package:shelf/modules/onboarding/OnboardingRoutes.dart';
 final GoRouter appRouter = GoRouter(
   initialLocation: "/onboarding/page1",
   routes: [
-    ...OnboardingRoutes.routes,
-    ...AuthenticationRoutes.routes,
+    // ...OnboardingRoutes.routes,
+    // ...AuthenticationRoutes.routes,
     ...HomeRoutes.routes
   ],
 );

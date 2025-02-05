@@ -52,7 +52,6 @@ class _OnboardingPage1State extends State<OnboardingPage1> {
                   width: ovalSize,
                   height: ovalSize,
                   color: AppColors.onboardLightGreen,
-
                 ),
               ),
             ),

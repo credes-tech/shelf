@@ -16,8 +16,6 @@ void main() async {
 }
 
 setupDependencies() {
-
-<<<<<<< HEAD
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -30,9 +28,3 @@ setupDependencies() {
     );
   }
 }
-=======
-}
-
-
-
->>>>>>> origin/master
