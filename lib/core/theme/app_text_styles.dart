@@ -3,7 +3,7 @@ import 'app_colors.dart';
 
 class AppTextStyles {
   static const TextStyle heading = TextStyle(
-    fontSize: 24,
+    fontSize: 44,
     fontWeight: FontWeight.bold,
     color: AppColors.text,
   );
@@ -25,4 +25,19 @@ class AppTextStyles {
     fontWeight: FontWeight.w400,
     color: Colors.grey,
   );
+
+  static const TextStyle onBoardingHeading = TextStyle(
+    fontSize: 64,
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+
+  );
+
+  static const TextStyle onBoardingBody = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.normal,
+    color: Colors.white,
+
+  );
+
 }
