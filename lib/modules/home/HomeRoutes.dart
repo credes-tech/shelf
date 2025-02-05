@@ -1,5 +1,5 @@
 import 'package:go_router/go_router.dart';
-import 'package:shelf/modules/home/ui/chat.dart';
+import 'package:shelf/modules/home/ui/pages/chat.dart';
 import 'package:shelf/modules/home/ui/home_screen.dart';
 
 class HomeRoutes {
