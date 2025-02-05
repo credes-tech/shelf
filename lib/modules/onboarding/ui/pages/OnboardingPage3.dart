@@ -20,7 +20,7 @@ class OnboardingPage3 extends StatelessWidget {
           clipBehavior: Clip.none,
           children: [
             Positioned(
-              top: -300,
+              top: -250,
               left: -250,
               child: ClipOval(
                 child: Container(
@@ -32,7 +32,7 @@ class OnboardingPage3 extends StatelessWidget {
               left: 50,
               right: 50,
               child: Image.asset(
-                "assets/vector/file.png",
+                "assets/vector/file3.png",
                 fit: BoxFit.contain,
               ),
             ),

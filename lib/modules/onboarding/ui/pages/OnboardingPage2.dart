@@ -34,7 +34,7 @@ class OnboardingPage2 extends StatelessWidget {
               left: 50,
               right: 50,
               child: Image.asset(
-                "assets/vector/file.png",
+                "assets/vector/file2.png",
                 fit: BoxFit.contain,
               ),
             ),

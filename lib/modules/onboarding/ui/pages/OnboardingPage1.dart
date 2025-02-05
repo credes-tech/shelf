@@ -20,7 +20,7 @@ class OnboardingPage1 extends StatelessWidget {
           clipBehavior: Clip.none,
           children: [
             Positioned(
-              bottom: -300,
+              bottom: -260,
               right: -250,
               child: ClipOval(
                 child: Container(
@@ -30,12 +30,13 @@ class OnboardingPage1 extends StatelessWidget {
               ),
             ),
             Positioned(
-              top: screenHeight * 0.6,
+              top: screenHeight * 0.55,
               left: 50,
               right: 50,
               child: Image.asset(
-                "assets/vector/file.png",
+                "assets/vector/file1.png",
                 fit: BoxFit.contain,
+
               ),
             ),
             Column(
@@ -46,7 +47,7 @@ class OnboardingPage1 extends StatelessWidget {
                   height: 80,
                 ),
                 Container(
-                  margin: EdgeInsets.symmetric(horizontal: AppSpacing.xLarge),
+                  margin: EdgeInsets.only(left: AppSpacing.xLarge),
                   child: Text(
                     "Organize your life.",
                     style: AppTextStyles.onBoardingHeading,
@@ -55,7 +56,7 @@ class OnboardingPage1 extends StatelessWidget {
                   ),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 20,
                 ),
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: AppSpacing.xLarge),

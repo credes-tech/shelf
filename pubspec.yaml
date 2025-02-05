@@ -24,7 +24,17 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/vector/file.png
+    - assets/vector/
+  fonts:
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat/Montserrat-Regular.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-Bold.ttf
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter/Inter-Regular.ttf
+        - asset: assets/fonts/Inter/Inter-Bold.ttf
+
 
 flutter_icons:
   android: true

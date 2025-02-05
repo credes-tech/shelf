@@ -27,17 +27,19 @@ class AppTextStyles {
   );
 
   static const TextStyle onBoardingHeading = TextStyle(
-    fontSize: 64,
-    fontWeight: FontWeight.bold,
+    fontFamily: 'Montserrat',
+    fontSize: 70,
+    fontWeight: FontWeight.w800,
     color: Colors.white,
-
+    letterSpacing: -5,
+    height: 1
   );
 
   static const TextStyle onBoardingBody = TextStyle(
-    fontSize: 18,
-    fontWeight: FontWeight.normal,
+    fontSize: 20,
+    fontWeight: FontWeight.w400,
     color: Colors.white,
-
+    fontFamily: 'Inter'
   );
 
 }
