@@ -3,6 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:shelf/core/theme/app_colors.dart';
 import 'package:shelf/core/theme/app_spacing.dart';
 import 'package:shelf/core/theme/app_text_styles.dart';
+import 'package:shelf/modules/onboarding/ui/widgets/OnboardCaption.dart';
+import 'package:shelf/modules/onboarding/ui/widgets/OnboardImage.dart';
+import 'package:shelf/modules/onboarding/ui/widgets/OnboardTitle.dart';
 
 class OnboardingPage1 extends StatefulWidget {
   const OnboardingPage1({super.key});
@@ -31,6 +34,10 @@ class _OnboardingPage1State extends State<OnboardingPage1> {
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
+    final String title = 'Organize your life.';
+    final String caption = 'Keep your files, images, and links neatly sorted—all in one place.';
+    final String imageURL = 'assets/vector/file1.png';
+
     return GestureDetector(
       onTap: () {
         context.go("/onboarding/page2");
@@ -52,7 +59,6 @@ class _OnboardingPage1State extends State<OnboardingPage1> {
                   width: ovalSize,
                   height: ovalSize,
                   color: AppColors.onboardLightGreen,
-
                 ),
               ),
             ),
@@ -60,39 +66,16 @@ class _OnboardingPage1State extends State<OnboardingPage1> {
               top: screenHeight * 0.55,
               left: 50,
               right: 50,
-              child: Image.asset(
-                "assets/vector/file1.png",
-                fit: BoxFit.contain,
-              ),
+              child: OnboardImage(imageURL: imageURL)
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(
-                  height: 80,
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: AppSpacing.xLarge),
-                  child: Text(
-                    "Organize your life.",
-                    style: AppTextStyles.onBoardingHeading,
-                    textAlign: TextAlign.start,
-                    softWrap: true,
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: AppSpacing.xLarge),
-                  child: Text(
-                    "Keep your files, images, and links neatly sorted—all in one place.",
-                    style: AppTextStyles.onBoardingBody,
-                    textAlign: TextAlign.start,
-                    softWrap: true,
-                  ),
-                ),
+                SizedBox(height: 80),
+                OnboardTitle(title: title),
+                SizedBox( height: 20),
+                OnboardCaption(caption: caption),
               ],
             ),
           ],
@@ -101,3 +84,8 @@ class _OnboardingPage1State extends State<OnboardingPage1> {
     );
   }
 }
+
+
+
+
+
