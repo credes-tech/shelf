@@ -64,10 +64,10 @@ class _HomeScreenState extends State<HomeScreen> {
         index: _selectedIndex,
         children: _pages,
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(AppSpacing.large),
+      bottomNavigationBar: Container(
+        margin: EdgeInsets.symmetric(horizontal: AppSpacing.medium,vertical: AppSpacing.large),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(35),
           child: Theme(
             data: ThemeData(
               canvasColor: _bottomNavInactiveColors[_selectedIndex],
@@ -75,11 +75,11 @@ class _HomeScreenState extends State<HomeScreen> {
             child: BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
               items: [
-                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/chat.svg',colorFilter: ColorFilter.mode(_setColour(index:0), BlendMode.srcIn),width: 35), label: "Chats"),
-                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/audio.svg',colorFilter: ColorFilter.mode(_setColour(index:1), BlendMode.srcIn),width: 35), label: "Audio"),
-                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/image.svg',colorFilter: ColorFilter.mode(_setColour(index:2), BlendMode.srcIn),width: 35), label: "Media"),
-                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/document.svg',colorFilter: ColorFilter.mode(_setColour(index:3), BlendMode.srcIn),width: 35), label: "Files"),
-                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/password.svg',colorFilter: ColorFilter.mode(_setColour(index:4), BlendMode.srcIn),width: 35), label: "Texts"),
+                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/chat.svg',colorFilter: ColorFilter.mode(_setColour(index:0), BlendMode.srcIn),width: 32), label: "Chats"),
+                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/audio.svg',colorFilter: ColorFilter.mode(_setColour(index:1), BlendMode.srcIn),width: 32), label: "Audio"),
+                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/image.svg',colorFilter: ColorFilter.mode(_setColour(index:2), BlendMode.srcIn),width: 32), label: "Media"),
+                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/document.svg',colorFilter: ColorFilter.mode(_setColour(index:3), BlendMode.srcIn),width: 32), label: "Files"),
+                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/password.svg',colorFilter: ColorFilter.mode(_setColour(index:4), BlendMode.srcIn),width: 32), label: "Texts"),
               ],
               unselectedItemColor: _bottomNavInactiveColors[_selectedIndex],
               elevation: 10,

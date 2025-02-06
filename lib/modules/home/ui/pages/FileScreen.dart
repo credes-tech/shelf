@@ -26,9 +26,12 @@ class _FileScreenState extends State<FileScreen> {
         backgroundColor: AppColors.background,
         title: HomeTitle(title: 'Documents'),
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: SvgPicture.asset('assets/vector/filter.svg'),
+          Padding(
+            padding: EdgeInsets.only(right: AppSpacing.medium),
+            child: IconButton(
+              onPressed: () {},
+              icon: SvgPicture.asset('assets/svg/menu.svg',width: 28),
+            ),
           ),
         ],
       ),
