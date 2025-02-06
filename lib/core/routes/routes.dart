@@ -4,10 +4,10 @@ import 'package:shelf/modules/home/HomeRoutes.dart';
 import 'package:shelf/modules/onboarding/OnboardingRoutes.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: "/onboarding/page1",
+  initialLocation: "/home/chats",
   routes: [
-    // ...OnboardingRoutes.routes,
-    // ...AuthenticationRoutes.routes,
+    ...OnboardingRoutes.routes,
+    ...AuthenticationRoutes.routes,
     ...HomeRoutes.routes
   ],
 );

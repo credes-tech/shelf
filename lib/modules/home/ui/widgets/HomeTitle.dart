@@ -1,0 +1,23 @@
+import 'package:flutter/material.dart';
+import 'package:shelf/core/theme/app_spacing.dart';
+import 'package:shelf/core/theme/app_text_styles.dart';
+
+class HomeTitle extends StatelessWidget {
+  final String title;
+
+  const HomeTitle({
+    super.key,
+    required this.title
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(left: AppSpacing.small),
+      child: Text(
+        title,
+        style: AppTextStyles.homeTitle,
+      ),
+    );
+  }
+}

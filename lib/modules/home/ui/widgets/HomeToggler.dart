@@ -1,32 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:shelf/core/theme/app_colors.dart';
+import 'package:shelf/core/theme/app_spacing.dart';
 
-class CustomSwitch extends StatefulWidget {
+class HomeToggler extends StatefulWidget {
   final bool initialValue;
   final Color color;
   final ValueChanged<bool> onChanged;
 
-  CustomSwitch({
-    Key? key,
+  const HomeToggler({
+    super.key,
     required this.initialValue,
     required this.onChanged,
     required this.color,
-  }) : super(key: key);
+  });
 
   @override
-  _CustomSwitchState createState() => _CustomSwitchState();
+  _HomeTogglerState createState() => _HomeTogglerState();
 }
 
-class _CustomSwitchState extends State<CustomSwitch> {
+class _HomeTogglerState extends State<HomeToggler> {
   late bool isChecked;
   late Color color;
-  double position = 0.0; // To track the position of the switch
+  double position = 0.0;
 
   @override
   void initState() {
     super.initState();
     isChecked = widget.initialValue;
     color = widget.color;
-    position = isChecked ? 30.0 : 0.0; // Initialize the position
+    position = isChecked ? 30.0 : 0.0;
   }
 
   void _toggleSwitch() {
@@ -34,8 +36,7 @@ class _CustomSwitchState extends State<CustomSwitch> {
       isChecked = !isChecked;
       position = isChecked ? 30.0 : 0.0;
     });
-
-    widget.onChanged(isChecked); // Notify the parent about the change
+    widget.onChanged(isChecked);
   }
 
   @override
@@ -49,17 +50,19 @@ class _CustomSwitchState extends State<CustomSwitch> {
       },
       onHorizontalDragEnd: (details) {
         if (position > 15.0) {
-          _toggleSwitch(); // Toggle to the "on" position
+          _toggleSwitch();
         } else {
-          _toggleSwitch(); // Toggle to the "off" position
+          _toggleSwitch();
         }
       },
       child: AnimatedContainer(
         duration: Duration(milliseconds: 300),
-        height: 30.0,
-        width: 60.0,
+        height: 35.0,
+        width: 65.0,
+        padding: EdgeInsets.symmetric(
+            horizontal: AppSpacing.xSmall, vertical: AppSpacing.xxSmall),
         decoration: BoxDecoration(
-          color: isChecked ? color : Colors.grey,
+          color: isChecked ? color : Colors.black12,
           borderRadius: BorderRadius.circular(20.0),
         ),
         child: Stack(
@@ -72,18 +75,17 @@ class _CustomSwitchState extends State<CustomSwitch> {
                 height: 25.0,
                 width: 25.0,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isChecked? Colors.white: color,
                   borderRadius: BorderRadius.circular(15.0),
                 ),
                 child: Stack(
                   children: [
-                    // Adding an arrow to the track
                     Positioned(
                       right: 5,
                       top: 4,
                       child: Icon(
                         Icons.arrow_forward,
-                        color: color,
+                        color: isChecked ? color : Colors.white,
                         size: 16,
                       ),
                     ),
