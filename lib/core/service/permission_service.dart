@@ -1,34 +1,23 @@
 import 'package:permission_handler/permission_handler.dart';
 
 class PermissionService {
-  /// Request Storage Permission
-  Future<bool> requestStoragePermission() async {
-    // Check if permission is already granted
-    if (await Permission.storage.isGranted) {
+
+  static Future<bool> requestStoragePermission() async {
+    PermissionStatus status = await Permission.storage.request();
+    if (status.isGranted) {
       return true;
+    } else if (status.isPermanentlyDenied) {
+      openAppSettings();
     }
-
-    // Request permission
-    var status = await Permission.storage.request();
-
-    // Return true if granted, false otherwise
-    return status == PermissionStatus.granted;
+    return false;
   }
 
-  /// Request Storage Permission for Android 13+
-  Future<bool> requestMediaPermission() async {
-    if (await Permission.photos.isGranted &&
-        await Permission.videos.isGranted &&
-        await Permission.audio.isGranted) {
-      return true;
-    }
+  static Future<bool> checkStoragePermission() async {
+    PermissionStatus status = await Permission.storage.status;
+    return status.isGranted;
+  }
 
-    var statusImages = await Permission.photos.request();
-    var statusVideos = await Permission.videos.request();
-    var statusAudio = await Permission.audio.request();
-
-    return statusImages == PermissionStatus.granted &&
-        statusVideos == PermissionStatus.granted &&
-        statusAudio == PermissionStatus.granted;
+  static Future<void> openSettings() async {
+    await openAppSettings();
   }
 }

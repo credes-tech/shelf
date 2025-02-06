@@ -19,15 +19,11 @@ class _AudioScreenState extends State<AudioScreen> {
   final List<String> source = ['Recordings', 'Audio Files'];
   int selectedSource = 0;
 
-  final PermissionService _permissionService = PermissionService();
-  String _status = "Unknown";
-
   Future<void> _checkPermission() async {
-    bool granted = await _permissionService.requestStoragePermission();
-    setState(() {
-      _status = granted ? "Permission Granted" : "Permission Denied";
-    });
+    bool isGranted = await PermissionService.checkStoragePermission();
+    print(isGranted);
   }
+
 
 
   @override
