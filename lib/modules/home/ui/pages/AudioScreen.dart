@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shelf/core/service/permission_service.dart';
 import 'package:shelf/core/theme/app_colors.dart';
 import 'package:shelf/core/theme/app_spacing.dart';
 import 'package:shelf/core/theme/app_text_styles.dart';
@@ -18,6 +19,17 @@ class _AudioScreenState extends State<AudioScreen> {
   final List<String> source = ['Recordings', 'Audio Files'];
   int selectedSource = 0;
 
+  final PermissionService _permissionService = PermissionService();
+  String _status = "Unknown";
+
+  Future<void> _checkPermission() async {
+    bool granted = await _permissionService.requestStoragePermission();
+    setState(() {
+      _status = granted ? "Permission Granted" : "Permission Denied";
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +41,7 @@ class _AudioScreenState extends State<AudioScreen> {
           Padding(
             padding: EdgeInsets.only(right: AppSpacing.medium),
             child: IconButton(
-              onPressed: () {},
+              onPressed: _checkPermission,
               icon: SvgPicture.asset('assets/svg/menu.svg',width: 28),
             ),
           ),
