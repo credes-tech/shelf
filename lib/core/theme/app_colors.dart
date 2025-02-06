@@ -19,6 +19,9 @@ class AppColors {
   static const Color onboardLightBlue = Color(0xFF73C6D2);
   static const Color onboardDarkYellow = Color(0xFFDABA2C);
   static const Color onboardLightYellow = Color(0xFFFDCF00);
+  
+  //ghostMode
+  static const Color ghostModeRed = Color(0xFFEEEEEE);
 
   // Dark Mode Colors
   static const Color darkBackground = Color(0xFF121212);

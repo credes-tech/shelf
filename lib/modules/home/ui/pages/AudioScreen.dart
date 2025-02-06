@@ -21,6 +21,7 @@ class _AudioScreenState extends State<AudioScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: AppColors.background,
         title: HomeTitle(title: 'Audio'),
@@ -35,19 +36,55 @@ class _AudioScreenState extends State<AudioScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          ChatPillBar(source: source, selectedSource: selectedSource, activeColor: AppColors.onboardDarkOrange, inactiveColor: AppColors.onboardLightOrange),
+          ChatPillBar(
+              source: source,
+              selectedSource: selectedSource,
+              activeColor: AppColors.onboardDarkOrange,
+              inactiveColor: AppColors.onboardLightOrange),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: AppSpacing.large, vertical: AppSpacing.medium),
+            margin: EdgeInsets.symmetric(
+                horizontal: AppSpacing.large, vertical: AppSpacing.medium),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text('Pinned',style: AppTextStyles.homePinned),
+                Text('Pinned', style: AppTextStyles.homePinned),
                 HomeToggler(
                   initialValue: true,
                   onChanged: (value) {},
                   color: AppColors.onboardDarkOrange,
                 ),
+              ],
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30.0),
+                color: AppColors.ghostModeRed),
+            margin: EdgeInsets.symmetric(
+                horizontal: AppSpacing.medium, vertical: AppSpacing.xSmall),
+            padding: EdgeInsets.only(left: AppSpacing.medium),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Recording',style: AppTextStyles.audioTitle),
+
+                    ],
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.pause_circle_filled_rounded,
+                    size: 40,
+                  ),
+                )
               ],
             ),
           )

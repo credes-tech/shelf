@@ -21,6 +21,7 @@ class _TextScreenState extends State<TextScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: AppColors.background,
         title: HomeTitle(title: 'Texts'),

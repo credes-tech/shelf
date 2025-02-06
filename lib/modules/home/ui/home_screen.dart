@@ -42,6 +42,14 @@ class _HomeScreenState extends State<HomeScreen> {
     AppColors.onboardDarkYellow,
   ];
 
+  final List<Color> _bottomNavInactiveColors = [
+    AppColors.onboardLightGreen,
+    AppColors.onboardLightOrange,
+    AppColors.onboardLightBlue,
+    AppColors.onboardLightPink,
+    AppColors.onboardLightYellow,
+  ];
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -62,20 +70,18 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(30),
           child: Theme(
             data: ThemeData(
-              canvasColor: _bottomNavColors[_selectedIndex],
+              canvasColor: _bottomNavInactiveColors[_selectedIndex],
             ),
             child: BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
               items: [
-                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/chat.svg'), label: "Chats"),
-                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/audio.svg'), label: "Audio"),
-                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/image.svg'), label: "Media"),
-                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/document.svg'), label: "Files"),
-                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/password.svg'), label: "Texts"),
+                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/chat.svg',colorFilter: ColorFilter.mode(_setColour(index:0), BlendMode.srcIn),width: 35), label: "Chats"),
+                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/audio.svg',colorFilter: ColorFilter.mode(_setColour(index:1), BlendMode.srcIn),width: 35), label: "Audio"),
+                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/image.svg',colorFilter: ColorFilter.mode(_setColour(index:2), BlendMode.srcIn),width: 35), label: "Media"),
+                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/document.svg',colorFilter: ColorFilter.mode(_setColour(index:3), BlendMode.srcIn),width: 35), label: "Files"),
+                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/password.svg',colorFilter: ColorFilter.mode(_setColour(index:4), BlendMode.srcIn),width: 35), label: "Texts"),
               ],
-              currentIndex: _selectedIndex,
-              selectedItemColor: Colors.white,
-              unselectedItemColor: Colors.grey,
+              unselectedItemColor: _bottomNavInactiveColors[_selectedIndex],
               elevation: 10,
               showSelectedLabels: false,
               showUnselectedLabels: false,
@@ -85,5 +91,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  _setColour({required int index}) {
+    return (_selectedIndex==index)?Colors.black:Colors.white;
   }
 }

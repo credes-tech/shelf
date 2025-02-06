@@ -66,6 +66,14 @@ class AppTextStyles {
       color: Colors.black
   );
 
+  static const TextStyle audioTitle = TextStyle(
+      fontFamily: 'Montserrat',
+      fontSize: 18,
+      fontWeight: FontWeight.w600,
+      color: Colors.black,
+      letterSpacing: -0.8
+  );
+
 
 
 }

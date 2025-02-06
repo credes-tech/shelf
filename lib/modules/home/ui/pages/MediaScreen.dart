@@ -21,6 +21,7 @@ class _MediaScreenState extends State<MediaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: AppColors.background,
         title: HomeTitle(title: 'Media'),
