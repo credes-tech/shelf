@@ -5,6 +5,8 @@ import 'package:shelf/core/theme/app_colors.dart';
 import 'package:shelf/core/theme/app_spacing.dart';
 import 'package:shelf/core/theme/app_text_styles.dart';
 import 'package:shelf/modules/home/ui/pages/ChatScreen.dart';
+import 'package:shelf/modules/home/ui/widgets/HomeMenuItem.dart';
+import 'package:shelf/modules/home/ui/widgets/HomePillBar.dart';
 import 'package:shelf/modules/home/ui/widgets/HomeTitle.dart';
 import 'package:shelf/modules/home/ui/widgets/HomeToggler.dart';
 
@@ -24,8 +26,6 @@ class _AudioScreenState extends State<AudioScreen> {
     print(isGranted);
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,9 +36,21 @@ class _AudioScreenState extends State<AudioScreen> {
         actions: [
           Padding(
             padding: EdgeInsets.only(right: AppSpacing.medium),
-            child: IconButton(
-              onPressed: _checkPermission,
-              icon: SvgPicture.asset('assets/svg/menu.svg',width: 28),
+            child: PopupMenuButton<String>(
+              icon: SvgPicture.asset('assets/svg/menu.svg', width: 28),
+              color: AppColors.onboardDarkOrange,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30)),
+              elevation: 1,
+              onSelected: (value) {
+                print("Selected: $value");
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                _buildPopupMenuItem(
+                    "Add Audio", Icons.audiotrack_rounded, Colors.black),
+                _buildPopupMenuItem(
+                    "Filter Audio", Icons.filter_alt_rounded, Colors.black)
+              ],
             ),
           ),
         ],
@@ -47,7 +59,7 @@ class _AudioScreenState extends State<AudioScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          ChatPillBar(
+          HomePillBar(
               source: source,
               selectedSource: selectedSource,
               activeColor: AppColors.onboardDarkOrange,
@@ -70,7 +82,7 @@ class _AudioScreenState extends State<AudioScreen> {
           ),
           Container(
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30.0),
+                borderRadius: BorderRadius.circular(35.0),
                 color: AppColors.ghostModeRed),
             margin: EdgeInsets.symmetric(
                 horizontal: AppSpacing.medium, vertical: AppSpacing.xSmall),
@@ -79,15 +91,12 @@ class _AudioScreenState extends State<AudioScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Recording',style: AppTextStyles.audioTitle),
-
-                    ],
-                  ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Recording', style: AppTextStyles.audioTitle),
+                  ],
                 ),
                 IconButton(
                   onPressed: () {},
@@ -103,4 +112,24 @@ class _AudioScreenState extends State<AudioScreen> {
       ),
     );
   }
+
+  PopupMenuItem<String> _buildPopupMenuItem(String text, IconData icon, Color iconColor) {
+    return PopupMenuItem<String>(
+      value: text,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(25),
+        child: InkWell(
+          splashColor: AppColors.onboardLightOrange,
+          highlightColor: Colors.transparent,
+          borderRadius: BorderRadius.circular(25),
+          onTap: () {
+            print("$text clicked");
+          },
+          child: HomeMenuItem(icon: icon, iconColor: iconColor, itemValue: text),
+        ),
+      ),
+    );
+  }
 }
+
+
