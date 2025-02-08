@@ -28,6 +28,7 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         title: HomeTitle(title: 'Chats'),
+        // title:Text("Char")
         actions: [
           Padding(
             padding: EdgeInsets.only(right: AppSpacing.medium),
@@ -42,9 +43,15 @@ class _ChatScreenState extends State<ChatScreen> {
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                 _buildPopupMenuItem(
-                    "Add Chat", Icons.copyright_rounded, Colors.black),
+                  "Add Chat",
+                  Icons.copyright_rounded,
+                  Colors.black,
+                ),
                 _buildPopupMenuItem(
-                    "Filter Chat", Icons.filter_alt_rounded, Colors.black)
+                  "Filter Chat",
+                  Icons.filter_alt_rounded,
+                  Colors.black,
+                ),
               ],
             ),
           ),
@@ -54,7 +61,11 @@ class _ChatScreenState extends State<ChatScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          HomePillBar(source: source, selectedSource: selectedSource, activeColor: AppColors.onboardDarkGreen, inactiveColor: AppColors.onboardLightGreen),
+          HomePillBar(
+              source: source,
+              selectedSource: selectedSource,
+              activeColor: AppColors.onboardDarkGreen,
+              inactiveColor: AppColors.onboardLightGreen),
           Container(
             margin: EdgeInsets.symmetric(
                 horizontal: AppSpacing.large, vertical: AppSpacing.medium),
@@ -75,7 +86,9 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
     );
   }
-  PopupMenuItem<String> _buildPopupMenuItem(String text, IconData icon, Color iconColor) {
+
+  PopupMenuItem<String> _buildPopupMenuItem(
+      String text, IconData icon, Color iconColor) {
     return PopupMenuItem<String>(
       value: text,
       child: ClipRRect(
@@ -85,13 +98,12 @@ class _ChatScreenState extends State<ChatScreen> {
           highlightColor: Colors.transparent,
           borderRadius: BorderRadius.circular(25),
           onTap: () {
-            print("$text clicked");
+            // print("$text clicked");
           },
-          child: HomeMenuItem(icon: icon, iconColor: iconColor, itemValue: text),
+          child:
+              HomeMenuItem(icon: icon, iconColor: iconColor, itemValue: text),
         ),
       ),
     );
   }
 }
-
-
