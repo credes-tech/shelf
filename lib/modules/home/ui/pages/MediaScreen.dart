@@ -4,6 +4,8 @@ import 'package:shelf/core/theme/app_colors.dart';
 import 'package:shelf/core/theme/app_spacing.dart';
 import 'package:shelf/core/theme/app_text_styles.dart';
 import 'package:shelf/modules/home/ui/pages/ChatScreen.dart';
+import 'package:shelf/modules/home/ui/widgets/HomeMenuItem.dart';
+import 'package:shelf/modules/home/ui/widgets/HomePillBar.dart';
 import 'package:shelf/modules/home/ui/widgets/HomeTitle.dart';
 import 'package:shelf/modules/home/ui/widgets/HomeToggler.dart';
 
@@ -28,9 +30,21 @@ class _MediaScreenState extends State<MediaScreen> {
         actions: [
           Padding(
             padding: EdgeInsets.only(right: AppSpacing.medium),
-            child: IconButton(
-              onPressed: () {},
-              icon: SvgPicture.asset('assets/svg/menu.svg',width: 28),
+            child: PopupMenuButton<String>(
+              icon: SvgPicture.asset('assets/svg/menu.svg', width: 28),
+              color: AppColors.onboardDarkBlue,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30)),
+              elevation: 1,
+              onSelected: (value) {
+                print("Selected: $value");
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                _buildPopupMenuItem(
+                    "Add Media", Icons.perm_media_rounded, Colors.black),
+                _buildPopupMenuItem(
+                    "Filter Media", Icons.filter_alt_rounded, Colors.black)
+              ],
             ),
           ),
         ],
@@ -39,7 +53,7 @@ class _MediaScreenState extends State<MediaScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          ChatPillBar(source: source, selectedSource: selectedSource, activeColor: AppColors.onboardDarkBlue, inactiveColor: AppColors.onboardLightBlue),
+          HomePillBar(source: source, selectedSource: selectedSource, activeColor: AppColors.onboardDarkBlue, inactiveColor: AppColors.onboardLightBlue),
           Container(
             margin: EdgeInsets.symmetric(horizontal: AppSpacing.large, vertical: AppSpacing.medium),
             child: Row(
@@ -56,6 +70,23 @@ class _MediaScreenState extends State<MediaScreen> {
             ),
           )
         ],
+      ),
+    );
+  }
+  PopupMenuItem<String> _buildPopupMenuItem(String text, IconData icon, Color iconColor) {
+    return PopupMenuItem<String>(
+      value: text,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(25),
+        child: InkWell(
+          splashColor: AppColors.onboardLightBlue,
+          highlightColor: Colors.transparent,
+          borderRadius: BorderRadius.circular(25),
+          onTap: () {
+            print("$text clicked");
+          },
+          child: HomeMenuItem(icon: icon, iconColor: iconColor, itemValue: text),
+        ),
       ),
     );
   }

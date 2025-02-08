@@ -54,23 +54,24 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedIndex = index;
     });
-
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: IndexedStack(
         index: _selectedIndex,
         children: _pages,
       ),
       bottomNavigationBar: Container(
+        color: Colors.white,
         margin: EdgeInsets.symmetric(horizontal: AppSpacing.medium,vertical: AppSpacing.large),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(35),
           child: Theme(
             data: ThemeData(
-              canvasColor: _bottomNavInactiveColors[_selectedIndex],
+              canvasColor: _bottomNavColors[_selectedIndex],
             ),
             child: BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
