@@ -31,8 +31,7 @@ class _ChatScreenState extends State<ChatScreen> {
             padding: EdgeInsets.only(right: AppSpacing.medium),
             child: IconButton(
               onPressed: () {},
-
-              icon: SvgPicture.asset('assets/svg/menu.svg',width: 28),
+              icon: SvgPicture.asset('assets/svg/menu.svg', width: 28),
             ),
           ),
         ],
@@ -41,14 +40,19 @@ class _ChatScreenState extends State<ChatScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          ChatPillBar(source: source, selectedSource: selectedSource, activeColor: AppColors.onboardDarkGreen, inactiveColor: AppColors.onboardLightGreen),
+          ChatPillBar(
+              source: source,
+              selectedSource: selectedSource,
+              activeColor: AppColors.onboardDarkGreen,
+              inactiveColor: AppColors.onboardLightGreen),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: AppSpacing.large, vertical: AppSpacing.medium),
+            margin: EdgeInsets.symmetric(
+                horizontal: AppSpacing.large, vertical: AppSpacing.medium),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text('Pinned',style: AppTextStyles.homePinned),
+                Text('Pinned', style: AppTextStyles.homePinned),
                 HomeToggler(
                   initialValue: true,
                   onChanged: (value) {},
@@ -64,13 +68,12 @@ class _ChatScreenState extends State<ChatScreen> {
 }
 
 class ChatPillBar extends StatelessWidget {
-  const ChatPillBar({
-    super.key,
-    required this.source,
-    required this.selectedSource,
-    required this.activeColor,
-    required this.inactiveColor
-  });
+  const ChatPillBar(
+      {super.key,
+      required this.source,
+      required this.selectedSource,
+      required this.activeColor,
+      required this.inactiveColor});
 
   final List<String> source;
   final int selectedSource;
@@ -89,12 +92,14 @@ class ChatPillBar extends StatelessWidget {
             child: SizedBox(
               height: 50,
               child: ListView.builder(
-                scrollDirection: Axis.horizontal,
+                  scrollDirection: Axis.horizontal,
                   itemCount: source.length,
                   itemBuilder: (context, index) {
                     return HomePills(
                       text: source[index],
-                      color: (selectedSource==index) ? activeColor: inactiveColor,
+                      color: (selectedSource == index)
+                          ? activeColor
+                          : inactiveColor,
                     );
                   }),
             ),
