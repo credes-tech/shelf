@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:shelf/core/service/file_picker.dart';
 import 'package:shelf/core/service/permission_service.dart';
 import 'package:shelf/core/theme/app_colors.dart';
 import 'package:shelf/core/theme/app_spacing.dart';
@@ -99,7 +104,12 @@ class _AudioScreenState extends State<AudioScreen> {
                   ],
                 ),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    await PermissionService.requestStoragePermission();
+                    final player = AudioPlayer();
+                    await player.play(DeviceFileSource(
+                        '/data/user/0/org.credes.shelf/cache/file_picker/1739025131940/Hello.mp3'));
+                  },
                   icon: Icon(
                     Icons.pause_circle_filled_rounded,
                     size: 40,
@@ -107,13 +117,14 @@ class _AudioScreenState extends State<AudioScreen> {
                 )
               ],
             ),
-          )
+          ),
         ],
       ),
     );
   }
 
-  PopupMenuItem<String> _buildPopupMenuItem(String text, IconData icon, Color iconColor) {
+  PopupMenuItem<String> _buildPopupMenuItem(
+      String text, IconData icon, Color iconColor) {
     return PopupMenuItem<String>(
       value: text,
       child: ClipRRect(
@@ -122,14 +133,24 @@ class _AudioScreenState extends State<AudioScreen> {
           splashColor: AppColors.onboardLightOrange,
           highlightColor: Colors.transparent,
           borderRadius: BorderRadius.circular(25),
-          onTap: () {
-            print("$text clicked");
-          },
-          child: HomeMenuItem(icon: icon, iconColor: iconColor, itemValue: text),
+          onTap: onTapAudioBtn,
+          child:
+              HomeMenuItem(icon: icon, iconColor: iconColor, itemValue: text),
         ),
       ),
     );
   }
+
+  onTapAudioBtn() async {
+    await PermissionService.requestAudioPermission();
+    bool isGranted = await PermissionService.checkAudioPermission();
+
+    if (isGranted == true) {
+      print("Permission Granted");
+      List<File>? file = await FilePickerService.pickAudioFile();
+      file!.forEach((file) => print(file));
+    } else {
+      print("Permission Denid");
+    }
+  }
 }
-
-
