@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shelf/modules/home/data/datasource/local/audio_hive_service.dart';
 
 class FilePickerService {
   Future<File?> pickFile() async {
@@ -33,6 +34,8 @@ class FilePickerService {
           final File nfile = File(file.path!);
           final File savedFile = await saveFileToLocalStorage(nfile, file.name);
           files!.add(savedFile);
+          // await AudioHiveService.saveAudioToHive(
+          //    file.name, file.extension!, file.bytes as int, DateTime.now());
           print("saved file $savedFile");
         });
         return files;
