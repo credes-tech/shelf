@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shelf/core/theme/app_spacing.dart';
-import 'package:shelf/modules/home/ui/widgets/HomePills.dart';
+import 'package:my_shelf_project/core/theme/app_spacing.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/HomePills.dart';
 
 class HomePillBar extends StatelessWidget {
   const HomePillBar({

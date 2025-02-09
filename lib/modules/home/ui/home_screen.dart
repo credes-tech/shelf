@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:shelf/core/theme/app_colors.dart';
-import 'package:shelf/core/theme/app_spacing.dart';
-import 'package:shelf/modules/home/ui/pages/AudioScreen.dart';
-import 'package:shelf/modules/home/ui/pages/ChatScreen.dart';
-import 'package:shelf/modules/home/ui/pages/FileScreen.dart';
-import 'package:shelf/modules/home/ui/pages/MediaScreen.dart';
-import 'package:shelf/modules/home/ui/pages/TextScreen.dart';
+import 'package:my_shelf_project/core/theme/app_colors.dart';
+import 'package:my_shelf_project/core/theme/app_spacing.dart';
+import 'package:my_shelf_project/modules/home/ui/pages/AudioScreen.dart';
+import 'package:my_shelf_project/modules/home/ui/pages/ChatScreen.dart';
+import 'package:my_shelf_project/modules/home/ui/pages/FileScreen.dart';
+import 'package:my_shelf_project/modules/home/ui/pages/MediaScreen.dart';
+import 'package:my_shelf_project/modules/home/ui/pages/TextScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required Widget child});

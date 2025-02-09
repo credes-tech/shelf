@@ -1,9 +1,9 @@
 import 'package:go_router/go_router.dart';
-import 'package:shelf/core/routes/routes_transitions.dart';
-import 'package:shelf/modules/onboarding/ui/onboarding_screen.dart';
-import 'package:shelf/modules/onboarding/ui/pages/OnboardingPage1.dart';
-import 'package:shelf/modules/onboarding/ui/pages/OnboardingPage2.dart';
-import 'package:shelf/modules/onboarding/ui/pages/OnboardingPage3.dart';
+import 'package:my_shelf_project/core/routes/routes_transitions.dart';
+import 'package:my_shelf_project/modules/onboarding/ui/onboarding_screen.dart';
+import 'package:my_shelf_project/modules/onboarding/ui/pages/OnboardingPage1.dart';
+import 'package:my_shelf_project/modules/onboarding/ui/pages/OnboardingPage2.dart';
+import 'package:my_shelf_project/modules/onboarding/ui/pages/OnboardingPage3.dart';
 
 class OnboardingRoutes {
   static final List<GoRoute> routes = [

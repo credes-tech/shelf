@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shelf/core/utils/FileValidator.dart';
-import 'package:shelf/modules/home/data/datasource/local/audio_hive_service.dart';
+import 'package:my_shelf_project/core/utils/FileValidator.dart';
+import 'package:my_shelf_project/modules/home/data/datasource/local/audio_hive_service.dart';
 
 class FilePickerService {
 

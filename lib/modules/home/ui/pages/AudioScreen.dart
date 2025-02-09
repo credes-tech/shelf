@@ -2,15 +2,15 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:marquee/marquee.dart';
-import 'package:shelf/core/service/file_picker.dart';
-import 'package:shelf/core/service/permission_service.dart';
-import 'package:shelf/core/theme/app_colors.dart';
-import 'package:shelf/core/theme/app_spacing.dart';
-import 'package:shelf/core/theme/app_text_styles.dart';
-import 'package:shelf/modules/home/ui/widgets/HomeMenuItem.dart';
-import 'package:shelf/modules/home/ui/widgets/HomePillBar.dart';
-import 'package:shelf/modules/home/ui/widgets/HomeTitle.dart';
-import 'package:shelf/modules/home/ui/widgets/HomeToggler.dart';
+import 'package:my_shelf_project/core/service/file_picker.dart';
+import 'package:my_shelf_project/core/service/permission_service.dart';
+import 'package:my_shelf_project/core/theme/app_colors.dart';
+import 'package:my_shelf_project/core/theme/app_spacing.dart';
+import 'package:my_shelf_project/core/theme/app_text_styles.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/HomePillBar.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/HomeToggler.dart';
 
 class AudioScreen extends StatefulWidget {
   const AudioScreen({super.key});

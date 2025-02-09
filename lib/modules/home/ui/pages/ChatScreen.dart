@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:shelf/core/theme/app_colors.dart';
-import 'package:shelf/core/theme/app_spacing.dart';
-import 'package:shelf/core/theme/app_text_styles.dart';
-import 'package:shelf/modules/home/ui/widgets/HomeMenuItem.dart';
-import 'package:shelf/modules/home/ui/widgets/HomePillBar.dart';
-import 'package:shelf/modules/home/ui/widgets/HomeTitle.dart';
-import 'package:shelf/modules/home/ui/widgets/HomePills.dart';
-import 'package:shelf/modules/home/ui/widgets/CustomNavigation.dart';
-import 'package:shelf/modules/home/ui/widgets/HomeToggler.dart';
+import 'package:my_shelf_project/core/theme/app_colors.dart';
+import 'package:my_shelf_project/core/theme/app_spacing.dart';
+import 'package:my_shelf_project/core/theme/app_text_styles.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/HomePillBar.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/HomePills.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/CustomNavigation.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/HomeToggler.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});

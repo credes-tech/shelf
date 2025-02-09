@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shelf/core/routes/routes.dart';
+import 'package:my_shelf_project/core/routes/routes.dart';
 import 'core/theme/theme.dart';
 
 class MyApp extends StatelessWidget {
