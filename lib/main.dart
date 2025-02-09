@@ -1,30 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize dependencies
   await setupDependencies();
-
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  runApp(const MyApp());
+  runApp(ProviderScope(child: MyApp()));
 }
 
-setupDependencies() {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Shelf',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-      ),
-      // home: ,
-    );
-  }
+setupDependencies() async{
+  await Hive.initFlutter();
+  await Hive.openBox('settings');
 }
