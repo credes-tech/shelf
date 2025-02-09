@@ -1,6 +1,18 @@
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+
+
+Future<int> getAndroidSdkVersion() async {
+  if (Platform.isAndroid) {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    return androidInfo.version.sdkInt;
+  }
+  return 0;
+}
 
 class PermissionService {
   static Future<bool> requestStoragePermission() async {
@@ -8,18 +20,32 @@ class PermissionService {
     if (status.isGranted) {
       return true;
     } else if (status.isPermanentlyDenied) {
-      openAppSettings();
+      await openAppSettings();
     }
     return false;
   }
 
   static Future<bool> requestAudioPermission() async {
     if (Platform.isAndroid) {
-      var status = await PermissionService.requestStoragePermission();
-      if (status) {
-        return true;
+      int sdkInt = await getAndroidSdkVersion();
+      if (sdkInt >= 33) {
+        // Android 13 and above
+        PermissionStatus audioStatus = await Permission.audio.request();
+        if (audioStatus.isGranted) {
+          return true;
+        } else if (audioStatus.isPermanentlyDenied) {
+          await openAppSettings();
+        } else {
+          return false;
+        }
       } else {
-        return false;
+        // Android 12 and below
+        var status = await PermissionService.requestStoragePermission();
+        if (status) {
+          return true;
+        } else {
+          return false;
+        }
       }
     } else if (Platform.isIOS) {
       var status = await Permission.audio.request();
@@ -31,7 +57,6 @@ class PermissionService {
     }
     return false;
   }
-
 
   //
   // static Future<void> requestMediaPermission() async {
@@ -66,5 +91,4 @@ class PermissionService {
     PermissionStatus status = await Permission.storage.status;
     return status.isGranted;
   }
-
 }

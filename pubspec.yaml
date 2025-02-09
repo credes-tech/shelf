@@ -22,6 +22,7 @@ dependencies:
   flutter_riverpod: ^2.6.1
   path_provider: ^2.1.5
   marquee: ^2.3.0
+  device_info_plus: ^11.3.0
 
 dev_dependencies:
   flutter_test:
