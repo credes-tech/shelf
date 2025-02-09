@@ -2,59 +2,56 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shelf/core/utils/FileValidator.dart';
 import 'package:shelf/modules/home/data/datasource/local/audio_hive_service.dart';
 
 class FilePickerService {
-  Future<File?> pickFile() async {
-    try {
+
+  static Future<String?> getFilePath() async {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         allowMultiple: false,
       );
       if (result != null) {
-        return File(result.files.single.path!);
+        return result.files.single.path!;
+      } else {
+        return null;
       }
-    } catch (e) {
-      if (kDebugMode) {
-        print("Error picking file: $e");
-      }
+  }
+
+  static Future<String?> pickAudioFile() async {
+    String? audioFilePath = await getFilePath();
+    if(FileValidator.isValidAudioFile(audioFilePath!)){
+      String? audioPath = await saveFileToLocalStorage(audioFilePath,"Audio");
+      return audioPath;
     }
     return null;
   }
 
-  static Future<List<File>?> pickAudioFile() async {
-    List<File>? files;
+
+
+  static Future<String?> saveFileToLocalStorage(String filePath,String type) async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        allowMultiple: true,
-        type: FileType.custom,
-        allowedExtensions: ['mp3', 'aac', 'wav'],
-      );
-      if (result != null) {
-        result.files.forEach((file) async {
-          final File nfile = File(file.path!);
-          final File savedFile = await saveFileToLocalStorage(nfile, file.name);
-          files!.add(savedFile);
-          // await AudioHiveService.saveAudioToHive(
-          //    file.name, file.extension!, file.bytes as int, DateTime.now());
-          print("saved file $savedFile");
-        });
-        return files;
-      }
+      File originalFile = File(filePath);
+      String newFilePath = await getLocalFilePath(originalFile,type) as String;
+      await originalFile.copy(newFilePath);
+      return newFilePath;
     } catch (e) {
-      if (kDebugMode) {
-        print("Error picking file: $e");
-      }
+      return null;
     }
   }
 
-  static Future<String> getLocalFilePath(String filename) async {
-    final directory = await getApplicationDocumentsDirectory();
-    return "${directory.path}/$filename";
+
+  static Future<String?> getLocalFilePath(File file,String dir) async {
+    try{
+      final appDir = await getApplicationDocumentsDirectory();
+      Directory subDir = Directory("${appDir.path}/$dir");
+      if (!await subDir.exists()) {
+        await subDir.create(recursive: true);
+      }
+      return "${subDir.path}/${file.uri.pathSegments.last}";
+    }catch(err){
+      return null;
+    }
   }
 
-  static Future<File> saveFileToLocalStorage(File file, String filename) async {
-    final String path = await getLocalFilePath(filename);
-    return file.copy(path);
-  }
-  // static Future<void> storeAudioFile() async {}
 }
