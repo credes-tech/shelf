@@ -148,9 +148,9 @@ class _AudioScreenState extends State<AudioScreen> {
     if (isGranted == true) {
       print("Permission Granted");
       List<File>? file = await FilePickerService.pickAudioFile();
-      file!.forEach((file) => print(file));
+      // file!.forEach((file) => print(file));
     } else {
-      print("Permission Denid");
+      print("Permission Denied");
     }
   }
 }
