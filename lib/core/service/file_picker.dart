@@ -21,6 +21,7 @@ class FilePickerService {
   }
 
   static Future<List<File>?> pickAudioFile() async {
+    List<File>? files;
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         allowMultiple: true,
@@ -31,9 +32,9 @@ class FilePickerService {
         result.files.forEach((file) async {
           final File nfile = File(file.path!);
           final File savedFile = await saveFileToLocalStorage(nfile, file.name);
+          files!.add(savedFile);
           print("saved file $savedFile");
         });
-        List<File> files = result.paths.map((path) => File(path!)).toList();
         return files;
       }
     } catch (e) {

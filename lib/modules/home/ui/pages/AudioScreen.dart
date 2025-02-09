@@ -24,6 +24,7 @@ class AudioScreen extends StatefulWidget {
 
 class _AudioScreenState extends State<AudioScreen> {
   final List<String> source = ['Recordings', 'Audio Files'];
+
   int selectedSource = 0;
 
   Future<void> _checkPermission() async {
@@ -144,11 +145,9 @@ class _AudioScreenState extends State<AudioScreen> {
   onTapAudioBtn() async {
     await PermissionService.requestAudioPermission();
     bool isGranted = await PermissionService.checkAudioPermission();
-
     if (isGranted == true) {
-      print("Permission Granted");
-      List<File>? file = await FilePickerService.pickAudioFile();
-      // file!.forEach((file) => print(file));
+      // it contains the files which we need to show to frontend.
+      List<File>? files = await FilePickerService.pickAudioFile();
     } else {
       print("Permission Denied");
     }
