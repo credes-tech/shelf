@@ -21,6 +21,7 @@ class AppTextStyles {
   );
 
   static const TextStyle caption = TextStyle(
+    fontFamily: 'Inter',
     fontSize: 14,
     fontWeight: FontWeight.w400,
     color: Colors.grey,

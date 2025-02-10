@@ -1,32 +1,41 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:marquee/marquee.dart';
-import 'package:my_shelf_project/core/service/file_picker.dart';
 import 'package:my_shelf_project/core/service/permission_service.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
+import 'package:my_shelf_project/modules/home/domain/providers/audio_provider.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/HomeCard.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomePillBar.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeToggler.dart';
 
-class AudioScreen extends StatefulWidget {
+class AudioScreen extends ConsumerStatefulWidget {
   const AudioScreen({super.key});
 
   @override
-  State<AudioScreen> createState() => _AudioScreenState();
+  ConsumerState<AudioScreen> createState() => _AudioScreenState();
 }
 
-class _AudioScreenState extends State<AudioScreen> {
+class _AudioScreenState extends ConsumerState<AudioScreen> {
   final GlobalKey _popupKey = GlobalKey();
   final List<String> source = ['Recordings', 'Audio Files'];
-  final List<String> _audioFiles = [];
   final AudioPlayer _audioPlayer = AudioPlayer();
   final Map<String, bool> _isPlaying = {};
 
   int selectedSource = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      ref.read(audioProvider.notifier).fetchAudios();
+    });
+  }
 
   Future<void> _togglePlayPause(String filePath) async {
     if (_isPlaying[filePath] == true) {
@@ -54,9 +63,9 @@ class _AudioScreenState extends State<AudioScreen> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
+    final audioList = ref.watch(audioProvider);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -107,68 +116,66 @@ class _AudioScreenState extends State<AudioScreen> {
               ],
             ),
           ),
-          Expanded(
-            child: ListView.builder(
-                itemCount: _audioFiles.length,
-                itemBuilder: (context, index) {
-                  String filePath = _audioFiles[index];
-                  return Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(35.0),
-                        color: AppColors.ghostModeRed),
-                    margin: EdgeInsets.symmetric(
-                        horizontal: AppSpacing.medium,
-                        vertical: AppSpacing.xSmall),
-                    padding: EdgeInsets.only(left: AppSpacing.medium),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: 30,
-                              width: MediaQuery.of(context).size.width * 0.6,
-                              child: Marquee(
-                                text: filePath.split('/').last,
-                                style: AppTextStyles.audioTitle,
-                                scrollAxis: Axis.horizontal,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                blankSpace: 20.0,
-                                velocity: 30.0,
-                                pauseAfterRound: Duration(seconds: 1),
-                                accelerationDuration: Duration(seconds: 1),
-                                accelerationCurve: Curves.linear,
-                                decelerationDuration: Duration(milliseconds: 500),
-                                decelerationCurve: Curves.easeOut,
+          audioList.isEmpty
+              ?  HomeCard()
+              : Expanded(
+                  child: ListView.builder(
+                      itemCount: audioList.length,
+                      itemBuilder: (context, index) {
+                        final audio = audioList[index];
+                        return Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(35.0),
+                              color: AppColors.ghostModeRed),
+                          margin: EdgeInsets.symmetric(
+                              horizontal: AppSpacing.medium,
+                              vertical: AppSpacing.xSmall),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                onPressed: () => _togglePlayPause(audio.filePath),
+                                icon: Icon(
+                                  _isPlaying[audio.filePath] == true
+                                      ? Icons.pause_circle_filled_rounded
+                                      : Icons.play_circle_fill_rounded,
+                                  size: 40,
+                                ),
                               ),
-                            )
-                          ],
-                        ),
-                        IconButton(
-                          onPressed: () async {
-                          },
-                          icon: Icon(
-                            Icons.share_rounded,
-                            size: 30,
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    height: 30,
+                                    width: MediaQuery.of(context).size.width * 0.7,
+                                    child: Marquee(
+                                      text: audio.filename,
+                                      style: AppTextStyles.audioTitle,
+                                      scrollAxis: Axis.horizontal,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      blankSpace: 20.0,
+                                      velocity: 30.0,
+                                      pauseAfterRound: Duration(seconds: 1),
+                                      accelerationDuration:
+                                          Duration(seconds: 1),
+                                      accelerationCurve: Curves.linear,
+                                      decelerationDuration:
+                                          Duration(milliseconds: 500),
+                                      decelerationCurve: Curves.easeOut,
+                                    ),
+                                  )
+                                ],
+                              ),
+
+
+                            ],
                           ),
-                        ),
-                        IconButton(
-                          onPressed: () => _togglePlayPause(filePath),
-                          icon: Icon(
-                            _isPlaying[filePath] == true
-                                ? Icons.pause_circle_filled_rounded
-                                : Icons.play_circle_fill_rounded,
-                            size: 40,
-                          ),
-                        )
-                      ],
-                    ),
-                  );
-                }),
-          ),
+                        );
+                      }),
+                ),
         ],
       ),
     );
@@ -195,16 +202,12 @@ class _AudioScreenState extends State<AudioScreen> {
   void onTapAudioBtn() async {
     bool isGranted = await PermissionService.requestAudioPermission();
     if (isGranted == true) {
-      String? path = await FilePickerService.pickAudioFile();
-      if (path != null) {
-        setState(() {
-          _audioFiles.add(path);
-          _isPlaying[path] = false;
-        });
-      }
+      await ref.read(audioProvider.notifier).pickAndSaveAudio();
     } else {
       print("Permission denied");
     }
     _closePopup();
   }
 }
+
+

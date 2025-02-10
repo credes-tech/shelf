@@ -21,13 +21,14 @@ class AudioHiveAdapter extends TypeAdapter<AudioHive> {
       fileType: fields[1] as String,
       fileSize: fields[2] as int,
       date: fields[3] as DateTime,
+      filePath: fields[4] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, AudioHive obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.filename)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class AudioHiveAdapter extends TypeAdapter<AudioHive> {
       ..writeByte(2)
       ..write(obj.fileSize)
       ..writeByte(3)
-      ..write(obj.date);
+      ..write(obj.date)
+      ..writeByte(4)
+      ..write(obj.filePath);
   }
 
   @override
