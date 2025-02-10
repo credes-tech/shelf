@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:marquee/marquee.dart';
 import 'package:my_shelf_project/core/service/permission_service.dart';
+import 'package:my_shelf_project/core/service/share_service.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
@@ -231,7 +232,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
                                         IconButton(
-                                            onPressed: () {},
+                                            onPressed: ()=>ShareService.shareFile(audio.filePath),
                                             icon: Icon(Icons.ios_share)),
                                         IconButton(
                                             onPressed: _seekBackward,
