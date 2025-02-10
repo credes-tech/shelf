@@ -26,7 +26,7 @@ class HomeCard extends StatelessWidget {
               SizedBox(height: 10),
               Text(
                 "No audio files found!",
-                style:AppTextStyles.audioTitle,
+                style:AppTextStyles.cardTitle,
               ),
               SizedBox(height: 8),
               RichText(text: TextSpan(

@@ -38,19 +38,17 @@ class AudioNotifier extends StateNotifier<List<AudioModel>> {
     }
   }
 
+  Future<String> getIndexedFile(int index) async {
+    return state[index].filePath;
+  }
+
   Future<void> deleteAudio(int index) async {
     final fileToDelete = state[index].filePath;
-
-    // Remove from database
     await _audioRepo.deleteAudio(index);
-
-    // Remove from device storage
     final file = File(fileToDelete);
     if (await file.exists()) {
       await file.delete();
     }
-
-    // Update state by removing the deleted file
     state = List.from(state)..removeAt(index);
   }
 }

@@ -1,4 +1,5 @@
-import 'package:audio_waveforms/audio_waveforms.dart';
+import 'dart:async';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +11,7 @@ import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 import 'package:my_shelf_project/modules/home/domain/models/audio_model.dart';
 import 'package:my_shelf_project/modules/home/domain/providers/audio_provider.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/AudioText.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeCard.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomePillBar.dart';
@@ -24,14 +26,15 @@ class AudioScreen extends ConsumerStatefulWidget {
 }
 
 class _AudioScreenState extends ConsumerState<AudioScreen> {
-  final PlayerController playerController = PlayerController();
-
   final GlobalKey _popupKey = GlobalKey();
   final List<String> source = ['Recordings', 'Audio Files'];
   final AudioPlayer _audioPlayer = AudioPlayer();
   final Map<String, bool> _isPlaying = {};
 
+  Duration _duration = Duration.zero;
+  Duration _position = Duration.zero;
 
+  bool _isSeeking = false;
   int selectedSource = 0;
 
   @override
@@ -40,31 +43,66 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     Future.delayed(Duration.zero, () {
       ref.read(audioProvider.notifier).fetchAudios();
     });
-    playerController.onCompletion.listen((_){
+    _audioPlayer.onDurationChanged.listen((Duration d) {
+      setState(() {
+        _duration = d;
+      });
+    });
+    _audioPlayer.onPositionChanged.listen((Duration p) {
+      setState(() {
+        _position = p;
+      });
+    });
+    _audioPlayer.onPlayerComplete.listen((_) {
       setState(() {
         _isPlaying.updateAll((key, value) => false);
       });
     });
-
   }
 
   Future<void> _togglePlayPause(String filePath) async {
     if (_isPlaying[filePath] == true) {
-      await playerController.pausePlayer();
+      await _audioPlayer.pause();
       setState(() {
         _isPlaying[filePath] = false;
       });
     } else {
-      playerController.stopPlayer();
+      _audioPlayer.stop();
       setState(() {
         _isPlaying.updateAll((key, value) => false);
         _isPlaying[filePath] = true;
+        _position = Duration.zero;
       });
-      await playerController.preparePlayer(path: filePath);
-      playerController.onExtractionProgress.listen((progress) async {
-        if(progress==1.0){
-          await playerController.startPlayer(forceRefresh: true);
-        }
+      await _audioPlayer.play(DeviceFileSource(filePath));
+    }
+  }
+
+  void _seekTo(double value) {
+    final newPosition = Duration(seconds: value.toInt());
+    _audioPlayer.seek(newPosition);
+  }
+
+  void _seekForward() {
+    final newPosition = _position + Duration(seconds: 10);
+    if (newPosition < _duration) {
+      _audioPlayer.seek(newPosition);
+      setState(() {
+        _position = newPosition;
+      });
+    }
+  }
+
+  void _seekBackward() {
+    final newPosition = _position - Duration(seconds: 10);
+    if (newPosition > Duration.zero) {
+      _audioPlayer.seek(newPosition);
+      setState(() {
+        _position = newPosition;
+      });
+    } else {
+      _audioPlayer.seek(Duration.zero);
+      setState(() {
+        _position = Duration.zero;
       });
     }
   }
@@ -75,7 +113,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
 
   @override
   void dispose() {
-    playerController.dispose();
+    _audioPlayer.dispose(); // Release resources
     super.dispose();
   }
 
@@ -139,7 +177,6 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                       itemCount: audioList.length,
                       itemBuilder: (context, index) {
                         final audio = audioList[index];
-
                         return Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(35.0),
@@ -149,42 +186,71 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                               vertical: AppSpacing.xSmall),
                           child: (_isPlaying[audio.filePath] == true)
                               ? Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     SizedBox(
                                       height: 20,
                                     ),
                                     SizedBox(
                                       height: 30,
-                                      width: MediaQuery.of(context).size.width *
-                                          0.7,
+                                      width: MediaQuery.of(context).size.width * 0.6,
                                       child: AudioText(audio: audio),
                                     ),
-                                    SizedBox(
-                                      height: 120,
-                                      child: AudioFileWaveforms(
-                                        animationCurve: Curves.easeInOut,
-                                        playerController: playerController,
-                                        continuousWaveform: true,
-                                        size: Size(280, 20),
-                                        playerWaveStyle: PlayerWaveStyle(
-                                          fixedWaveColor: AppColors.onboardLightOrange,
-                                          liveWaveColor: AppColors.onboardDarkOrange,
-                                          waveThickness: 2,
-                                          showSeekLine: true,
-                                        ),
-                                      ),
+                                    TweenAnimationBuilder<double>(
+                                      tween: Tween<double>(begin: 0, end: _position.inSeconds.toDouble()),
+                                      duration: Duration(milliseconds: 300), // Smooth transition effect
+                                      builder: (context, value, child) {
+                                        return Slider(
+                                          min: 0,
+                                          max: _duration.inSeconds.toDouble(),
+                                          value: _isSeeking ? value : _position.inSeconds.toDouble(),
+                                          onChanged: (newValue) {
+                                            setState(() {
+                                              _isSeeking = true;
+                                            });
+                                          },
+                                          onChangeStart: (newValue) {
+                                            setState(() {
+                                              _isSeeking = true;
+                                            });
+                                          },
+                                          onChangeEnd: (newValue) {
+                                            setState(() {
+                                              _isSeeking = false;
+                                              _seekTo(newValue);
+                                            });
+                                          },
+                                          activeColor: AppColors.onboardDarkOrange,
+                                          inactiveColor: Colors.white,
+                                          thumbColor: AppColors.onboardLightOrange,
+                                        );
+                                      },
                                     ),
-
-                                    IconButton(
-                                      onPressed: () =>
-                                          _togglePlayPause(audio.filePath),
-                                      icon: Icon(
-                                        _isPlaying[audio.filePath] == true
-                                            ? Icons.pause_circle_filled_rounded
-                                            : Icons.play_circle_fill_rounded,
-                                        size: 50,
-                                      ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        IconButton(
+                                            onPressed: () {},
+                                            icon: Icon(Icons.ios_share)),
+                                        IconButton(
+                                            onPressed: _seekBackward,
+                                            icon: Icon(Icons.replay_10_rounded)),
+                                        IconButton(
+                                          onPressed: () => _togglePlayPause(audio.filePath),
+                                          icon: Icon(
+                                            Icons.pause_circle_filled_rounded,
+                                            size: 60,
+                                            color: AppColors.onboardDarkOrange,
+                                          ),
+                                        ),
+                                        IconButton(
+                                            onPressed: _seekForward,
+                                            icon: Icon(Icons.forward_10_rounded)),
+                                        IconButton(
+                                            onPressed: ()=>onTapDeleteBtn(index),
+                                            icon: Icon(Icons.delete))
+                                      ],
                                     ),
                                     SizedBox(
                                       height: 10,
@@ -199,9 +265,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                       onPressed: () =>
                                           _togglePlayPause(audio.filePath),
                                       icon: Icon(
-                                        _isPlaying[audio.filePath] == true
-                                            ? Icons.pause_circle_filled_rounded
-                                            : Icons.play_circle_fill_rounded,
+                                        Icons.play_circle_fill_rounded,
                                         size: 40,
                                       ),
                                     ),
@@ -242,8 +306,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
           highlightColor: Colors.transparent,
           borderRadius: BorderRadius.circular(25),
           onTap: onTapAudioBtn,
-          child:
-              HomeMenuItem(icon: icon, iconColor: iconColor, itemValue: text),
+          child: HomeMenuItem(icon: icon, iconColor: iconColor, itemValue: text),
         ),
       ),
     );
@@ -258,30 +321,22 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     }
     _closePopup();
   }
-}
 
-class AudioText extends StatelessWidget {
-  const AudioText({
-    super.key,
-    required this.audio,
-  });
-
-  final AudioModel audio;
-
-  @override
-  Widget build(BuildContext context) {
-    return Marquee(
-      text: audio.filename,
-      style: AppTextStyles.audioTitle,
-      scrollAxis: Axis.horizontal,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      blankSpace: 20.0,
-      velocity: 30.0,
-      pauseAfterRound: Duration(seconds: 1),
-      accelerationDuration: Duration(seconds: 1),
-      accelerationCurve: Curves.linear,
-      decelerationDuration: Duration(milliseconds: 500),
-      decelerationCurve: Curves.easeOut,
-    );
+  void onTapDeleteBtn(index) async {
+    String currentFilePath = await ref.read(audioProvider.notifier).getIndexedFile(index);
+    if(_isPlaying[currentFilePath]==true){
+      await _audioPlayer.pause();
+      setState(() {
+        _isPlaying[currentFilePath] = false;
+      });
+      _audioPlayer.stop();
+    }
+    setState(() {
+      _isPlaying.remove(currentFilePath);
+    });
+    await ref.read(audioProvider.notifier).deleteAudio(index);
   }
+
 }
+
+

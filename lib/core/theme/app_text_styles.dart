@@ -70,6 +70,14 @@ class AppTextStyles {
   static const TextStyle audioTitle = TextStyle(
       fontFamily: 'Montserrat',
       fontSize: 18,
+      fontWeight: FontWeight.w500,
+      color: Colors.black,
+      letterSpacing: -0.8
+  );
+
+  static const TextStyle cardTitle = TextStyle(
+      fontFamily: 'Montserrat',
+      fontSize: 18,
       fontWeight: FontWeight.w600,
       color: Colors.black,
       letterSpacing: -0.8
