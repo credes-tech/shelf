@@ -1,3 +1,4 @@
+import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +8,7 @@ import 'package:my_shelf_project/core/service/permission_service.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
+import 'package:my_shelf_project/modules/home/domain/models/audio_model.dart';
 import 'package:my_shelf_project/modules/home/domain/providers/audio_provider.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeCard.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
@@ -22,10 +24,13 @@ class AudioScreen extends ConsumerStatefulWidget {
 }
 
 class _AudioScreenState extends ConsumerState<AudioScreen> {
+  final PlayerController playerController = PlayerController();
+
   final GlobalKey _popupKey = GlobalKey();
   final List<String> source = ['Recordings', 'Audio Files'];
   final AudioPlayer _audioPlayer = AudioPlayer();
   final Map<String, bool> _isPlaying = {};
+
 
   int selectedSource = 0;
 
@@ -35,21 +40,32 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     Future.delayed(Duration.zero, () {
       ref.read(audioProvider.notifier).fetchAudios();
     });
+    playerController.onCompletion.listen((_){
+      setState(() {
+        _isPlaying.updateAll((key, value) => false);
+      });
+    });
+
   }
 
   Future<void> _togglePlayPause(String filePath) async {
     if (_isPlaying[filePath] == true) {
-      await _audioPlayer.pause();
+      await playerController.pausePlayer();
       setState(() {
         _isPlaying[filePath] = false;
       });
     } else {
-      _audioPlayer.stop();
+      playerController.stopPlayer();
       setState(() {
         _isPlaying.updateAll((key, value) => false);
         _isPlaying[filePath] = true;
       });
-      await _audioPlayer.play(DeviceFileSource(filePath));
+      await playerController.preparePlayer(path: filePath);
+      playerController.onExtractionProgress.listen((progress) async {
+        if(progress==1.0){
+          await playerController.startPlayer(forceRefresh: true);
+        }
+      });
     }
   }
 
@@ -59,7 +75,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
 
   @override
   void dispose() {
-    _audioPlayer.dispose(); // Release resources
+    playerController.dispose();
     super.dispose();
   }
 
@@ -117,12 +133,13 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
             ),
           ),
           audioList.isEmpty
-              ?  HomeCard()
+              ? HomeCard()
               : Expanded(
                   child: ListView.builder(
                       itemCount: audioList.length,
                       itemBuilder: (context, index) {
                         final audio = audioList[index];
+
                         return Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(35.0),
@@ -130,49 +147,82 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                           margin: EdgeInsets.symmetric(
                               horizontal: AppSpacing.medium,
                               vertical: AppSpacing.xSmall),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              IconButton(
-                                onPressed: () => _togglePlayPause(audio.filePath),
-                                icon: Icon(
-                                  _isPlaying[audio.filePath] == true
-                                      ? Icons.pause_circle_filled_rounded
-                                      : Icons.play_circle_fill_rounded,
-                                  size: 40,
-                                ),
-                              ),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    height: 30,
-                                    width: MediaQuery.of(context).size.width * 0.7,
-                                    child: Marquee(
-                                      text: audio.filename,
-                                      style: AppTextStyles.audioTitle,
-                                      scrollAxis: Axis.horizontal,
+                          child: (_isPlaying[audio.filePath] == true)
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    SizedBox(
+                                      height: 30,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.7,
+                                      child: AudioText(audio: audio),
+                                    ),
+                                    SizedBox(
+                                      height: 120,
+                                      child: AudioFileWaveforms(
+                                        animationCurve: Curves.easeInOut,
+                                        playerController: playerController,
+                                        continuousWaveform: true,
+                                        size: Size(280, 20),
+                                        playerWaveStyle: PlayerWaveStyle(
+                                          fixedWaveColor: AppColors.onboardLightOrange,
+                                          liveWaveColor: AppColors.onboardDarkOrange,
+                                          waveThickness: 2,
+                                          showSeekLine: true,
+                                        ),
+                                      ),
+                                    ),
+
+                                    IconButton(
+                                      onPressed: () =>
+                                          _togglePlayPause(audio.filePath),
+                                      icon: Icon(
+                                        _isPlaying[audio.filePath] == true
+                                            ? Icons.pause_circle_filled_rounded
+                                            : Icons.play_circle_fill_rounded,
+                                        size: 50,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                  ],
+                                )
+                              : Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    IconButton(
+                                      onPressed: () =>
+                                          _togglePlayPause(audio.filePath),
+                                      icon: Icon(
+                                        _isPlaying[audio.filePath] == true
+                                            ? Icons.pause_circle_filled_rounded
+                                            : Icons.play_circle_fill_rounded,
+                                        size: 40,
+                                      ),
+                                    ),
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
-                                      blankSpace: 20.0,
-                                      velocity: 30.0,
-                                      pauseAfterRound: Duration(seconds: 1),
-                                      accelerationDuration:
-                                          Duration(seconds: 1),
-                                      accelerationCurve: Curves.linear,
-                                      decelerationDuration:
-                                          Duration(milliseconds: 500),
-                                      decelerationCurve: Curves.easeOut,
+                                      children: [
+                                        SizedBox(
+                                          height: 30,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.7,
+                                          child: AudioText(audio: audio),
+                                        )
+                                      ],
                                     ),
-                                  )
-                                ],
-                              ),
-
-
-                            ],
-                          ),
+                                  ],
+                                ),
                         );
                       }),
                 ),
@@ -210,4 +260,28 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
   }
 }
 
+class AudioText extends StatelessWidget {
+  const AudioText({
+    super.key,
+    required this.audio,
+  });
 
+  final AudioModel audio;
+
+  @override
+  Widget build(BuildContext context) {
+    return Marquee(
+      text: audio.filename,
+      style: AppTextStyles.audioTitle,
+      scrollAxis: Axis.horizontal,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      blankSpace: 20.0,
+      velocity: 30.0,
+      pauseAfterRound: Duration(seconds: 1),
+      accelerationDuration: Duration(seconds: 1),
+      accelerationCurve: Curves.linear,
+      decelerationDuration: Duration(milliseconds: 500),
+      decelerationCurve: Curves.easeOut,
+    );
+  }
+}
