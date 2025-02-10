@@ -1,9 +1,7 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:my_shelf_project/core/utils/FileValidator.dart';
-import 'package:my_shelf_project/modules/home/data/datasource/local/audio_hive_service.dart';
 
 class FilePickerService {
 
@@ -18,7 +16,7 @@ class FilePickerService {
       }
   }
 
-  static Future<String?> pickAudioFile() async {
+  Future<String?> pickAudioFile() async {
     String? audioFilePath = await getFilePath();
     if(FileValidator.isValidAudioFile(audioFilePath!)){
       String? audioPath = await saveFileToLocalStorage(audioFilePath,"Audio");

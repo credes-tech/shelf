@@ -5,17 +5,25 @@ part 'audio_hive_model.g.dart';
 @HiveType(typeId: 0)
 class AudioHive {
   @HiveField(0)
-  String filename;
+  final String filename;
+
   @HiveField(1)
-  String fileType;
+  final String fileType;
+
   @HiveField(2)
   final int fileSize;
+
   @HiveField(3)
   final DateTime date;
+
+  @HiveField(4)  // New Field for File Path
+  final String filePath;
+
   AudioHive({
     required this.filename,
     required this.fileType,
     required this.fileSize,
     required this.date,
+    required this.filePath, // Include file path
   });
 }

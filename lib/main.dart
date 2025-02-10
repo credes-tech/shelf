@@ -5,7 +5,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive/hive.dart';
 import 'package:my_shelf_project/modules/home/data/models/audio_hive_model.dart';
 import 'app.dart';
-import 'package:build_runner/build_runner.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +18,7 @@ void main() async {
 
 setupDependencies() async {
   await Hive.initFlutter();
-  var box = await Hive.openBox('files');
   Hive.registerAdapter(AudioHiveAdapter());
+  await Hive.openBox<AudioHive>('audioBox');
 
 }
