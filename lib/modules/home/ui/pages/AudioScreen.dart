@@ -232,13 +232,9 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                       itemBuilder: (context, index) {
                         final audio = audioList[index];
                         return GestureDetector(
-                          onLongPress: () => !_isPlaying[audio.filePath]!
-                              ? _toggleOption(audio.filePath)
-                              : null,
+                          onLongPress: () => _toggleOption(audio.filePath),
                           onDoubleTap: () {
-                            ref
-                                .read(audioProvider.notifier)
-                                .togglePin(audio.filename);
+                            ref.read(audioProvider.notifier).togglePin(audio.filename);
                           },
                           child: (_isOpen[audio.filePath] == true)
                               ? Container(
@@ -257,12 +253,9 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                         width: 20,
                                       ),
                                       SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.45,
+                                        width: MediaQuery.of(context).size.width * 0.45,
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: AppSpacing.medium),
+                                          padding: const EdgeInsets.symmetric(vertical: AppSpacing.medium),
                                           child: Text(
                                             audio.filename,
                                             style: AppTextStyles.audioTitle,
@@ -272,16 +265,13 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                         ),
                                       ),
                                       IconButton(
-                                          onPressed: () =>
-                                              ShareService.shareFile(
-                                                  audio.filePath),
+                                          onPressed: () => ShareService.shareFile(audio.filePath),
                                           icon: Icon(
                                             Icons.ios_share,
                                             color: Colors.black,
                                           )),
                                       IconButton(
-                                          onPressed: () =>
-                                              onTapDeleteBtn(index),
+                                          onPressed: () => onTapDeleteBtn(index),
                                           icon: Icon(
                                             Icons.delete,
                                             color: Colors.black,
@@ -305,37 +295,30 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                       vertical: AppSpacing.xSmall),
                                   child: (_isPlaying[audio.filePath] == true)
                                       ? Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
                                             SizedBox(
                                               height: 20,
                                             ),
                                             SizedBox(
                                               height: 30,
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.6,
+                                              width: MediaQuery.of(context).size.width * 0.6,
                                               child: AudioText(audio: audio),
                                             ),
                                             TweenAnimationBuilder<double>(
                                               tween: Tween<double>(
                                                   begin: 0,
-                                                  end: _position.inSeconds
-                                                      .toDouble()),
+                                                  end: _position.inSeconds.toDouble()),
                                               duration: Duration(
                                                   milliseconds:
                                                       300), // Smooth transition effect
                                               builder: (context, value, child) {
                                                 return Slider(
                                                   min: 0,
-                                                  max: _duration.inSeconds
-                                                      .toDouble(),
+                                                  max: _duration.inSeconds.toDouble(),
                                                   value: _isSeeking
                                                       ? value
-                                                      : _position.inSeconds
-                                                          .toDouble(),
+                                                      : _position.inSeconds.toDouble(),
                                                   onChanged: (newValue) {
                                                     setState(() {
                                                       _isSeeking = true;
@@ -352,24 +335,18 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                                       _seekTo(newValue);
                                                     });
                                                   },
-                                                  activeColor: AppColors
-                                                      .onboardDarkOrange,
+                                                  activeColor: AppColors.onboardDarkOrange,
                                                   inactiveColor: Colors.white,
-                                                  thumbColor: AppColors
-                                                      .onboardLightOrange,
+                                                  thumbColor: AppColors.onboardLightOrange,
                                                 );
                                               },
                                             ),
                                             Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.center,
                                               children: [
                                                 IconButton(
-                                                    onPressed: () =>
-                                                        ShareService.shareFile(
-                                                            audio.filePath),
+                                                    onPressed: () => ShareService.shareFile(audio.filePath),
                                                     icon: Icon(
                                                       Icons.ios_share,
                                                       color: Colors.black,
@@ -381,15 +358,11 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                                       color: Colors.black,
                                                     )),
                                                 IconButton(
-                                                  onPressed: () =>
-                                                      _togglePlayPause(
-                                                          audio.filePath),
+                                                  onPressed: () => _togglePlayPause(audio.filePath),
                                                   icon: Icon(
-                                                    Icons
-                                                        .pause_circle_filled_rounded,
+                                                    Icons.pause_circle_filled_rounded,
                                                     size: 60,
-                                                    color: AppColors
-                                                        .onboardDarkOrange,
+                                                    color: AppColors.onboardDarkOrange,
                                                   ),
                                                 ),
                                                 IconButton(
@@ -399,8 +372,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                                       color: Colors.black,
                                                     )),
                                                 IconButton(
-                                                    onPressed: () =>
-                                                        onTapDeleteBtn(index),
+                                                    onPressed: () => onTapDeleteBtn(index),
                                                     icon: Icon(
                                                       Icons.delete,
                                                       color: Colors.black,
@@ -413,14 +385,11 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                           ],
                                         )
                                       : Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
                                           children: [
                                             IconButton(
-                                              onPressed: () => _togglePlayPause(
-                                                  audio.filePath),
+                                              onPressed: () => _togglePlayPause(audio.filePath),
                                               icon: Icon(
                                                 Icons.play_circle_fill_rounded,
                                                 size: 40,
@@ -428,39 +397,25 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                               ),
                                             ),
                                             Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                 SizedBox(
                                                   height: 30,
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      (audio.isPinned
-                                                          ? 0.6
-                                                          : 0.7),
-                                                  child:
-                                                      AudioText(audio: audio),
+                                                  width: MediaQuery.of(context).size.width * (audio.isPinned ? 0.6 : 0.7),
+                                                  child: AudioText(audio: audio),
                                                 )
                                               ],
                                             ),
                                             audio.isPinned
                                                 ? SizedBox(
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.05,
+                                                    width: MediaQuery.of(context).size.width * 0.05,
                                                   )
                                                 : SizedBox(),
                                             audio.isPinned
-                                                ? Icon(
-                                                    Icons.stars_rounded,
+                                                ? Icon(Icons.stars_rounded,
                                                     size: 30,
-                                                    color: AppColors
-                                                        .onboardDarkOrange,
+                                                    color: AppColors.onboardDarkOrange,
                                                   )
                                                 : SizedBox()
                                           ],
