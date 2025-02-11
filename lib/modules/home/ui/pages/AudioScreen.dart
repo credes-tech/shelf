@@ -182,7 +182,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(Icons.stars_rounded, size: 30),
+                    Icon(Icons.stars_rounded, size: 30,color: Colors.black,),
                     SizedBox(
                       width: 10,
                     ),
@@ -256,15 +256,15 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                           onPressed: () =>
                                               ShareService.shareFile(
                                                   audio.filePath),
-                                          icon: Icon(Icons.ios_share)),
+                                          icon: Icon(Icons.ios_share,color: Colors.black,)),
                                       IconButton(
                                           onPressed: () =>
                                               onTapDeleteBtn(index),
-                                          icon: Icon(Icons.delete)),
+                                          icon: Icon(Icons.delete,color: Colors.black,)),
                                       IconButton(
                                           onPressed: () =>
                                               _toggleOption(audio.filePath),
-                                          icon: Icon(Icons.close_rounded))
+                                          icon: Icon(Icons.close_rounded,color: Colors.black,))
                                     ],
                                   ),
                                 )
@@ -343,11 +343,11 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                                         ShareService.shareFile(
                                                             audio.filePath),
                                                     icon:
-                                                        Icon(Icons.ios_share)),
+                                                        Icon(Icons.ios_share,color: Colors.black,)),
                                                 IconButton(
                                                     onPressed: _seekBackward,
                                                     icon: Icon(Icons
-                                                        .replay_10_rounded)),
+                                                        .replay_10_rounded,color: Colors.black,)),
                                                 IconButton(
                                                   onPressed: () =>
                                                       _togglePlayPause(
@@ -363,11 +363,11 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                                 IconButton(
                                                     onPressed: _seekForward,
                                                     icon: Icon(Icons
-                                                        .forward_10_rounded)),
+                                                        .forward_10_rounded,color: Colors.black,)),
                                                 IconButton(
                                                     onPressed: () =>
                                                         onTapDeleteBtn(index),
-                                                    icon: Icon(Icons.delete))
+                                                    icon: Icon(Icons.delete,color: Colors.black,))
                                               ],
                                             ),
                                             SizedBox(
@@ -387,6 +387,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                               icon: Icon(
                                                 Icons.play_circle_fill_rounded,
                                                 size: 40,
+                                                color: Colors.black,
                                               ),
                                             ),
                                             Column(
