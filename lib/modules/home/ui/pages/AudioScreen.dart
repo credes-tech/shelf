@@ -77,6 +77,9 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
   }
 
   void _toggleOption(String filePath) {
+    if(_isPlaying[filePath]==true){
+      return;
+    }
     if (_isOpen[filePath] == true) {
       setState(() {
         _isOpen[filePath] = false;
@@ -88,6 +91,8 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
       });
     }
   }
+
+
 
   void _seekTo(double value) {
     final newPosition = Duration(seconds: value.toInt());
@@ -233,9 +238,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                         final audio = audioList[index];
                         return GestureDetector(
                           onLongPress: () => _toggleOption(audio.filePath),
-                          onDoubleTap: () {
-                            ref.read(audioProvider.notifier).togglePin(audio.filename);
-                          },
+                          onDoubleTap: () => togglePinAudio(audio.filePath,audio.filename),
                           child: (_isOpen[audio.filePath] == true)
                               ? Container(
                                   decoration: BoxDecoration(
@@ -457,8 +460,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
   }
 
   void onTapDeleteBtn(index) async {
-    String currentFilePath =
-        await ref.read(audioProvider.notifier).getIndexedFile(index);
+    String currentFilePath = await ref.read(audioProvider.notifier).getIndexedFile(index);
     if (_isPlaying[currentFilePath] == true) {
       await _audioPlayer.pause();
       setState(() {
@@ -472,5 +474,12 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
       _isOpen.remove(currentFilePath);
     });
     await ref.read(audioProvider.notifier).deleteAudio(index);
+  }
+
+  void togglePinAudio(String filePath, String fileName) {
+    if(_isPlaying[filePath]==true){
+      return;
+    }
+    ref.read(audioProvider.notifier).togglePin(fileName);
   }
 }
