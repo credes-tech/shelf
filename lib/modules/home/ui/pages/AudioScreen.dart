@@ -1,16 +1,13 @@
 import 'dart:async';
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:marquee/marquee.dart';
 import 'package:my_shelf_project/core/service/permission_service.dart';
 import 'package:my_shelf_project/core/service/share_service.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
-import 'package:my_shelf_project/modules/home/domain/models/audio_model.dart';
 import 'package:my_shelf_project/modules/home/domain/providers/audio_provider.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/AudioText.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeCard.dart';
@@ -31,6 +28,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
   final List<String> source = ['Recordings', 'Audio Files'];
   final AudioPlayer _audioPlayer = AudioPlayer();
   final Map<String, bool> _isPlaying = {};
+  final Map<String, bool> _isOpen = {};
 
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
@@ -75,6 +73,19 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
         _position = Duration.zero;
       });
       await _audioPlayer.play(DeviceFileSource(filePath));
+    }
+  }
+
+  void _toggleOption(String filePath) {
+    if (_isOpen[filePath] == true) {
+      setState(() {
+        _isOpen[filePath] = false;
+      });
+    } else {
+      setState(() {
+        _isOpen.updateAll((key, value) => false);
+        _isOpen[filePath] = true;
+      });
     }
   }
 
@@ -156,18 +167,53 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
               activeColor: AppColors.onboardDarkOrange,
               inactiveColor: AppColors.onboardLightOrange),
           Container(
-            margin: EdgeInsets.symmetric(
+            padding: EdgeInsets.symmetric(
                 horizontal: AppSpacing.large, vertical: AppSpacing.medium),
+            decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(20.0),
+                    bottomRight: Radius.circular(20.0))),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text('Pinned', style: AppTextStyles.homePinned),
-                HomeToggler(
-                  initialValue: true,
-                  onChanged: (value) {},
-                  color: AppColors.onboardDarkOrange,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(Icons.stars_rounded, size: 30),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    HomeToggler(
+                      initialValue: true,
+                      onChanged: (value) {},
+                      color: AppColors.onboardDarkOrange,
+                    ),
+                  ],
                 ),
+                ElevatedButton(
+                  onPressed: onTapAudioBtn,
+                  style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.only(
+                          left: AppSpacing.medium,
+                          right: AppSpacing.xSmall,
+                          top: AppSpacing.xSmall,
+                          bottom: AppSpacing.xSmall),
+                      backgroundColor: AppColors.onboardDarkOrange),
+                  child: Row(
+                    children: [
+                      Text("Add New", style: AppTextStyles.homePinned),
+                      SizedBox(width: 8),
+                      Icon(
+                        Icons.add_circle_rounded,
+                        size: 30,
+                        color: Colors.black,
+                      )
+                    ],
+                  ),
+                )
               ],
             ),
           ),
@@ -178,115 +224,190 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                       itemCount: audioList.length,
                       itemBuilder: (context, index) {
                         final audio = audioList[index];
-                        return Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(35.0),
-                              color: AppColors.ghostModeRed),
-                          margin: EdgeInsets.symmetric(
-                              horizontal: AppSpacing.medium,
-                              vertical: AppSpacing.xSmall),
-                          child: (_isPlaying[audio.filePath] == true)
-                              ? Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      height: 20,
-                                    ),
-                                    SizedBox(
-                                      height: 30,
-                                      width: MediaQuery.of(context).size.width * 0.6,
-                                      child: AudioText(audio: audio),
-                                    ),
-                                    TweenAnimationBuilder<double>(
-                                      tween: Tween<double>(begin: 0, end: _position.inSeconds.toDouble()),
-                                      duration: Duration(milliseconds: 300), // Smooth transition effect
-                                      builder: (context, value, child) {
-                                        return Slider(
-                                          min: 0,
-                                          max: _duration.inSeconds.toDouble(),
-                                          value: _isSeeking ? value : _position.inSeconds.toDouble(),
-                                          onChanged: (newValue) {
-                                            setState(() {
-                                              _isSeeking = true;
-                                            });
-                                          },
-                                          onChangeStart: (newValue) {
-                                            setState(() {
-                                              _isSeeking = true;
-                                            });
-                                          },
-                                          onChangeEnd: (newValue) {
-                                            setState(() {
-                                              _isSeeking = false;
-                                              _seekTo(newValue);
-                                            });
-                                          },
-                                          activeColor: AppColors.onboardDarkOrange,
-                                          inactiveColor: Colors.white,
-                                          thumbColor: AppColors.onboardLightOrange,
-                                        );
-                                      },
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        IconButton(
-                                            onPressed: ()=>ShareService.shareFile(audio.filePath),
-                                            icon: Icon(Icons.ios_share)),
-                                        IconButton(
-                                            onPressed: _seekBackward,
-                                            icon: Icon(Icons.replay_10_rounded)),
-                                        IconButton(
-                                          onPressed: () => _togglePlayPause(audio.filePath),
-                                          icon: Icon(
-                                            Icons.pause_circle_filled_rounded,
-                                            size: 60,
-                                            color: AppColors.onboardDarkOrange,
-                                          ),
-                                        ),
-                                        IconButton(
-                                            onPressed: _seekForward,
-                                            icon: Icon(Icons.forward_10_rounded)),
-                                        IconButton(
-                                            onPressed: ()=>onTapDeleteBtn(index),
-                                            icon: Icon(Icons.delete))
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                  ],
-                                )
-                              : Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    IconButton(
-                                      onPressed: () =>
-                                          _togglePlayPause(audio.filePath),
-                                      icon: Icon(
-                                        Icons.play_circle_fill_rounded,
-                                        size: 40,
+                        return GestureDetector(
+                          onLongPress: () => _toggleOption(audio.filePath),
+                          child: (_isOpen[audio.filePath] == true)
+                              ? Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(35.0),
+                                      color: AppColors.onboardLightOrange),
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: AppSpacing.medium,
+                                      vertical: AppSpacing.xSmall),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        width: 20,
                                       ),
-                                    ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(
-                                          height: 30,
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.7,
-                                          child: AudioText(audio: audio),
+                                      SizedBox(
+                                        width: MediaQuery.of(context).size.width * 0.45,
+                                        child: Text(
+                                          audio.filename,
+                                          style: AppTextStyles.audioTitle,
+                                          softWrap: false,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+
+                                      IconButton(
+                                          onPressed: () =>
+                                              ShareService.shareFile(
+                                                  audio.filePath),
+                                          icon: Icon(Icons.ios_share)),
+                                      IconButton(
+                                          onPressed: () =>
+                                              onTapDeleteBtn(index),
+                                          icon: Icon(Icons.delete)),
+                                      IconButton(
+                                          onPressed: () =>
+                                              _toggleOption(audio.filePath),
+                                          icon: Icon(Icons.close_rounded))
+                                    ],
+                                  ),
+                                )
+                              : Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(35.0),
+                                      color: AppColors.ghostModeRed),
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: AppSpacing.medium,
+                                      vertical: AppSpacing.xSmall),
+                                  child: (_isPlaying[audio.filePath] == true)
+                                      ? Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            SizedBox(
+                                              height: 20,
+                                            ),
+                                            SizedBox(
+                                              height: 30,
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.6,
+                                              child: AudioText(audio: audio),
+                                            ),
+                                            TweenAnimationBuilder<double>(
+                                              tween: Tween<double>(
+                                                  begin: 0,
+                                                  end: _position.inSeconds
+                                                      .toDouble()),
+                                              duration: Duration(
+                                                  milliseconds:
+                                                      300), // Smooth transition effect
+                                              builder: (context, value, child) {
+                                                return Slider(
+                                                  min: 0,
+                                                  max: _duration.inSeconds
+                                                      .toDouble(),
+                                                  value: _isSeeking
+                                                      ? value
+                                                      : _position.inSeconds
+                                                          .toDouble(),
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      _isSeeking = true;
+                                                    });
+                                                  },
+                                                  onChangeStart: (newValue) {
+                                                    setState(() {
+                                                      _isSeeking = true;
+                                                    });
+                                                  },
+                                                  onChangeEnd: (newValue) {
+                                                    setState(() {
+                                                      _isSeeking = false;
+                                                      _seekTo(newValue);
+                                                    });
+                                                  },
+                                                  activeColor: AppColors
+                                                      .onboardDarkOrange,
+                                                  inactiveColor: Colors.white,
+                                                  thumbColor: AppColors
+                                                      .onboardLightOrange,
+                                                );
+                                              },
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                IconButton(
+                                                    onPressed: () =>
+                                                        ShareService.shareFile(
+                                                            audio.filePath),
+                                                    icon:
+                                                        Icon(Icons.ios_share)),
+                                                IconButton(
+                                                    onPressed: _seekBackward,
+                                                    icon: Icon(Icons
+                                                        .replay_10_rounded)),
+                                                IconButton(
+                                                  onPressed: () =>
+                                                      _togglePlayPause(
+                                                          audio.filePath),
+                                                  icon: Icon(
+                                                    Icons
+                                                        .pause_circle_filled_rounded,
+                                                    size: 60,
+                                                    color: AppColors
+                                                        .onboardDarkOrange,
+                                                  ),
+                                                ),
+                                                IconButton(
+                                                    onPressed: _seekForward,
+                                                    icon: Icon(Icons
+                                                        .forward_10_rounded)),
+                                                IconButton(
+                                                    onPressed: () =>
+                                                        onTapDeleteBtn(index),
+                                                    icon: Icon(Icons.delete))
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                          ],
                                         )
-                                      ],
-                                    ),
-                                  ],
+                                      : Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            IconButton(
+                                              onPressed: () => _togglePlayPause(
+                                                  audio.filePath),
+                                              icon: Icon(
+                                                Icons.play_circle_fill_rounded,
+                                                size: 40,
+                                              ),
+                                            ),
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                SizedBox(
+                                                  height: 30,
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.7,
+                                                  child:
+                                                      AudioText(audio: audio),
+                                                )
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                 ),
                         );
                       }),
@@ -307,7 +428,8 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
           highlightColor: Colors.transparent,
           borderRadius: BorderRadius.circular(25),
           onTap: onTapAudioBtn,
-          child: HomeMenuItem(icon: icon, iconColor: iconColor, itemValue: text),
+          child:
+              HomeMenuItem(icon: icon, iconColor: iconColor, itemValue: text),
         ),
       ),
     );
@@ -324,8 +446,9 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
   }
 
   void onTapDeleteBtn(index) async {
-    String currentFilePath = await ref.read(audioProvider.notifier).getIndexedFile(index);
-    if(_isPlaying[currentFilePath]==true){
+    String currentFilePath =
+        await ref.read(audioProvider.notifier).getIndexedFile(index);
+    if (_isPlaying[currentFilePath] == true) {
       await _audioPlayer.pause();
       setState(() {
         _isPlaying[currentFilePath] = false;
@@ -337,7 +460,4 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     });
     await ref.read(audioProvider.notifier).deleteAudio(index);
   }
-
 }
-
-

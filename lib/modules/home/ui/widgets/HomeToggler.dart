@@ -28,13 +28,13 @@ class _HomeTogglerState extends State<HomeToggler> {
     super.initState();
     isChecked = widget.initialValue;
     color = widget.color;
-    position = isChecked ? 30.0 : 0.0;
+    position = isChecked ? 24.0 : 0.0;
   }
 
   void _toggleSwitch() {
     setState(() {
       isChecked = !isChecked;
-      position = isChecked ? 30.0 : 0.0;
+      position = isChecked ? 24.0 : 0.0;
     });
     widget.onChanged(isChecked);
   }
@@ -57,10 +57,9 @@ class _HomeTogglerState extends State<HomeToggler> {
       },
       child: AnimatedContainer(
         duration: Duration(milliseconds: 300),
-        height: 35.0,
-        width: 65.0,
-        padding: EdgeInsets.symmetric(
-            horizontal: AppSpacing.xSmall, vertical: AppSpacing.xxSmall),
+        height: 30.0,
+        width: 52.0,
+        padding: EdgeInsets.symmetric(horizontal: AppSpacing.xSmall, vertical: AppSpacing.xxSmall),
         decoration: BoxDecoration(
           color: isChecked ? color : Colors.black12,
           borderRadius: BorderRadius.circular(20.0),
@@ -72,8 +71,8 @@ class _HomeTogglerState extends State<HomeToggler> {
               top: 3,
               child: AnimatedContainer(
                 duration: Duration(milliseconds: 200),
-                height: 25.0,
-                width: 25.0,
+                height: 20.0,
+                width: 20.0,
                 decoration: BoxDecoration(
                   color: isChecked? Colors.white: color,
                   borderRadius: BorderRadius.circular(15.0),
@@ -81,10 +80,10 @@ class _HomeTogglerState extends State<HomeToggler> {
                 child: Stack(
                   children: [
                     Positioned(
-                      right: 5,
-                      top: 4,
+                      right: 1,
+                      top: 2,
                       child: Icon(
-                        Icons.arrow_forward,
+                        Icons.chevron_right,
                         color: isChecked ? color : Colors.white,
                         size: 16,
                       ),
