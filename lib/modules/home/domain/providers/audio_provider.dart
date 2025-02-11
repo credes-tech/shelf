@@ -12,6 +12,7 @@ import 'package:my_shelf_project/modules/home/domain/models/audio_model.dart';
 class AudioNotifier extends StateNotifier<List<AudioModel>> {
   final AudioRepository _audioRepo;
   final FilePickerService _filePickerService;
+  bool showOnlyPinned = false;
 
   AudioNotifier(this._audioRepo,this._filePickerService) : super([]) {
     fetchAudios();
@@ -21,6 +22,25 @@ class AudioNotifier extends StateNotifier<List<AudioModel>> {
     state = _audioRepo.fetchAllAudio().map((hiveAudio) {
       return AudioModel.fromHiveModel(hiveAudio);
     }).toList();
+  }
+
+  Future<void> loadPinnedFiles() async {
+    final allAudios = _audioRepo.fetchAllAudio().map((hiveAudio) {
+      return AudioModel.fromHiveModel(hiveAudio);
+    }).toList();
+    state = (showOnlyPinned
+        ? allAudios.where((audio) => audio.isPinned).toList()
+        : allAudios);
+  }
+
+  void togglePin(String fileName) {
+    _audioRepo.togglePin(fileName);
+    fetchAudios();
+  }
+
+  void togglePinnedFilter() {
+    showOnlyPinned = !showOnlyPinned;
+    loadPinnedFiles();
   }
 
   Future<void> pickAndSaveAudio() async {

@@ -132,6 +132,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
   @override
   Widget build(BuildContext context) {
     final audioList = ref.watch(audioProvider);
+    final bool audioPinnedNotifier = ref.read(audioProvider.notifier).showOnlyPinned;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -149,9 +150,9 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
               elevation: 1,
               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                 _buildPopupMenuItem(
-                    "Add Audio", Icons.audiotrack_rounded, Colors.black),
+                    "Menu Option 1", Icons.bar_chart_rounded, Colors.black),
                 _buildPopupMenuItem(
-                    "Filter Audio", Icons.filter_alt_rounded, Colors.black)
+                    "Menu Option 2", Icons.bar_chart_rounded, Colors.black)
               ],
             ),
           ),
@@ -182,13 +183,19 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(Icons.stars_rounded, size: 30,color: Colors.black,),
+                    Icon(
+                      Icons.stars_rounded,
+                      size: 35,
+                      color: Colors.black,
+                    ),
                     SizedBox(
                       width: 10,
                     ),
                     HomeToggler(
-                      initialValue: true,
-                      onChanged: (value) {},
+                      initialValue: audioPinnedNotifier,
+                      onChanged: (audioPinnedNotifier) {
+                        ref.read(audioProvider.notifier).togglePinnedFilter();
+                      },
                       color: AppColors.onboardDarkOrange,
                     ),
                   ],
@@ -208,7 +215,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                       SizedBox(width: 8),
                       Icon(
                         Icons.add_circle_rounded,
-                        size: 30,
+                        size: 35,
                         color: Colors.black,
                       )
                     ],
@@ -225,7 +232,14 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                       itemBuilder: (context, index) {
                         final audio = audioList[index];
                         return GestureDetector(
-                          onLongPress: () => _toggleOption(audio.filePath),
+                          onLongPress: () => !_isPlaying[audio.filePath]!
+                              ? _toggleOption(audio.filePath)
+                              : null,
+                          onDoubleTap: () {
+                            ref
+                                .read(audioProvider.notifier)
+                                .togglePin(audio.filename);
+                          },
                           child: (_isOpen[audio.filePath] == true)
                               ? Container(
                                   decoration: BoxDecoration(
@@ -243,28 +257,42 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                         width: 20,
                                       ),
                                       SizedBox(
-                                        width: MediaQuery.of(context).size.width * 0.45,
-                                        child: Text(
-                                          audio.filename,
-                                          style: AppTextStyles.audioTitle,
-                                          softWrap: false,
-                                          overflow: TextOverflow.ellipsis,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.45,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: AppSpacing.medium),
+                                          child: Text(
+                                            audio.filename,
+                                            style: AppTextStyles.audioTitle,
+                                            softWrap: false,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
                                         ),
                                       ),
-
                                       IconButton(
                                           onPressed: () =>
                                               ShareService.shareFile(
                                                   audio.filePath),
-                                          icon: Icon(Icons.ios_share,color: Colors.black,)),
+                                          icon: Icon(
+                                            Icons.ios_share,
+                                            color: Colors.black,
+                                          )),
                                       IconButton(
                                           onPressed: () =>
                                               onTapDeleteBtn(index),
-                                          icon: Icon(Icons.delete,color: Colors.black,)),
+                                          icon: Icon(
+                                            Icons.delete,
+                                            color: Colors.black,
+                                          )),
                                       IconButton(
                                           onPressed: () =>
                                               _toggleOption(audio.filePath),
-                                          icon: Icon(Icons.close_rounded,color: Colors.black,))
+                                          icon: Icon(
+                                            Icons.close_rounded,
+                                            color: Colors.black,
+                                          ))
                                     ],
                                   ),
                                 )
@@ -342,12 +370,16 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                                     onPressed: () =>
                                                         ShareService.shareFile(
                                                             audio.filePath),
-                                                    icon:
-                                                        Icon(Icons.ios_share,color: Colors.black,)),
+                                                    icon: Icon(
+                                                      Icons.ios_share,
+                                                      color: Colors.black,
+                                                    )),
                                                 IconButton(
                                                     onPressed: _seekBackward,
-                                                    icon: Icon(Icons
-                                                        .replay_10_rounded,color: Colors.black,)),
+                                                    icon: Icon(
+                                                      Icons.replay_10_rounded,
+                                                      color: Colors.black,
+                                                    )),
                                                 IconButton(
                                                   onPressed: () =>
                                                       _togglePlayPause(
@@ -362,12 +394,17 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                                 ),
                                                 IconButton(
                                                     onPressed: _seekForward,
-                                                    icon: Icon(Icons
-                                                        .forward_10_rounded,color: Colors.black,)),
+                                                    icon: Icon(
+                                                      Icons.forward_10_rounded,
+                                                      color: Colors.black,
+                                                    )),
                                                 IconButton(
                                                     onPressed: () =>
                                                         onTapDeleteBtn(index),
-                                                    icon: Icon(Icons.delete,color: Colors.black,))
+                                                    icon: Icon(
+                                                      Icons.delete,
+                                                      color: Colors.black,
+                                                    ))
                                               ],
                                             ),
                                             SizedBox(
@@ -401,12 +438,31 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                                   width: MediaQuery.of(context)
                                                           .size
                                                           .width *
-                                                      0.7,
+                                                      (audio.isPinned
+                                                          ? 0.6
+                                                          : 0.7),
                                                   child:
                                                       AudioText(audio: audio),
                                                 )
                                               ],
                                             ),
+                                            audio.isPinned
+                                                ? SizedBox(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.05,
+                                                  )
+                                                : SizedBox(),
+                                            audio.isPinned
+                                                ? Icon(
+                                                    Icons.stars_rounded,
+                                                    size: 30,
+                                                    color: AppColors
+                                                        .onboardDarkOrange,
+                                                  )
+                                                : SizedBox()
                                           ],
                                         ),
                                 ),
@@ -428,7 +484,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
           splashColor: AppColors.onboardLightOrange,
           highlightColor: Colors.transparent,
           borderRadius: BorderRadius.circular(25),
-          onTap: onTapAudioBtn,
+          onTap: (){},
           child:
               HomeMenuItem(icon: icon, iconColor: iconColor, itemValue: text),
         ),
@@ -443,7 +499,6 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     } else {
       print("Permission denied");
     }
-    _closePopup();
   }
 
   void onTapDeleteBtn(index) async {
@@ -453,11 +508,13 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
       await _audioPlayer.pause();
       setState(() {
         _isPlaying[currentFilePath] = false;
+        _isOpen[currentFilePath] = false;
       });
       _audioPlayer.stop();
     }
     setState(() {
       _isPlaying.remove(currentFilePath);
+      _isOpen.remove(currentFilePath);
     });
     await ref.read(audioProvider.notifier).deleteAudio(index);
   }

@@ -5,7 +5,8 @@ class AudioModel {
   final String fileType;
   final int fileSize;
   final DateTime date;
-  final String filePath; // New field
+  final String filePath;
+  final bool isPinned;
 
   AudioModel({
     required this.filename,
@@ -13,6 +14,7 @@ class AudioModel {
     required this.fileSize,
     required this.date,
     required this.filePath,
+    this.isPinned = false
   });
 
   AudioHive toHiveModel() {
@@ -21,7 +23,8 @@ class AudioModel {
       fileType: fileType,
       fileSize: fileSize,
       date: date,
-      filePath: filePath, // Include file path
+      filePath: filePath,
+      isPinned: isPinned
     );
   }
 
@@ -32,6 +35,7 @@ class AudioModel {
       fileSize: audioHive.fileSize,
       date: audioHive.date,
       filePath: audioHive.filePath,
+      isPinned: audioHive.isPinned
     );
   }
 

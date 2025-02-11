@@ -18,7 +18,7 @@ class FilePickerService {
 
   Future<String?> pickAudioFile() async {
     String? audioFilePath = await getFilePath();
-    if(FileValidator.isValidAudioFile(audioFilePath!)){
+    if(FileValidator.isValidAudioFile(audioFilePath!) && !(await FileValidator.isDuplicateAudioFile(audioFilePath))){
       String? audioPath = await saveFileToLocalStorage(audioFilePath,"Audio");
       return audioPath;
     }
