@@ -12,6 +12,7 @@ class HomeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Card(
+        color: Colors.white,
         elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
@@ -26,20 +27,13 @@ class HomeCard extends StatelessWidget {
               SizedBox(height: 10),
               Text(
                 "No audio files found!",
-                style:AppTextStyles.audioTitle,
+                style:AppTextStyles.cardTitle,
               ),
               SizedBox(height: 8),
-              RichText(text: TextSpan(
+              Text(
+                "Tap Add New button to save your audio's",
                 style: AppTextStyles.caption,
-                children: [
-                  TextSpan(text: "Tap "),
-                  WidgetSpan(child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                    child: SvgPicture.asset('assets/svg/menu.svg', width: 15,height: 15,colorFilter: ColorFilter.mode(Colors.grey, BlendMode.srcIn)),
-                  )),
-                  TextSpan(text: " button to add a new Audio file")
-                ]
-              ))
+              ),
             ],
           ),
         ),

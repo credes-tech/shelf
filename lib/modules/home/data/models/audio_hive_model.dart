@@ -16,14 +16,18 @@ class AudioHive {
   @HiveField(3)
   final DateTime date;
 
-  @HiveField(4)  // New Field for File Path
+  @HiveField(4)
   final String filePath;
+
+  @HiveField(5)
+  bool isPinned;
 
   AudioHive({
     required this.filename,
     required this.fileType,
     required this.fileSize,
     required this.date,
-    required this.filePath, // Include file path
+    required this.filePath,
+    required this.isPinned
   });
 }
