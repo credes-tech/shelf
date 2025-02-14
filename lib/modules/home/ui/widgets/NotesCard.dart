@@ -14,8 +14,7 @@ class NotesCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-      elevation: 5,
+      elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
@@ -27,6 +26,8 @@ class NotesCard extends StatelessWidget {
           padding: const EdgeInsets.all(15.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 title,
@@ -43,7 +44,6 @@ class NotesCard extends StatelessWidget {
                   fontSize: 14,
                   color: Colors.grey[600],
                 ),
-                // The text will naturally overflow or wrap as needed
                 maxLines: null,
                 overflow: TextOverflow.visible,
               ),

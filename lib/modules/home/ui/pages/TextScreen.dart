@@ -22,6 +22,34 @@ class _TextScreenState extends ConsumerState<TextScreen> {
   final List<String> source = ['Passwords', 'Notes'];
   int selectedSource = 0;
 
+
+  final List<String> cardContents = [
+    "Short text",
+    "A bit longer text to see if the height of the card adjusts correctly.",
+    "This is an even longer text that should expand the height of the card significantly more than the others.",
+    "Tiny.",
+    "Let's add some more words here to check how much the height can expand dynamically.",
+    "This is an even longer text that should expand the height of the card significantly more than the others.",
+    "Tiny.",
+    "Let's add some more words here to check how much the height can expand dynamically.",
+    "Let's add some more words here to check how much the height can expand dynamically.",
+    "This is an even longer text that should expand the height of the card significantly more than the others.",
+    "Tiny.",
+    "Let's add some more words here to check how much the height can expand dynamically.",
+    "Short text",
+    "A bit longer text to see if the height of the card adjusts correctly.",
+    "This is an even longer text that should expand the height of the card significantly more than the others.",
+    "Tiny.",
+    "Let's add some more words here to check how much the height can expand dynamically.",
+    "This is an even longer text that should expand the height of the card significantly more than the others.",
+    "Tiny.",
+    "Let's add some more words here to check how much the height can expand dynamically.",
+    "Let's add some more words here to check how much the height can expand dynamically.",
+    "This is an even longer text that should expand the height of the card significantly more than the others.",
+    "Tiny.",
+    "Let's add some more words here to check how much the height can expand dynamically."
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -116,24 +144,27 @@ class _TextScreenState extends ConsumerState<TextScreen> {
             ),
           ),
           Expanded(
-            child: GridView.builder(
-              padding: EdgeInsets.all(15),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // This defines 2 cards per row
-                crossAxisSpacing: 0, // Horizontal spacing between cards
-                mainAxisSpacing: 0, // Vertical spacing between cards
-                childAspectRatio:
-                    0.75, // Adjust this value to control card aspect (height vs width)
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.medium),
+                child: Wrap(
+                  direction: Axis.vertical,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  runSpacing: AppSpacing.small,
+                  spacing: AppSpacing.small,
+                  children: cardContents.map((text) {
+                    return SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.45,
+                      child: NotesCard(title: "Heading", description: text)
+                    );
+                  }).toList(),
+                ),
               ),
-              itemCount: 6, // Set the total number of cards
-              itemBuilder: (context, index) {
-                return NotesCard(
-                  title: "Heading ${index + 1}",
-                  description: "This is card $index ",
-                );
-              },
             ),
-          ),
+
+
+            ),
         ],
       ),
     );
