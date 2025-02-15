@@ -24,7 +24,7 @@ dependencies:
   marquee: ^2.3.0
   device_info_plus: ^11.3.0
   share_plus: ^10.1.4
-
+  flutter_quill: ^10.8.5
 dev_dependencies:
   flutter_lints: ^5.0.0
   hive_generator: ^2.0.1

@@ -21,8 +21,6 @@ class TextScreen extends ConsumerStatefulWidget {
 class _TextScreenState extends ConsumerState<TextScreen> {
   final List<String> source = ['Passwords', 'Notes'];
   int selectedSource = 0;
-
-
   final List<String> cardContents = [
     "Short text",
     "A bit longer text to see if the height of the card adjusts correctly.",
@@ -147,7 +145,8 @@ class _TextScreenState extends ConsumerState<TextScreen> {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.medium),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: AppSpacing.medium),
                 child: Wrap(
                   direction: Axis.vertical,
                   crossAxisAlignment: WrapCrossAlignment.center,
@@ -155,16 +154,13 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                   spacing: AppSpacing.small,
                   children: cardContents.map((text) {
                     return SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.45,
-                      child: NotesCard(title: "Heading", description: text)
-                    );
+                        width: MediaQuery.of(context).size.width * 0.45,
+                        child: NotesCard(title: "Heading", description: text));
                   }).toList(),
                 ),
               ),
             ),
-
-
-            ),
+          ),
         ],
       ),
     );

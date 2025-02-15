@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:my_shelf_project/core/theme/app_colors.dart';
+import 'package:my_shelf_project/modules/home/ui/pages/NotesScreen.dart';
 
 class NotesCard extends StatelessWidget {
   final String title;
@@ -20,7 +19,7 @@ class NotesCard extends StatelessWidget {
       ),
       color: Color(0xFFEEEEEE),
       child: InkWell(
-        onTap: () {},
+        onTap: () => onTapNotesCard(context),
         borderRadius: BorderRadius.circular(20),
         child: Padding(
           padding: const EdgeInsets.all(15.0),
@@ -51,6 +50,17 @@ class NotesCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  onTapNotesCard(context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => NotesScreen(
+                description: description,
+                heading: title,
+              )),
     );
   }
 }
