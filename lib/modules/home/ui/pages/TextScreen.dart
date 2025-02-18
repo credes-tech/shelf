@@ -4,7 +4,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
+import 'package:my_shelf_project/modules/home/domain/providers/text_provider.dart';
 import 'package:my_shelf_project/modules/home/ui/pages/ChatScreen.dart';
+import 'package:my_shelf_project/modules/home/ui/pages/NotesScreen.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomePillBar.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
@@ -50,6 +52,7 @@ class _TextScreenState extends ConsumerState<TextScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textList = ref.watch(textProvider);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -118,7 +121,7 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                   ],
                 ),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: onTapAddNewTextBtn,
                   style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.only(
                           left: AppSpacing.medium,
@@ -141,26 +144,32 @@ class _TextScreenState extends ConsumerState<TextScreen> {
               ],
             ),
           ),
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: AppSpacing.medium),
-                child: Wrap(
-                  direction: Axis.vertical,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  runSpacing: AppSpacing.small,
-                  spacing: AppSpacing.small,
-                  children: cardContents.map((text) {
-                    return SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.45,
-                        child: NotesCard(title: "Heading", description: text));
-                  }).toList(),
+          textList.isEmpty
+              ? Text("Text are empty right now")
+              : Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.medium),
+                      child: Wrap(
+                        direction: Axis.vertical,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        runSpacing: AppSpacing.small,
+                        spacing: AppSpacing.small,
+                        children: textList.map((data) {
+                          return SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.45,
+                              child: NotesCard(
+                                title: data.heading,
+                                description: data.description,
+                                onTap: () => onTapFunction(context),
+                              ));
+                        }).toList(),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -183,6 +192,22 @@ class _TextScreenState extends ConsumerState<TextScreen> {
               HomeMenuItem(icon: icon, iconColor: iconColor, itemValue: text),
         ),
       ),
+    );
+  }
+
+  onTapAddNewTextBtn() async {
+    await ref.read(textProvider.notifier).addNewText();
+  }
+
+  onTapFunction(context) {
+    // print("showing context..................... $context");
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => NotesScreen(
+                description: "description",
+                heading: "title",
+              )),
     );
   }
 }

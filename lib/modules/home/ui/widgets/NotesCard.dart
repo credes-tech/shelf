@@ -5,10 +5,12 @@ import 'package:my_shelf_project/modules/home/ui/pages/NotesScreen.dart';
 class NotesCard extends StatelessWidget {
   final String title;
   final String description;
+  final GestureTapCallback onTap;
   const NotesCard({
     super.key,
     required this.title,
     required this.description,
+    required this.onTap,
   });
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class NotesCard extends StatelessWidget {
       ),
       color: Color(0xFFEEEEEE),
       child: InkWell(
-        onTap: () => onTapNotesCard(context),
+        onTap: () => onTap,
         borderRadius: BorderRadius.circular(20),
         child: Padding(
           padding: const EdgeInsets.all(15.0),
@@ -50,17 +52,6 @@ class NotesCard extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  onTapNotesCard(context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => NotesScreen(
-                description: description,
-                heading: title,
-              )),
     );
   }
 }

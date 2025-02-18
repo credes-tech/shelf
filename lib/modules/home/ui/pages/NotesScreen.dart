@@ -40,8 +40,8 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
 
   Document _buildDocument(String heading, String description) {
     final delta = Delta()
-      ..insert(heading)
-      ..insert('\n')
+      ..insert(heading, {'header': 2})
+      ..insert('\n\n')
       ..insert(description)
       ..insert('\n');
     return Document.fromDelta(delta);
@@ -49,7 +49,6 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _controller.dispose();
     super.dispose();
   }
@@ -67,9 +66,16 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
         child: Column(
           children: [
             Expanded(
-              child: QuillEditor.basic(
-                controller: _controller,
-                configurations: const QuillEditorConfigurations(),
+              child: Card(
+                child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: QuillEditor.basic(
+                    controller: _controller,
+                    configurations: const QuillEditorConfigurations(
+                      autoFocus: true,
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
