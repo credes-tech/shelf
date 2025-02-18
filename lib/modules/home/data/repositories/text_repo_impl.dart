@@ -10,4 +10,7 @@ class TextRepository {
 
   List<TextHive> fetchAllTexts() => _hiveService.getAllTexts();
   Future<void> saveText(data) => _hiveService.saveText(data);
+  Future<void> updateText(
+          int index, String newHeading, String newDescription) =>
+      _hiveService.updateText(index, newHeading, newDescription);
 }

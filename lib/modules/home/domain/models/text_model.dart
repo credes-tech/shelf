@@ -11,8 +11,8 @@ class TextModel {
 
   TextHive toHiveModel() {
     return TextHive(
-      heading: this.heading,
-      description: this.description,
+      heading: heading,
+      description: description,
     );
   }
 

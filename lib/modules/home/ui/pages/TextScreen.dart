@@ -157,13 +157,16 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                         crossAxisAlignment: WrapCrossAlignment.center,
                         runSpacing: AppSpacing.small,
                         spacing: AppSpacing.small,
-                        children: textList.map((data) {
+                        children: textList.asMap().entries.map((value) {
+                          int index = value.key;
+                          var data = value.value;
                           return SizedBox(
                               width: MediaQuery.of(context).size.width * 0.45,
                               child: NotesCard(
                                 title: data.heading,
                                 description: data.description,
-                                onTap: () => onTapFunction(context),
+                                onTap: () => onTapFunction(context, index,
+                                    data.heading, data.description),
                               ));
                         }).toList(),
                       ),
@@ -199,14 +202,14 @@ class _TextScreenState extends ConsumerState<TextScreen> {
     await ref.read(textProvider.notifier).addNewText();
   }
 
-  onTapFunction(context) {
-    // print("showing context..................... $context");
+  onTapFunction(context, index, heading, description) {
     Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) => NotesScreen(
-                description: "description",
-                heading: "title",
+                index: index,
+                description: description,
+                heading: heading,
               )),
     );
   }

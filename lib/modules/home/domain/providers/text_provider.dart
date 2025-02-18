@@ -19,6 +19,22 @@ class TextNotifier extends StateNotifier<List<TextModel>> {
     await _textRepository.saveText(newText.toHiveModel());
     state = [...state, newText];
   }
+
+  Future<void> updateText(
+    int index,
+    String updatedHeading,
+    String updatedDescription,
+  ) async {
+    final updatedText =
+        TextModel(heading: updatedHeading, description: updatedDescription);
+    await _textRepository.updateText(
+        index, updatedText.heading, updatedText.description);
+    state = [
+      ...state.sublist(0, index),
+      updatedText,
+      ...state.sublist(index + 1),
+    ];
+  }
 }
 
 final textProvider =

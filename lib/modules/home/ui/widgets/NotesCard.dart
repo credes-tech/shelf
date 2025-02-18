@@ -5,7 +5,7 @@ import 'package:my_shelf_project/modules/home/ui/pages/NotesScreen.dart';
 class NotesCard extends StatelessWidget {
   final String title;
   final String description;
-  final GestureTapCallback onTap;
+  final VoidCallback onTap;
   const NotesCard({
     super.key,
     required this.title,
@@ -21,7 +21,7 @@ class NotesCard extends StatelessWidget {
       ),
       color: Color(0xFFEEEEEE),
       child: InkWell(
-        onTap: () => onTap,
+        onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Padding(
           padding: const EdgeInsets.all(15.0),
