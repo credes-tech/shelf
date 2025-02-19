@@ -4,10 +4,10 @@ part 'text_hive_model.g.dart';
 @HiveType(typeId: 1)
 class TextHive {
   @HiveField(0)
-  final String heading;
+  String heading;
 
   @HiveField(1)
-  final String description;
+  String description;
 
   TextHive({
     required this.heading,
