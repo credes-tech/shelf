@@ -7,7 +7,7 @@ import 'package:my_shelf_project/modules/home/domain/providers/text_provider.dar
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
 
 class NotesScreen extends ConsumerStatefulWidget {
-  final String? index;
+  final int index;
   const NotesScreen({
     super.key,
     required this.index,
@@ -62,7 +62,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
           // Update the text in the provider (save it in the state)
           ref
               .read(textProvider.notifier)
-              .updateText(widget.index as int, updatedHeading, updatedDescription);
+              .updateText(widget.index, updatedHeading, updatedDescription);
 
           // Allow the pop action (navigate back)
         },

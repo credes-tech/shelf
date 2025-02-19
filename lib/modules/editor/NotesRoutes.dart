@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:my_shelf_project/modules/editor/ui/pages/AddNewNote.dart';
 import 'package:my_shelf_project/modules/editor/ui/pages/NotesScreen.dart';
 
 class NotesRoutes {
@@ -6,9 +7,13 @@ class NotesRoutes {
     GoRoute(
         path: '/home/texts/note/:index',
         builder: (context, state) {
-          final String? noteId = state.pathParameters['index'];
+          final int noteId = int.parse(state.pathParameters['index']!) ;
           return NotesScreen(index: noteId);
         }
+    ),
+    GoRoute(
+        path: '/home/texts/new',
+        builder: (context, state) => AddNewNote()
     ),
   ];
 }

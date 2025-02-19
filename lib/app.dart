@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/translations.dart';
 import 'package:my_shelf_project/core/routes/routes.dart';
 import 'core/theme/theme.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -14,6 +16,12 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       routerConfig: appRouter,
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        FlutterQuillLocalizations.delegate,
+      ],
     );
   }
 }

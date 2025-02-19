@@ -83,6 +83,16 @@ class AppTextStyles {
       letterSpacing: -0.8
   );
 
+  static const TextStyle noteTitle = TextStyle(
+      fontFamily: 'Montserrat',
+      fontSize: 22,
+      fontWeight: FontWeight.w800,
+      color: AppColors.onboardLightYellow,
+      letterSpacing: -0.8
+  );
+
+
+
 
 
 }

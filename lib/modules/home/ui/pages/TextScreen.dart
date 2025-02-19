@@ -94,7 +94,9 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                   ],
                 ),
                 ElevatedButton(
-                  onPressed: onTapAddNewTextBtn,
+                  onPressed: () {
+                    context.push('/home/texts/new');
+                  },
                   style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.only(
                           left: AppSpacing.medium,
@@ -139,7 +141,7 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                                   title: data.heading,
                                   description: data.description,
                                   onTap: () {
-                                    context.go('/home/texts/note/$index');
+                                    context.push('/home/texts/note/$index');
                                   }));
                         }).toList(),
                       ),
@@ -171,7 +173,4 @@ class _TextScreenState extends ConsumerState<TextScreen> {
     );
   }
 
-  onTapAddNewTextBtn() async {
-    await ref.read(textProvider.notifier).addNewText();
-  }
 }
