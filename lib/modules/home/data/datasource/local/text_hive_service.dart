@@ -18,26 +18,18 @@ class TextHiveService {
   }
 
   Future<void> saveText(TextHive data) async {
-    print("text hive data $data");
     final box = Hive.box<TextHive>(_boxName);
     await box.add(data);
   }
 
-  // Update an existing text in the box
-  Future<void> updateText(
-      int index, String newHeading, String newDescription) async {
+  Future<void> updateText(int index, String newHeading, String newDescription) async {
     final box = Hive.box<TextHive>(_boxName);
-    var existingText = box.getAt(index); // Get the object at the provided index
+    var existingText = box.getAt(index);
 
     if (existingText != null) {
-      // Update the properties
       existingText.heading = newHeading;
       existingText.description = newDescription;
-
-      // Save the updated object back to the box
-      await box.putAt(index, existingText); // Update the data at the index
-    } else {
-      print("Text not found at the provided index!");
+      await box.putAt(index, existingText);
     }
   }
 }

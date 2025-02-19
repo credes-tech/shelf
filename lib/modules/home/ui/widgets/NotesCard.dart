@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:my_shelf_project/modules/home/ui/pages/NotesScreen.dart';
+import 'package:my_shelf_project/modules/editor/ui/pages/NotesScreen.dart';
 
 class NotesCard extends StatelessWidget {
   final String title;

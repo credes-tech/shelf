@@ -29,14 +29,12 @@ class AudioHiveService {
 
   Future<bool> isAudioExists(String fileName) async {
     final box = Hive.box<AudioHive>(_boxName);
-    return box.values
-        .any((audio) => audio.filename.toLowerCase() == fileName.toLowerCase());
+    return box.values.any((audio) => audio.filename.toLowerCase() == fileName.toLowerCase());
   }
 
   Future<void> togglePin(String fileName) async {
     final box = Hive.box<AudioHive>(_boxName);
-    final index =
-        box.values.toList().indexWhere((audio) => audio.filename == fileName);
+    final index = box.values.toList().indexWhere((audio) => audio.filename == fileName);
 
     if (index != -1) {
       final audio = box.getAt(index);

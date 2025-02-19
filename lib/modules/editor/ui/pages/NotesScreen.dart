@@ -1,25 +1,16 @@
-// import 'package:flutter/cupertino.dart';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_quill/quill_delta.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
-import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/modules/home/domain/providers/text_provider.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
 
 class NotesScreen extends ConsumerStatefulWidget {
-  final String heading;
-  final String description;
-  final int index;
+  final String? index;
   const NotesScreen({
     super.key,
     required this.index,
-    required this.heading,
-    required this.description,
   });
 
   @override
@@ -33,8 +24,6 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
 
   @override
   void initState() {
-    heading = widget.heading;
-    description = widget.description;
     _controller = QuillController(
         document: _buildDocument(heading, description),
         selection: TextSelection.collapsed(offset: 0));
@@ -73,7 +62,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
           // Update the text in the provider (save it in the state)
           ref
               .read(textProvider.notifier)
-              .updateText(widget.index, updatedHeading, updatedDescription);
+              .updateText(widget.index as int, updatedHeading, updatedDescription);
 
           // Allow the pop action (navigate back)
         },

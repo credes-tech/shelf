@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 import 'package:my_shelf_project/modules/home/domain/providers/text_provider.dart';
-import 'package:my_shelf_project/modules/home/ui/pages/ChatScreen.dart';
-import 'package:my_shelf_project/modules/home/ui/pages/NotesScreen.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomePillBar.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
@@ -23,32 +22,6 @@ class TextScreen extends ConsumerStatefulWidget {
 class _TextScreenState extends ConsumerState<TextScreen> {
   final List<String> source = ['Passwords', 'Notes'];
   int selectedSource = 0;
-  final List<String> cardContents = [
-    "Short text",
-    "A bit longer text to see if the height of the card adjusts correctly.",
-    "This is an even longer text that should expand the height of the card significantly more than the others.",
-    "Tiny.",
-    "Let's add some more words here to check how much the height can expand dynamically.",
-    "This is an even longer text that should expand the height of the card significantly more than the others.",
-    "Tiny.",
-    "Let's add some more words here to check how much the height can expand dynamically.",
-    "Let's add some more words here to check how much the height can expand dynamically.",
-    "This is an even longer text that should expand the height of the card significantly more than the others.",
-    "Tiny.",
-    "Let's add some more words here to check how much the height can expand dynamically.",
-    "Short text",
-    "A bit longer text to see if the height of the card adjusts correctly.",
-    "This is an even longer text that should expand the height of the card significantly more than the others.",
-    "Tiny.",
-    "Let's add some more words here to check how much the height can expand dynamically.",
-    "This is an even longer text that should expand the height of the card significantly more than the others.",
-    "Tiny.",
-    "Let's add some more words here to check how much the height can expand dynamically.",
-    "Let's add some more words here to check how much the height can expand dynamically.",
-    "This is an even longer text that should expand the height of the card significantly more than the others.",
-    "Tiny.",
-    "Let's add some more words here to check how much the height can expand dynamically."
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -163,11 +136,11 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                           return SizedBox(
                               width: MediaQuery.of(context).size.width * 0.45,
                               child: NotesCard(
-                                title: data.heading,
-                                description: data.description,
-                                onTap: () => onTapFunction(context, index,
-                                    data.heading, data.description),
-                              ));
+                                  title: data.heading,
+                                  description: data.description,
+                                  onTap: () {
+                                    context.go('/home/texts/note/$index');
+                                  }));
                         }).toList(),
                       ),
                     ),
@@ -200,17 +173,5 @@ class _TextScreenState extends ConsumerState<TextScreen> {
 
   onTapAddNewTextBtn() async {
     await ref.read(textProvider.notifier).addNewText();
-  }
-
-  onTapFunction(context, index, heading, description) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => NotesScreen(
-                index: index,
-                description: description,
-                heading: heading,
-              )),
-    );
   }
 }
