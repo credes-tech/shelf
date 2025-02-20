@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "43076874233",
+    "project_id": "shelf-credes",
+    "storage_bucket": "shelf-credes.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:43076874233:android:fe72df0538a0c0cbe01728",
+        "android_client_info": {
+          "package_name": "org.credes.shelf"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "43076874233-gdj82bu2dp1d2c6o6btr9q32q14b9844.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.credes.shelf",
+            "certificate_hash": "fa1948d967f4a00aad9faf4e01171dc38b10da01"
+          }
+        },
+        {
+          "client_id": "43076874233-d2gd2amscbj9de5bccm96h08pj1itlsp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8LBGuYiUHUS2hrVgnKVmaCMetNrvhhsg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "43076874233-d2gd2amscbj9de5bccm96h08pj1itlsp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
