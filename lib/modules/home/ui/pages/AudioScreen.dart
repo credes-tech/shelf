@@ -30,6 +30,9 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
   final Map<String, bool> _isPlaying = {};
   final Map<String, bool> _isOpen = {};
 
+  final String emptyHeading = "No audio files found!";
+  final String emptyDescription = "Tap Add New button to save your audio's";
+
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
 
@@ -124,9 +127,6 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     }
   }
 
-  void _closePopup() {
-    Navigator.of(context).pop();
-  }
 
   @override
   void dispose() {
@@ -230,7 +230,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
             ),
           ),
           audioList.isEmpty
-              ? HomeCard()
+              ? HomeCard(title: emptyHeading,description: emptyDescription, icon: Icons.audiotrack_rounded, iconColor: AppColors.onboardDarkOrange)
               : Expanded(
                   child: ListView.builder(
                       itemCount: audioList.length,
