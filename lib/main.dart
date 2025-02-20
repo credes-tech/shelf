@@ -28,4 +28,5 @@ setupDependencies() async {
   Hive.registerAdapter(TextHiveAdapter());
   await Hive.openBox<AudioHive>('audioBox');
   await Hive.openBox<TextHive>('textBox');
+  await Hive.openBox<TextHive>('mediaBox');
 }

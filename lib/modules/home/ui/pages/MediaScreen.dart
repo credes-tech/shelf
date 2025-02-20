@@ -54,20 +54,60 @@ class _MediaScreenState extends State<MediaScreen> {
         children: [
           HomePillBar(source: source, selectedSource: selectedSource, activeColor: AppColors.onboardDarkBlue, inactiveColor: AppColors.onboardLightBlue),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: AppSpacing.large, vertical: AppSpacing.medium),
+            padding: EdgeInsets.symmetric(
+                horizontal: AppSpacing.large, vertical: AppSpacing.medium),
+            decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(20.0),
+                    bottomRight: Radius.circular(20.0))),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text('Pinned',style: AppTextStyles.homePinned),
-                HomeToggler(
-                  initialValue: true,
-                  onChanged: (value) {},
-                  color: AppColors.onboardDarkBlue,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.stars_rounded,
+                      size: 35,
+                      color: Colors.black,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    HomeToggler(
+                      initialValue: false,
+                      onChanged: (value){},
+                      color: AppColors.onboardDarkBlue,
+                    ),
+                  ],
                 ),
+                ElevatedButton(
+                  onPressed: (){},
+                  style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.only(
+                          left: AppSpacing.medium,
+                          right: AppSpacing.xSmall,
+                          top: AppSpacing.xSmall,
+                          bottom: AppSpacing.xSmall),
+                      backgroundColor: AppColors.onboardDarkBlue),
+                  child: Row(
+                    children: [
+                      Text("Add New", style: AppTextStyles.homePinned),
+                      SizedBox(width: 8),
+                      Icon(
+                        Icons.add_circle_rounded,
+                        size: 35,
+                        color: Colors.black,
+                      )
+                    ],
+                  ),
+                )
               ],
             ),
-          )
+          ),
         ],
       ),
     );

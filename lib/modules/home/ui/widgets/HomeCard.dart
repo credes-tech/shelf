@@ -3,8 +3,13 @@ import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 
 class HomeCard extends StatelessWidget {
+  final String title;
+  final String description;
+
   const HomeCard({
     super.key,
+    required this.title,
+    required this.description
   });
 
   @override
@@ -25,12 +30,12 @@ class HomeCard extends StatelessWidget {
                   , color: AppColors.onboardDarkOrange),
               SizedBox(height: 10),
               Text(
-                "No audio files found!",
+                title,
                 style:AppTextStyles.cardTitle,
               ),
               SizedBox(height: 8),
               Text(
-                "Tap Add New button to save your audio's",
+                description,
                 style: AppTextStyles.caption,
               ),
             ],
