@@ -42,6 +42,7 @@ class MediaNotifier extends StateNotifier<List<MediaModel>> {
         date: DateTime.now(),
         filePath: filePath,
       );
+      print(newMedia.toHiveModel().filename);
       await _mediaRepo.saveMedia(newMedia.toHiveModel());
       state = [...state,newMedia];
     }

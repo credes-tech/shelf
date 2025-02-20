@@ -230,7 +230,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
             ),
           ),
           audioList.isEmpty
-              ? HomeCard(title: emptyHeading,description: emptyDescription,)
+              ? HomeCard(title: emptyHeading,description: emptyDescription, icon: Icons.audiotrack_rounded, iconColor: AppColors.onboardDarkOrange)
               : Expanded(
                   child: ListView.builder(
                       itemCount: audioList.length,

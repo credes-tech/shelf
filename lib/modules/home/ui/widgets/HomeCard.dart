@@ -5,11 +5,15 @@ import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 class HomeCard extends StatelessWidget {
   final String title;
   final String description;
+  final IconData icon;
+  final Color iconColor;
 
   const HomeCard({
     super.key,
     required this.title,
-    required this.description
+    required this.description,
+    required this.icon,
+    required this.iconColor
   });
 
   @override
@@ -26,8 +30,8 @@ class HomeCard extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.music_note_rounded, size: 60
-                  , color: AppColors.onboardDarkOrange),
+              Icon(icon, size: 60
+                  , color: iconColor),
               SizedBox(height: 10),
               Text(
                 title,

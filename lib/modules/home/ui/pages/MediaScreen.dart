@@ -1,26 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:my_shelf_project/core/service/permission_service.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
+import 'package:my_shelf_project/modules/home/domain/providers/media_provider.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/HomeCard.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomePillBar.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeToggler.dart';
 
-class MediaScreen extends StatefulWidget {
+class MediaScreen extends ConsumerStatefulWidget {
   const MediaScreen({super.key});
 
   @override
-  State<MediaScreen> createState() => _MediaScreenState();
+  ConsumerState<MediaScreen> createState() => _MediaScreenState();
 }
 
-class _MediaScreenState extends State<MediaScreen> {
+class _MediaScreenState extends ConsumerState<MediaScreen> {
   final List<String> source = ['Photo', 'Video', 'GIF'];
   int selectedSource = 0;
 
+  final String emptyHeading = "No media files found!";
+  final String emptyDescription = "Tap Add New button to save your media files";
+
   @override
   Widget build(BuildContext context) {
+    final mediaList = ref.watch(mediaProvider);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -52,7 +60,11 @@ class _MediaScreenState extends State<MediaScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          HomePillBar(source: source, selectedSource: selectedSource, activeColor: AppColors.onboardDarkBlue, inactiveColor: AppColors.onboardLightBlue),
+          HomePillBar(
+              source: source,
+              selectedSource: selectedSource,
+              activeColor: AppColors.onboardDarkBlue,
+              inactiveColor: AppColors.onboardLightBlue),
           Container(
             padding: EdgeInsets.symmetric(
                 horizontal: AppSpacing.large, vertical: AppSpacing.medium),
@@ -79,13 +91,13 @@ class _MediaScreenState extends State<MediaScreen> {
                     ),
                     HomeToggler(
                       initialValue: false,
-                      onChanged: (value){},
+                      onChanged: (value) {},
                       color: AppColors.onboardDarkBlue,
                     ),
                   ],
                 ),
                 ElevatedButton(
-                  onPressed: (){},
+                  onPressed: onTapMediaBtn,
                   style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.only(
                           left: AppSpacing.medium,
@@ -108,11 +120,23 @@ class _MediaScreenState extends State<MediaScreen> {
               ],
             ),
           ),
+          mediaList.isEmpty
+              ? HomeCard(title: emptyHeading, description: emptyDescription, icon: Icons.perm_media_rounded, iconColor: AppColors.onboardDarkBlue)
+              : Expanded(
+                  child: ListView.builder(
+                      itemCount: mediaList.length,
+                      itemBuilder: (context, index) {
+                        final media = mediaList[index];
+                        return Text(media.filename);
+                      }),
+                ),
         ],
       ),
     );
   }
-  PopupMenuItem<String> _buildPopupMenuItem(String text, IconData icon, Color iconColor) {
+
+  PopupMenuItem<String> _buildPopupMenuItem(
+      String text, IconData icon, Color iconColor) {
     return PopupMenuItem<String>(
       value: text,
       child: ClipRRect(
@@ -124,9 +148,19 @@ class _MediaScreenState extends State<MediaScreen> {
           onTap: () {
             print("$text clicked");
           },
-          child: HomeMenuItem(icon: icon, iconColor: iconColor, itemValue: text),
+          child:
+              HomeMenuItem(icon: icon, iconColor: iconColor, itemValue: text),
         ),
       ),
     );
+  }
+
+  void onTapMediaBtn() async {
+    bool isGranted = await PermissionService.requestMediaPermission();
+    if (isGranted == true) {
+      await ref.read(mediaProvider.notifier).pickAndSaveMedia();
+    } else {
+      print("Permission denied");
+    }
   }
 }
