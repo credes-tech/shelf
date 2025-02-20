@@ -4,8 +4,15 @@ import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 
 class HomeCard extends StatelessWidget {
+  final String text;
+  final IconData icon;
+  final String description;
+
   const HomeCard({
     super.key,
+    required this.text,
+    required this.icon,
+    required this.description,
   });
 
   @override
@@ -22,16 +29,15 @@ class HomeCard extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.music_note_rounded, size: 60
-                  , color: AppColors.onboardDarkOrange),
+              Icon(icon, size: 60, color: AppColors.onboardDarkOrange),
               SizedBox(height: 10),
               Text(
-                "No audio files found!",
-                style:AppTextStyles.cardTitle,
+                text,
+                style: AppTextStyles.cardTitle,
               ),
               SizedBox(height: 8),
               Text(
-                "Tap Add New button to save your audio's",
+                description,
                 style: AppTextStyles.caption,
               ),
             ],

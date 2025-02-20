@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
@@ -35,7 +36,9 @@ class _AddNewNoteState extends ConsumerState<AddNewNote> {
     String description = _controller.document.toPlainText();
     print("********************** $title");
     print("********************** $description");
-    ref.read(textProvider.notifier).addNewText(title, description);
+    if (!(title.isEmpty || description.isEmpty)) {
+      ref.read(textProvider.notifier).addNewText(title, description);
+    }
   }
 
   @override
@@ -52,7 +55,9 @@ class _AddNewNoteState extends ConsumerState<AddNewNote> {
               Padding(
                 padding: EdgeInsets.only(right: AppSpacing.small),
                 child: IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    context.push('/home/textScreen');
+                  },
                   icon: Icon(
                     Icons.cancel,
                     color: Colors.black,
