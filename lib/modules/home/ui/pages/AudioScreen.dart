@@ -124,9 +124,6 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     }
   }
 
-  void _closePopup() {
-    Navigator.of(context).pop();
-  }
 
   @override
   void dispose() {

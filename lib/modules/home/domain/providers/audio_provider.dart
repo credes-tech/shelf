@@ -1,11 +1,8 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_shelf_project/core/service/file_picker.dart';
 import 'package:my_shelf_project/modules/home/data/datasource/local/audio_hive_service.dart';
-import 'package:my_shelf_project/modules/home/data/models/audio_hive_model.dart';
 import 'package:my_shelf_project/modules/home/data/repositories/audio_repo_impl.dart';
 import 'package:my_shelf_project/modules/home/domain/models/audio_model.dart';
 

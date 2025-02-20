@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
-import 'package:my_shelf_project/modules/home/ui/pages/ChatScreen.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomePillBar.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
