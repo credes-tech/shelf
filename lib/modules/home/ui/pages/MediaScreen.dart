@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -5,12 +7,14 @@ import 'package:my_shelf_project/core/service/permission_service.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
+import 'package:my_shelf_project/core/utils/FileValidator.dart';
 import 'package:my_shelf_project/modules/home/domain/providers/media_provider.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeCard.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomePillBar.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeToggler.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/VideoThumbnail.dart';
 
 class MediaScreen extends ConsumerStatefulWidget {
   const MediaScreen({super.key});
@@ -121,14 +125,43 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
             ),
           ),
           mediaList.isEmpty
-              ? HomeCard(title: emptyHeading, description: emptyDescription, icon: Icons.perm_media_rounded, iconColor: AppColors.onboardDarkBlue)
+              ? HomeCard(
+                  title: emptyHeading,
+                  description: emptyDescription,
+                  icon: Icons.perm_media_rounded,
+                  iconColor: AppColors.onboardDarkBlue)
               : Expanded(
-                  child: ListView.builder(
-                      itemCount: mediaList.length,
-                      itemBuilder: (context, index) {
-                        final media = mediaList[index];
-                        return Text(media.filename);
-                      }),
+                  child: GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4,
+                      crossAxisSpacing: 2,
+                      mainAxisSpacing: 2,
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: AppSpacing.medium),
+                    itemCount: mediaList.length,
+                    itemBuilder: (context, index) {
+                      final media = mediaList[index];
+                      return GestureDetector(
+                          onLongPress: () async {
+                            await ref.read(mediaProvider.notifier).deleteMedia(index);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Media deleted")),
+                            );
+                          },
+                          onTap: () {},
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.black12)
+                            ),
+                            clipBehavior: Clip.hardEdge,
+                            child: FileValidator.getMediaFileType(media.fileType) == "video"
+                                ? VideoThumbnail(videoPath: media.filePath)
+                                : Image.file(File(media.filePath),
+                                    fit: BoxFit.cover),
+                          ));
+                    },
+                  ),
                 ),
         ],
       ),

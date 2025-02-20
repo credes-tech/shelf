@@ -21,7 +21,7 @@ class FileValidator {
 
   static bool isValidMediaFile(String filePath) {
     List<String> mediaFormats = [
-      "jpg", "png", "gif", "webp", "mp4", "mov", "avi", "mkv"];
+      "jpg", "png", "gif", "webp", "mp4", "mov", "mkv"];
     String fileExtension = filePath.split('.').last.toLowerCase();
     return mediaFormats.contains(fileExtension);
   }
@@ -32,4 +32,12 @@ class FileValidator {
     return await mediaRepository.isMediaExists(fileName);
   }
 
+  static String getMediaFileType(String fileType) {
+    List<String> videoType = ["mp4", "mov", "mkv"];
+    if(videoType.contains(fileType)){
+      return "video";
+    }else{
+      return "image";
+    }
+  }
 }
