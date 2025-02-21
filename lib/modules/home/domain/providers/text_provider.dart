@@ -24,6 +24,11 @@ class TextNotifier extends StateNotifier<List<TextModel>> {
     state = [...state, newText];
   }
 
+  Future<void> deleteText(int index) async {
+    await _textRepository.deleteText(index);
+    state = List.from(state)..removeAt(index);
+  }
+
   Future<void> updateText(
     int index,
     String updatedHeading,

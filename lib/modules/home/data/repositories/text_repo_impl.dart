@@ -11,4 +11,6 @@ class TextRepository {
   Future<void> updateText(
           int index, String newHeading, String newDescription) =>
       _hiveService.updateText(index, newHeading, newDescription);
+
+  Future<void> deleteText(int index) => _hiveService.deleteText(index);
 }

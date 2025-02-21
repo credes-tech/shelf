@@ -20,7 +20,9 @@ class NotesScreen extends ConsumerStatefulWidget {
 class _NotesScreenState extends ConsumerState<NotesScreen> {
   String heading = "None";
   String description = "None";
-  late QuillController _controller;
+  late QuillController _controller = QuillController(
+      document: _buildDocument("None", "None\n"),
+      selection: TextSelection.collapsed(offset: 0));
 
   @override
   void initState() {

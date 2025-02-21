@@ -3,6 +3,7 @@ import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 
 class HomeCard extends StatelessWidget {
+
   final String title;
   final String description;
   final IconData icon;
@@ -30,6 +31,7 @@ class HomeCard extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+
               Icon(icon, size: 60
                   , color: iconColor),
               SizedBox(height: 10),

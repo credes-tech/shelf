@@ -6,6 +6,7 @@ import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 import 'package:my_shelf_project/modules/home/domain/providers/text_provider.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/HomeCard.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomePillBar.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
@@ -21,7 +22,31 @@ class TextScreen extends ConsumerStatefulWidget {
 
 class _TextScreenState extends ConsumerState<TextScreen> {
   final List<String> source = ['Passwords', 'Notes'];
+  // bool isPressed = false;
+  final Map<int, bool> isPressed = {};
+  // final Map<String, bool> _isPlaying = {};
   int selectedSource = 0;
+
+  void selectPressedNote(int index) {
+    setState(() {
+      if (!isPressed.containsKey(index)) isPressed[index] = false;
+      isPressed[index] = true;
+    });
+  }
+
+  void onTapDeleteBtn(index) {
+    setState(() {
+      isPressed.remove(index);
+    });
+    ref.read(textProvider.notifier).deleteText(index);
+  }
+
+  void _toggleOption(int index) {
+    setState(() {
+      if (!isPressed.containsKey(index)) isPressed[index] = false;
+      isPressed[index] = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +145,11 @@ class _TextScreenState extends ConsumerState<TextScreen> {
             ),
           ),
           textList.isEmpty
-              ? Text("Text are empty right now")
+              ? HomeCard(
+                  text: "No Notes found",
+                  icon: Icons.add,
+                  description: "Tap Add New button to add new Note",
+                )
               : Expanded(
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -136,13 +165,60 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                           int index = value.key;
                           var data = value.value;
                           return SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.45,
-                              child: NotesCard(
-                                  title: data.heading,
-                                  description: data.description,
-                                  onTap: () {
-                                    context.push('/home/texts/note/$index');
-                                  }));
+                            width: MediaQuery.of(context).size.width * 0.45,
+                            child: GestureDetector(
+                              onLongPress: () => selectPressedNote(index),
+                              child: (isPressed[index] ?? false)
+                                  ? Container(
+                                      height: 125,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                          color: AppColors.onboardLightYellow),
+                                      margin: EdgeInsets.symmetric(
+                                          horizontal: AppSpacing.xxSmall,
+                                          vertical: AppSpacing.xSmall),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          IconButton(
+                                              onPressed: () {},
+                                              icon: Icon(
+                                                Icons.ios_share,
+                                                color: Colors.black,
+                                              )),
+                                          IconButton(
+                                              onPressed: () =>
+                                                  onTapDeleteBtn(index),
+                                              icon: Icon(
+                                                Icons.delete,
+                                                color: Colors.black,
+                                              )),
+                                          IconButton(
+                                              onPressed: () =>
+                                                  _toggleOption(index),
+                                              icon: Icon(
+                                                Icons.close_rounded,
+                                                color: Colors.black,
+                                              ))
+                                        ],
+                                      ),
+                                    )
+                                  : NotesCard(
+                                      title: data.heading,
+                                      description: data.description,
+                                      onTap: () {
+                                        context.push('/home/texts/note/$index');
+                                      },
+                                    ),
+                            ),
+                          );
                         }).toList(),
                       ),
                     ),
@@ -172,5 +248,4 @@ class _TextScreenState extends ConsumerState<TextScreen> {
       ),
     );
   }
-
 }
