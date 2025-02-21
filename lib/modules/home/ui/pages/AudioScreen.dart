@@ -60,6 +60,12 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
         _isPlaying.updateAll((key, value) => false);
       });
     });
+    _audioPlayer.onPlayerStateChanged.listen((PlayerState s) {
+      if(s==PlayerState.paused){
+        _isPlaying.updateAll((key, value) => false);
+      }
+    });
+
   }
 
   Future<void> _togglePlayPause(String filePath) async {
