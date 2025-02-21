@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 
 class HomeCard extends StatelessWidget {
-  final String text;
-  final IconData icon;
+
+  final String title;
   final String description;
+  final IconData icon;
+  final Color iconColor;
 
   const HomeCard({
     super.key,
-    required this.text,
-    required this.icon,
+    required this.title,
     required this.description,
+    required this.icon,
+    required this.iconColor
   });
 
   @override
@@ -29,11 +31,13 @@ class HomeCard extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 60, color: AppColors.onboardDarkOrange),
+
+              Icon(icon, size: 60
+                  , color: iconColor),
               SizedBox(height: 10),
               Text(
-                text,
-                style: AppTextStyles.cardTitle,
+                title,
+                style:AppTextStyles.cardTitle,
               ),
               SizedBox(height: 8),
               Text(
