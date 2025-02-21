@@ -26,6 +26,15 @@ class MediaNotifier extends StateNotifier<List<MediaModel>> {
     }).toList();
   }
 
+  Future<void> loadPinnedFiles() async {
+    final allMedia = _mediaRepo.fetchAllMedia().map((hiveMedia) {
+      return MediaModel.fromHiveModel(hiveMedia);
+    }).toList();
+    state = (showOnlyPinned
+        ? allMedia.where((media) => media.isPinned).toList()
+        : allMedia);
+  }
+
   void togglePin(String fileName) {
     _mediaRepo.togglePin(fileName);
     fetchMedia();
@@ -60,6 +69,11 @@ class MediaNotifier extends StateNotifier<List<MediaModel>> {
       await file.delete();
     }
     state = List.from(state)..removeAt(index);
+  }
+
+  void togglePinnedFilter() {
+    showOnlyPinned = !showOnlyPinned;
+    loadPinnedFiles();
   }
 }
 
