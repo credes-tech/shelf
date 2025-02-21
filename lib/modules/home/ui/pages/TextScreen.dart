@@ -146,9 +146,10 @@ class _TextScreenState extends ConsumerState<TextScreen> {
           ),
           textList.isEmpty
               ? HomeCard(
-                  text: "No Notes found",
                   icon: Icons.add,
                   description: "Tap Add New button to add new Note",
+                  title: "No Notes found",
+                  iconColor: AppColors.onboardDarkYellow,
                 )
               : Expanded(
                   child: SingleChildScrollView(
