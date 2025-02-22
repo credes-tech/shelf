@@ -22,7 +22,13 @@ class TextHiveService {
     await box.add(data);
   }
 
-  Future<void> updateText(int index, String newHeading, String newDescription) async {
+  Future<void> deleteText(int index) async {
+    final box = Hive.box<TextHive>(_boxName);
+    await box.deleteAt(index);
+  }
+
+  Future<void> updateText(
+      int index, String newHeading, String newDescription) async {
     final box = Hive.box<TextHive>(_boxName);
     var existingText = box.getAt(index);
 

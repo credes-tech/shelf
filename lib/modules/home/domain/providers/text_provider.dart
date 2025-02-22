@@ -14,10 +14,19 @@ class TextNotifier extends StateNotifier<List<TextModel>> {
     }).toList();
   }
 
-  Future<void> addNewText() async {
-    final newText = TextModel(heading: "Heading", description: "description");
+  Future<TextModel> findNoteByIndex(int index) async {
+    return state[index];
+  }
+
+  Future<void> addNewText(String heading, String description) async {
+    final newText = TextModel(heading: heading, description: description);
     await _textRepository.saveText(newText.toHiveModel());
     state = [...state, newText];
+  }
+
+  Future<void> deleteText(int index) async {
+    await _textRepository.deleteText(index);
+    state = List.from(state)..removeAt(index);
   }
 
   Future<void> updateText(

@@ -3,6 +3,7 @@ import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_quill/quill_delta.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
+import 'package:my_shelf_project/modules/home/domain/models/text_model.dart';
 import 'package:my_shelf_project/modules/home/domain/providers/text_provider.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
 
@@ -12,7 +13,6 @@ class NotesScreen extends ConsumerStatefulWidget {
     super.key,
     required this.index,
   });
-
   @override
   ConsumerState<NotesScreen> createState() => _NotesScreenState();
 }
@@ -20,21 +20,32 @@ class NotesScreen extends ConsumerStatefulWidget {
 class _NotesScreenState extends ConsumerState<NotesScreen> {
   String heading = "None";
   String description = "None";
-  late QuillController _controller;
+  late QuillController _controller = QuillController(
+      document: _buildDocument("None", "None\n"),
+      selection: TextSelection.collapsed(offset: 0));
 
   @override
   void initState() {
-    _controller = QuillController(
-        document: _buildDocument(heading, description),
-        selection: TextSelection.collapsed(offset: 0));
     super.initState();
+    getText();
+  }
+
+  void getText() async {
+    TextModel text =
+        await ref.read(textProvider.notifier).findNoteByIndex(widget.index);
+    setState(() {
+      heading = text.heading;
+      description = text.description;
+      _controller = QuillController(
+          document: _buildDocument(heading, description),
+          selection: TextSelection.collapsed(offset: 0));
+    });
   }
 
   Document _buildDocument(String heading, String description) {
     final delta = Delta()
       ..insert(heading, {'header': 2})
-      ..insert(description)
-      ..insert('\n');
+      ..insert(description);
     return Document.fromDelta(delta);
   }
 
@@ -48,8 +59,8 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
   Widget build(BuildContext context) {
     return PopScope(
         onPopInvokedWithResult: (bool didPop, Object? result) async {
-          print(
-              " controller *************************************** ${_controller.document}");
+          // print(
+          //     " controller *************************************** ${_controller.document}");
           String updatedHeading = _controller.document
               .toPlainText()
               .split('\n')[0]; // Assuming first line is heading

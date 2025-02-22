@@ -4,6 +4,7 @@ import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 
 class HomeCard extends StatelessWidget {
+
   final String title;
   final String description;
   final IconData icon;
