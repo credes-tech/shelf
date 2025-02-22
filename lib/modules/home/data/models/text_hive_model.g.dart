@@ -19,6 +19,7 @@ class TextHiveAdapter extends TypeAdapter<TextHive> {
     return TextHive(
       heading: fields[0] as String,
       description: fields[1] as String,
+      isPinned: fields[2] as bool,
     );
   }
 

@@ -24,6 +24,7 @@ class _TextScreenState extends ConsumerState<TextScreen> {
   final List<String> source = ['Passwords', 'Notes'];
   // bool isPressed = false;
   final Map<int, bool> isPressed = {};
+  final Map<int, bool> isPinned = {};
   // final Map<String, bool> _isPlaying = {};
   int selectedSource = 0;
 
@@ -45,6 +46,13 @@ class _TextScreenState extends ConsumerState<TextScreen> {
     setState(() {
       if (!isPressed.containsKey(index)) isPressed[index] = false;
       isPressed[index] = false;
+    });
+  }
+
+  void setToPinned(index) {
+    setState(() {
+      if (!isPinned.containsKey(index)) isPinned[index] = false;
+      isPinned[index] = true;
     });
   }
 
@@ -169,6 +177,7 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                             width: MediaQuery.of(context).size.width * 0.45,
                             child: GestureDetector(
                               onLongPress: () => selectPressedNote(index),
+                              onDoubleTap: () => setToPinned(index),
                               child: (isPressed[index] ?? false)
                                   ? Container(
                                       height: 125,
