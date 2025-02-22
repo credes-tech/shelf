@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:my_shelf_project/core/service/permission_service.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
@@ -127,8 +128,7 @@ class _FileScreenState extends ConsumerState<FileScreen> {
                   icon: Icons.picture_as_pdf_rounded,
                   iconColor: AppColors.onboardDarkPink)
               : Expanded(
-
-                child: Padding(
+                  child: Padding(
                     padding: EdgeInsets.all(8.0),
                     child: GridView.builder(
                       itemCount: fileList.length,
@@ -141,14 +141,50 @@ class _FileScreenState extends ConsumerState<FileScreen> {
                       itemBuilder: (context, index) {
                         final file = fileList[index];
                         return GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            context.push(
+                              '/home/file/view',
+                              extra: {
+                                'filePath': file.filePath,
+                                'fileName': file.filename,
+                              },
+                            );
+                          },
                           onDoubleTap: () => togglePinFile(file.filename),
-                          child: FileCard(file: file),
+                          onLongPress: () async {
+                            await ref
+                                .read(fileProvider.notifier)
+                                .deleteFile(index);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("File deleted")),
+                            );
+                          },
+                          child: Stack(
+                            alignment: Alignment.topRight,
+                            children: [
+                              AspectRatio(
+                                  aspectRatio: 0.9,
+                                  child: FileCard(file: file)),
+                              if (file.isPinned)
+                                Positioned(
+                                    top: 10,
+                                    right: 10,
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.white,
+                                      radius: 10,
+                                      child: Icon(
+                                        Icons.stars_rounded,
+                                        size: 20,
+                                        color: AppColors.onboardDarkPink,
+                                      ),
+                                    ))
+                            ],
+                          ),
                         );
                       },
                     ),
                   ),
-              ),
+                ),
         ],
       ),
     );
@@ -182,10 +218,8 @@ class _FileScreenState extends ConsumerState<FileScreen> {
       print("Permission denied");
     }
   }
+
   void togglePinFile(String fileName) {
     ref.read(fileProvider.notifier).togglePin(fileName);
   }
-
 }
-
-
