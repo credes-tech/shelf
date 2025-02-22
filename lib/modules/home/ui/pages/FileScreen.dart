@@ -5,7 +5,9 @@ import 'package:my_shelf_project/core/service/permission_service.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
+import 'package:my_shelf_project/modules/home/domain/models/file_model.dart';
 import 'package:my_shelf_project/modules/home/domain/providers/file_provider.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/FileCard.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeCard.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomePillBar.dart';
@@ -22,15 +24,16 @@ class FileScreen extends ConsumerStatefulWidget {
 class _FileScreenState extends ConsumerState<FileScreen> {
   final List<String> source = ['Files', 'Docs'];
 
-  final String emptyHeading = "No file documents found!";
-  final String emptyDescription = "Tap Add New button to save your documents";
+  final String emptyHeading = "No documents found!";
+  final String emptyDescription = "Tap Add New button to save your files";
 
   int selectedSource = 0;
 
   @override
   Widget build(BuildContext context) {
     final fileList = ref.watch(fileProvider);
-    final bool filePinnedNotifier = ref.read(fileProvider.notifier).showOnlyPinned;
+    final bool filePinnedNotifier =
+        ref.read(fileProvider.notifier).showOnlyPinned;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -83,7 +86,6 @@ class _FileScreenState extends ConsumerState<FileScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     HomeToggler(
                       initialValue: filePinnedNotifier,
                       onChanged: (filePinnedNotifier) {
@@ -91,8 +93,10 @@ class _FileScreenState extends ConsumerState<FileScreen> {
                       },
                       color: AppColors.onboardDarkPink,
                     ),
-                    SizedBox(width: 5,),
-                    Text("Quick Access",style: AppTextStyles.pinLabelText),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text("Quick Access", style: AppTextStyles.pinLabelText),
                   ],
                 ),
                 ElevatedButton(
@@ -108,19 +112,43 @@ class _FileScreenState extends ConsumerState<FileScreen> {
                     children: [
                       Text("Add New", style: AppTextStyles.homePinned),
                       SizedBox(width: 8),
-                      Icon(
-                        Icons.add_circle_rounded,
-                        size: 30,
-                        color: Colors.white,
-                      )
+                      Icon(Icons.add_circle_rounded,
+                          size: 30, color: AppColors.onboardLightPink)
                     ],
                   ),
                 )
               ],
             ),
           ),
-          fileList.isEmpty?HomeCard(title: emptyHeading, description: emptyDescription, icon: Icons.picture_as_pdf_rounded, iconColor: AppColors.onboardDarkPink):
-              SizedBox()
+          fileList.isEmpty
+              ? HomeCard(
+                  title: emptyHeading,
+                  description: emptyDescription,
+                  icon: Icons.picture_as_pdf_rounded,
+                  iconColor: AppColors.onboardDarkPink)
+              : Expanded(
+
+                child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: GridView.builder(
+                      itemCount: fileList.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        childAspectRatio: 0.8,
+                        crossAxisSpacing: 4,
+                        mainAxisSpacing: 4,
+                      ),
+                      itemBuilder: (context, index) {
+                        final file = fileList[index];
+                        return GestureDetector(
+                          onTap: () {},
+                          onDoubleTap: () => togglePinFile(file.filename),
+                          child: FileCard(file: file),
+                        );
+                      },
+                    ),
+                  ),
+              ),
         ],
       ),
     );
@@ -154,4 +182,10 @@ class _FileScreenState extends ConsumerState<FileScreen> {
       print("Permission denied");
     }
   }
+  void togglePinFile(String fileName) {
+    ref.read(fileProvider.notifier).togglePin(fileName);
+  }
+
 }
+
+

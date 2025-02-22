@@ -30,8 +30,8 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
   final List<String> source = ['Photo', 'Video', 'GIF'];
   int selectedSource = 0;
 
-  final String emptyHeading = "No media files found!";
-  final String emptyDescription = "Tap Add New button to save your media files";
+  final String emptyHeading = "No media found!";
+  final String emptyDescription = "Tap Add New button to save your files";
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +123,7 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                       Icon(
                         Icons.add_circle_rounded,
                         size: 30,
-                        color: Colors.white,
+                        color: AppColors.onboardLightBlue
                       )
                     ],
                   ),

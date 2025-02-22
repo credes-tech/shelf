@@ -106,7 +106,7 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                       Icon(
                         Icons.add_circle_rounded,
                         size: 30,
-                        color: Colors.white,
+                        color: AppColors.onboardLightYellow
                       )
                     ],
                   ),

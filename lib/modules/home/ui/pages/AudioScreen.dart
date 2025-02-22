@@ -30,8 +30,8 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
   final Map<String, bool> _isPlaying = {};
   final Map<String, bool> _isOpen = {};
 
-  final String emptyHeading = "No audio files found!";
-  final String emptyDescription = "Tap Add New button to save your audio's";
+  final String emptyHeading = "No audio found!";
+  final String emptyDescription = "Tap Add New button to save your files";
 
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
@@ -222,7 +222,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                       Icon(
                         Icons.add_circle_rounded,
                         size: 30,
-                        color: Colors.white,
+                        color: AppColors.onboardLightOrange,
                       )
                     ],
                   ),
