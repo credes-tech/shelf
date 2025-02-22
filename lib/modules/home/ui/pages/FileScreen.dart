@@ -1,26 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:my_shelf_project/core/service/permission_service.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
+import 'package:my_shelf_project/modules/home/domain/providers/file_provider.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomePillBar.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeToggler.dart';
 
-class FileScreen extends StatefulWidget {
+class FileScreen extends ConsumerStatefulWidget {
   const FileScreen({super.key});
 
   @override
-  State<FileScreen> createState() => _FileScreenState();
+  ConsumerState<FileScreen> createState() => _FileScreenState();
 }
 
-class _FileScreenState extends State<FileScreen> {
+class _FileScreenState extends ConsumerState<FileScreen> {
   final List<String> source = ['Files', 'Docs'];
   int selectedSource = 0;
 
   @override
   Widget build(BuildContext context) {
+    final fileList = ref.watch(fileProvider);
+    final bool filePinnedNotifier = ref.read(fileProvider.notifier).showOnlyPinned;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -52,27 +57,75 @@ class _FileScreenState extends State<FileScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          HomePillBar(source: source, selectedSource: selectedSource, activeColor: AppColors.onboardDarkPink, inactiveColor: AppColors.onboardLightPink),
+          HomePillBar(
+              source: source,
+              selectedSource: selectedSource,
+              activeColor: AppColors.onboardDarkPink,
+              inactiveColor: AppColors.onboardLightPink),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: AppSpacing.large, vertical: AppSpacing.medium),
+            padding: EdgeInsets.symmetric(
+                horizontal: AppSpacing.large, vertical: AppSpacing.medium),
+            decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(20.0),
+                    bottomRight: Radius.circular(20.0))),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text('Pinned',style: AppTextStyles.homePinned),
-                HomeToggler(
-                  initialValue: true,
-                  onChanged: (value) {},
-                  color: AppColors.onboardDarkPink,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.stars_rounded,
+                      size: 35,
+                      color: Colors.black,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    HomeToggler(
+                      initialValue: filePinnedNotifier,
+                      onChanged: (filePinnedNotifier) {
+                        ref.read(fileProvider.notifier).togglePinnedFilter();
+                      },
+                      color: AppColors.onboardDarkPink,
+                    ),
+                  ],
                 ),
+                ElevatedButton(
+                  onPressed: onTapFileBtn,
+                  style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.only(
+                          left: AppSpacing.medium,
+                          right: AppSpacing.xSmall,
+                          top: AppSpacing.xSmall,
+                          bottom: AppSpacing.xSmall),
+                      backgroundColor: AppColors.onboardDarkPink),
+                  child: Row(
+                    children: [
+                      Text("Add New", style: AppTextStyles.homePinned),
+                      SizedBox(width: 8),
+                      Icon(
+                        Icons.add_circle_rounded,
+                        size: 35,
+                        color: Colors.black,
+                      )
+                    ],
+                  ),
+                )
               ],
             ),
-          )
+          ),
         ],
       ),
     );
   }
-  PopupMenuItem<String> _buildPopupMenuItem(String text, IconData icon, Color iconColor) {
+
+  PopupMenuItem<String> _buildPopupMenuItem(
+      String text, IconData icon, Color iconColor) {
     return PopupMenuItem<String>(
       value: text,
       child: ClipRRect(
@@ -84,9 +137,19 @@ class _FileScreenState extends State<FileScreen> {
           onTap: () {
             print("$text clicked");
           },
-          child: HomeMenuItem(icon: icon, iconColor: iconColor, itemValue: text),
+          child:
+              HomeMenuItem(icon: icon, iconColor: iconColor, itemValue: text),
         ),
       ),
     );
+  }
+
+  void onTapFileBtn() async {
+    bool isGranted = await PermissionService.requestFilePermission();
+    if (isGranted == true) {
+      await ref.read(fileProvider.notifier).pickAndSaveFile();
+    } else {
+      print("Permission denied");
+    }
   }
 }

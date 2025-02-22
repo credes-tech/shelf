@@ -91,6 +91,39 @@ class PermissionService {
     return false;
   }
 
+  static Future<bool> requestFilePermission() async {
+    if (Platform.isAndroid) {
+      int sdkInt = await getAndroidSdkVersion();
+      if (sdkInt >= 33) {
+        // Android 13 and above
+        PermissionStatus fileStatus = await Permission.storage.request();
+        if (fileStatus.isGranted) {
+          return true;
+        } else if (fileStatus.isPermanentlyDenied) {
+          await openAppSettings();
+        } else {
+          return false;
+        }
+      } else {
+        // Android 12 and below
+        var status = await PermissionService.requestStoragePermission();
+        if (status) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    } else if (Platform.isIOS) {
+      var status = await Permission.storage.request();
+      if (status.isGranted) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
+  }
+
   static Future<bool> checkStoragePermission() async {
     PermissionStatus status = await Permission.storage.status;
     return status.isGranted;
