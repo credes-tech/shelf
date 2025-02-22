@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:my_shelf_project/core/service/share_service.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
@@ -202,7 +203,10 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                                             width: 10,
                                           ),
                                           IconButton(
-                                              onPressed: () {},
+                                              onPressed: () {
+                                                ShareService.shareNote(
+                                                    data.description);
+                                              },
                                               icon: Icon(
                                                 Icons.ios_share,
                                                 color: Colors.black,

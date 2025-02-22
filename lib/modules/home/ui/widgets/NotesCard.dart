@@ -11,8 +11,13 @@ class NotesCard extends StatelessWidget {
     required this.description,
     required this.onTap,
   });
+
   @override
   Widget build(BuildContext context) {
+    print(description.length);
+    String newDesc = (description.length > 18)
+        ? description.substring(0, 15) + "..."
+        : description;
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -39,7 +44,7 @@ class NotesCard extends StatelessWidget {
               ),
               SizedBox(height: 5),
               Text(
-                description,
+                newDesc,
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey[600],

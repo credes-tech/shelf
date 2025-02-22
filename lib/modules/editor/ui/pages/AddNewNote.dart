@@ -38,10 +38,8 @@ class _AddNewNoteState extends ConsumerState<AddNewNote> {
   void saveNote() {
     String title = _titleController.text;
     String description = _controller.document.toPlainText();
-    print("********************** $description");
     if (!(title.isEmpty || description.isEmpty)) {
       title = '$title\n';
-      print("********************** $title");
       ref.read(textProvider.notifier).addNewText(title, description);
     }
   }
