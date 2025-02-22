@@ -34,9 +34,10 @@ class _AddNewNoteState extends ConsumerState<AddNewNote> {
   void onBackFn(bool didPop, Object? result) async {
     String title = _titleController.text;
     String description = _controller.document.toPlainText();
-    print("********************** $title");
     print("********************** $description");
     if (!(title.isEmpty || description.isEmpty)) {
+      title = '$title\n';
+      print("********************** $title");
       ref.read(textProvider.notifier).addNewText(title, description);
     }
   }
