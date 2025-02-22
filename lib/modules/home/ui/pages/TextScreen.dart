@@ -89,7 +89,7 @@ class _TextScreenState extends ConsumerState<TextScreen> {
               inactiveColor: AppColors.onboardLightYellow),
           Container(
             padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.large, vertical: AppSpacing.medium),
+                horizontal: AppSpacing.medium, vertical: AppSpacing.xSmall),
             decoration: BoxDecoration(
                 color: Colors.transparent,
                 borderRadius: BorderRadius.only(
@@ -101,21 +101,16 @@ class _TextScreenState extends ConsumerState<TextScreen> {
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      Icons.stars_rounded,
-                      size: 35,
-                      color: Colors.black,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
+
                     HomeToggler(
                       initialValue: true,
                       onChanged: (value) {},
                       color: AppColors.onboardDarkYellow,
                     ),
+                    SizedBox(width: 5,),
+                    Text("Quick Access",style: AppTextStyles.pinLabelText),
                   ],
                 ),
                 ElevatedButton(
@@ -135,8 +130,8 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                       SizedBox(width: 8),
                       Icon(
                         Icons.add_circle_rounded,
-                        size: 35,
-                        color: Colors.black,
+                        size: 30,
+                        color: AppColors.onboardLightYellow
                       )
                     ],
                   ),

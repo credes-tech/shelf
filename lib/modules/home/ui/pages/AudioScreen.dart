@@ -30,8 +30,8 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
   final Map<String, bool> _isPlaying = {};
   final Map<String, bool> _isOpen = {};
 
-  final String emptyHeading = "No audio files found!";
-  final String emptyDescription = "Tap Add New button to save your audio's";
+  final String emptyHeading = "No audio found!";
+  final String emptyDescription = "Tap Add New button to save your files";
 
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
@@ -60,6 +60,12 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
         _isPlaying.updateAll((key, value) => false);
       });
     });
+    _audioPlayer.onPlayerStateChanged.listen((PlayerState s) {
+      if(s==PlayerState.paused){
+        _isPlaying.updateAll((key, value) => false);
+      }
+    });
+
   }
 
   Future<void> _togglePlayPause(String filePath) async {
@@ -173,7 +179,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
               inactiveColor: AppColors.onboardLightOrange),
           Container(
             padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.large, vertical: AppSpacing.medium),
+                horizontal: AppSpacing.medium, vertical: AppSpacing.xSmall),
             decoration: BoxDecoration(
                 color: Colors.transparent,
                 borderRadius: BorderRadius.only(
@@ -185,16 +191,9 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      Icons.stars_rounded,
-                      size: 35,
-                      color: Colors.black,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
+
                     HomeToggler(
                       initialValue: audioPinnedNotifier,
                       onChanged: (audioPinnedNotifier) {
@@ -202,6 +201,8 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                       },
                       color: AppColors.onboardDarkOrange,
                     ),
+                    SizedBox(width: 5,),
+                    Text("Quick Access",style: AppTextStyles.pinLabelText),
                   ],
                 ),
                 ElevatedButton(
@@ -219,8 +220,8 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                       SizedBox(width: 8),
                       Icon(
                         Icons.add_circle_rounded,
-                        size: 35,
-                        color: Colors.black,
+                        size: 30,
+                        color: AppColors.onboardLightOrange,
                       )
                     ],
                   ),
