@@ -25,6 +25,15 @@ class FilePickerService {
     return null;
   }
 
+  Future<String?> pickMediaFile() async {
+    String? mediaFilePath = await getFilePath();
+    if(FileValidator.isValidMediaFile(mediaFilePath!) && !(await FileValidator.isDuplicateMediaFile(mediaFilePath))){
+      String? mediaPath = await saveFileToLocalStorage(mediaFilePath,"Media");
+      return mediaPath;
+    }
+    return null;
+  }
+
 
 
   static Future<String?> saveFileToLocalStorage(String filePath,String type) async {

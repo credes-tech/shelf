@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 
 class HomeToggler extends StatefulWidget {

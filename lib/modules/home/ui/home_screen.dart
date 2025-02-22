@@ -18,13 +18,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 2;
 
-  final List<String> _routes = [
-    "/home/chats",
-    "/home/audio",
-    "/home/media",
-    "/home/file",
-    "/home/texts",
-  ];
 
   final List<Widget> _pages = [
     ChatScreen(),
