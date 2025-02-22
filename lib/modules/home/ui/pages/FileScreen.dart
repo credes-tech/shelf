@@ -6,6 +6,7 @@ import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 import 'package:my_shelf_project/modules/home/domain/providers/file_provider.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/HomeCard.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomePillBar.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
@@ -20,6 +21,10 @@ class FileScreen extends ConsumerStatefulWidget {
 
 class _FileScreenState extends ConsumerState<FileScreen> {
   final List<String> source = ['Files', 'Docs'];
+
+  final String emptyHeading = "No file documents found!";
+  final String emptyDescription = "Tap Add New button to save your documents";
+
   int selectedSource = 0;
 
   @override
@@ -64,7 +69,7 @@ class _FileScreenState extends ConsumerState<FileScreen> {
               inactiveColor: AppColors.onboardLightPink),
           Container(
             padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.large, vertical: AppSpacing.medium),
+                horizontal: AppSpacing.medium, vertical: AppSpacing.xSmall),
             decoration: BoxDecoration(
                 color: Colors.transparent,
                 borderRadius: BorderRadius.only(
@@ -76,16 +81,9 @@ class _FileScreenState extends ConsumerState<FileScreen> {
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      Icons.stars_rounded,
-                      size: 35,
-                      color: Colors.black,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
+
                     HomeToggler(
                       initialValue: filePinnedNotifier,
                       onChanged: (filePinnedNotifier) {
@@ -93,6 +91,8 @@ class _FileScreenState extends ConsumerState<FileScreen> {
                       },
                       color: AppColors.onboardDarkPink,
                     ),
+                    SizedBox(width: 5,),
+                    Text("Quick Access",style: AppTextStyles.pinLabelText),
                   ],
                 ),
                 ElevatedButton(
@@ -110,8 +110,8 @@ class _FileScreenState extends ConsumerState<FileScreen> {
                       SizedBox(width: 8),
                       Icon(
                         Icons.add_circle_rounded,
-                        size: 35,
-                        color: Colors.black,
+                        size: 30,
+                        color: Colors.white,
                       )
                     ],
                   ),
@@ -119,6 +119,8 @@ class _FileScreenState extends ConsumerState<FileScreen> {
               ],
             ),
           ),
+          fileList.isEmpty?HomeCard(title: emptyHeading, description: emptyDescription, icon: Icons.picture_as_pdf_rounded, iconColor: AppColors.onboardDarkPink):
+              SizedBox()
         ],
       ),
     );
