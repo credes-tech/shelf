@@ -26,11 +26,13 @@ class TextHiveAdapter extends TypeAdapter<TextHive> {
   @override
   void write(BinaryWriter writer, TextHive obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.heading)
       ..writeByte(1)
-      ..write(obj.description);
+      ..write(obj.description)
+      ..writeByte(2)
+      ..write(obj.isPinned);
   }
 
   @override

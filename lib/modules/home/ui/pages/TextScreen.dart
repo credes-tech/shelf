@@ -50,15 +50,16 @@ class _TextScreenState extends ConsumerState<TextScreen> {
   }
 
   void setToPinned(index) {
-    setState(() {
-      if (!isPinned.containsKey(index)) isPinned[index] = false;
-      isPinned[index] = true;
-    });
+    ref.read(textProvider.notifier).setTogglePin(index);
   }
+
+  void loadPinnedFiles() {}
 
   @override
   Widget build(BuildContext context) {
     final textList = ref.watch(textProvider);
+    final bool textPinnedNotifier =
+        ref.read(textProvider.notifier).showOnlyPinned;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -120,8 +121,11 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                       width: 10,
                     ),
                     HomeToggler(
-                      initialValue: true,
-                      onChanged: (value) {},
+                      initialValue: textPinnedNotifier,
+                      onChanged: (textPinnedNotifier) {
+                        print("text Pinned Notifier $textPinnedNotifier");
+                        ref.read(textProvider.notifier).togglePinned();
+                      },
                       color: AppColors.onboardDarkYellow,
                     ),
                   ],

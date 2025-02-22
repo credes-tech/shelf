@@ -11,7 +11,7 @@ class AudioNotifier extends StateNotifier<List<AudioModel>> {
   final FilePickerService _filePickerService;
   bool showOnlyPinned = false;
 
-  AudioNotifier(this._audioRepo,this._filePickerService) : super([]) {
+  AudioNotifier(this._audioRepo, this._filePickerService) : super([]) {
     fetchAudios();
   }
 
@@ -51,7 +51,7 @@ class AudioNotifier extends StateNotifier<List<AudioModel>> {
         filePath: filePath,
       );
       await _audioRepo.saveAudio(newAudio.toHiveModel());
-      state = [...state,newAudio];
+      state = [...state, newAudio];
     }
   }
 
@@ -74,5 +74,5 @@ final audioProvider =
     StateNotifierProvider<AudioNotifier, List<AudioModel>>((ref) {
   final audioRepo = AudioRepository(AudioHiveService());
   final filePickerService = FilePickerService();
-  return AudioNotifier(audioRepo,filePickerService);
+  return AudioNotifier(audioRepo, filePickerService);
 });

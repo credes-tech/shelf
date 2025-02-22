@@ -27,6 +27,18 @@ class TextHiveService {
     await box.deleteAt(index);
   }
 
+  Future<void> setTogglePin(int index) async {
+    final box = Hive.box<TextHive>(_boxName);
+    var existingText = box.getAt(index);
+    if (existingText != null) {
+      final updatedText = TextHive(
+          heading: existingText.heading,
+          description: existingText.description,
+          isPinned: !existingText.isPinned);
+      await box.putAt(index, updatedText);
+    }
+  }
+
   Future<void> updateText(
       int index, String newHeading, String newDescription) async {
     final box = Hive.box<TextHive>(_boxName);

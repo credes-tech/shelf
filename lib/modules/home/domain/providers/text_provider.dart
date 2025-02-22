@@ -5,9 +5,32 @@ import 'package:my_shelf_project/modules/home/domain/models/text_model.dart';
 
 class TextNotifier extends StateNotifier<List<TextModel>> {
   final TextRepository _textRepository;
+  bool showOnlyPinned = false;
   TextNotifier(this._textRepository) : super([]) {
     fetchTexts();
   }
+
+  void togglePinned() {
+    print("toggle pinned workinbg");
+    showOnlyPinned = !showOnlyPinned;
+    loadPinnedFiles();
+  }
+
+  void setTogglePin(int index) async {
+    await _textRepository.setTogglePin(index);
+    fetchTexts();
+  }
+
+  void loadPinnedFiles() {
+    final allTexts = _textRepository.fetchAllTexts().map((hiveText) {
+      return TextModel.fromHiveModel(hiveText);
+    }).toList();
+    print("showOnlyPinned $showOnlyPinned");
+    state = (showOnlyPinned
+        ? allTexts.where((texts) => texts.isPinned).toList()
+        : allTexts);
+  }
+
   void fetchTexts() {
     state = _textRepository.fetchAllTexts().map((hiveText) {
       return TextModel.fromHiveModel(hiveText);
