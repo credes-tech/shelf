@@ -4,9 +4,8 @@ class AuthTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
   final IconData prefixIcon;
-  final IconData? suffixIcon;
   final bool obscureText;
-  final String? errorText;
+  final TextInputType keyboardType;
 
   const AuthTextField({
     super.key,
@@ -14,8 +13,7 @@ class AuthTextField extends StatelessWidget {
     required this.hintText,
     required this.prefixIcon,
     this.obscureText = false,
-    this.suffixIcon,
-    required this.errorText,
+    this.keyboardType = TextInputType.text,
   });
 
   @override
@@ -23,14 +21,11 @@ class AuthTextField extends StatelessWidget {
     return TextField(
       controller: controller,
       obscureText: obscureText,
-      keyboardType: TextInputType.text,
+      keyboardType: keyboardType,
       decoration: InputDecoration(
         hintText: hintText,
-        errorText: errorText,
-        errorStyle: TextStyle(color: Colors.white),
         hintStyle: const TextStyle(color: Colors.white70),
         prefixIcon: Icon(prefixIcon, color: Colors.white),
-        suffixIcon: Icon(suffixIcon, color: Colors.white),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(46),
           borderSide: const BorderSide(color: Colors.white, width: 2),
@@ -47,20 +42,11 @@ class AuthTextField extends StatelessWidget {
           borderRadius: BorderRadius.circular(46),
           borderSide: const BorderSide(color: Colors.white54, width: 2),
         ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(46),
-          borderSide: const BorderSide(color: Colors.white54, width: 2),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(46),
-          borderSide: const BorderSide(color: Colors.white54, width: 2),
-        ),
         filled: true,
         fillColor: Colors.transparent,
       ),
       style: const TextStyle(color: Colors.white),
       cursorColor: Colors.white,
-      cursorErrorColor: Colors.white,
     );
   }
 }
