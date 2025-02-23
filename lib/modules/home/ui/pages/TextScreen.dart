@@ -13,6 +13,7 @@ import 'package:my_shelf_project/modules/home/ui/widgets/HomePillBar.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeToggler.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/NotesCard.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class TextScreen extends ConsumerStatefulWidget {
   const TextScreen({super.key});
@@ -161,20 +162,23 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                 )
               : Expanded(
                   child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
+                    scrollDirection: Axis.vertical,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.medium),
-                      child: Wrap(
-                        direction: Axis.vertical,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        runSpacing: AppSpacing.small,
-                        spacing: AppSpacing.small,
-                        children: textList.asMap().entries.map((value) {
-                          int index = value.key;
+                      child: StaggeredGrid.count(
+                        crossAxisCount: 2, // 2 columns
+                        mainAxisSpacing: 1,
+                        crossAxisSpacing: 1,
+                        children: textList.reversed
+                            .toList()
+                            .asMap()
+                            .entries
+                            .map((value) {
+                          int index = textList.length - value.key - 1;
                           var data = value.value;
-                          return SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.45,
+                          return StaggeredGridTile.fit(
+                            crossAxisCellCount: 1,
                             child: GestureDetector(
                               onLongPress: () => selectPressedNote(index),
                               onDoubleTap: () => setToPinned(index),
@@ -223,12 +227,32 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                                         ],
                                       ),
                                     )
-                                  : NotesCard(
-                                      title: data.heading,
-                                      description: data.description,
-                                      onTap: () {
-                                        context.push('/home/texts/note/$index');
-                                      },
+                                  : Stack(
+                                      children: [
+                                        NotesCard(
+                                          title: data.heading,
+                                          description: data.description,
+                                          onTap: () {
+                                            context.push(
+                                                '/home/texts/note/$index');
+                                          },
+                                        ),
+                                        if (data.isPinned)
+                                          Positioned(
+                                            top: 10,
+                                            right: 10,
+                                            child: CircleAvatar(
+                                              backgroundColor: Colors.white,
+                                              radius: 10,
+                                              child: Icon(
+                                                Icons.stars_rounded,
+                                                size: 20,
+                                                color:
+                                                    AppColors.onboardDarkYellow,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
                                     ),
                             ),
                           );

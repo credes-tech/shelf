@@ -37,7 +37,7 @@ class TextNotifier extends StateNotifier<List<TextModel>> {
     }).toList();
   }
 
-  Future<TextModel> findNoteByIndex(int index) async {
+  TextModel findNoteByIndex(int index) {
     return state[index];
   }
 
@@ -56,11 +56,15 @@ class TextNotifier extends StateNotifier<List<TextModel>> {
     int index,
     String updatedHeading,
     String updatedDescription,
+    bool isPinned,
   ) async {
-    final updatedText =
-        TextModel(heading: updatedHeading, description: updatedDescription);
-    await _textRepository.updateText(
-        index, updatedText.heading, updatedText.description);
+    final updatedText = TextModel(
+        heading: updatedHeading,
+        description: updatedDescription,
+        isPinned: isPinned);
+
+    await _textRepository.updateText(index, updatedText.heading,
+        updatedText.description, updatedText.isPinned);
     state = [
       ...state.sublist(0, index),
       updatedText,

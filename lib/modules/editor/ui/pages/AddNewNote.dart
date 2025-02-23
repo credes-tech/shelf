@@ -36,6 +36,7 @@ class _AddNewNoteState extends ConsumerState<AddNewNote> {
   }
 
   void saveNote() {
+    FocusScope.of(context).unfocus();
     String title = _titleController.text;
     String description = _controller.document.toPlainText();
     if (!(title.isEmpty || description.isEmpty)) {
@@ -57,8 +58,8 @@ class _AddNewNoteState extends ConsumerState<AddNewNote> {
             actions: [
               IconButton(
                   onPressed: () {
-                    saveNote();
-                    context.push('/home/textScreen');
+                    // saveNote();
+                    context.pop();
                   },
                   icon: Icon(
                     Icons.save,
@@ -68,7 +69,7 @@ class _AddNewNoteState extends ConsumerState<AddNewNote> {
                 padding: EdgeInsets.only(right: AppSpacing.small),
                 child: IconButton(
                   onPressed: () {
-                    context.push('/home/textScreen');
+                    context.pop();
                   },
                   icon: Icon(
                     Icons.cancel,

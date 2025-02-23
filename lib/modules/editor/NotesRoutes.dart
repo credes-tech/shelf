@@ -12,10 +12,5 @@ class NotesRoutes {
           return NotesScreen(index: noteId);
         }),
     GoRoute(path: '/home/texts/new', builder: (context, state) => AddNewNote()),
-    GoRoute(
-        path: '/home/textScreen',
-        builder: (context, state) {
-          return TextScreen();
-        })
   ];
 }

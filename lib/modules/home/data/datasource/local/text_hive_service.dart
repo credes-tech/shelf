@@ -39,14 +39,15 @@ class TextHiveService {
     }
   }
 
-  Future<void> updateText(
-      int index, String newHeading, String newDescription) async {
+  Future<void> updateText(int index, String newHeading, String newDescription,
+      bool isPinned) async {
     final box = Hive.box<TextHive>(_boxName);
     var existingText = box.getAt(index);
 
     if (existingText != null) {
       existingText.heading = newHeading;
       existingText.description = newDescription;
+      existingText.isPinned = isPinned;
       await box.putAt(index, existingText);
     }
   }

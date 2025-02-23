@@ -20,32 +20,21 @@ class NotesScreen extends ConsumerStatefulWidget {
 class _NotesScreenState extends ConsumerState<NotesScreen> {
   String heading = "None";
   String description = "None";
+
+  final TextEditingController _titleController = TextEditingController();
   late QuillController _controller = QuillController(
-      document: _buildDocument("None", "None\n"),
+      document: _buildDocument("None\n"),
       selection: TextSelection.collapsed(offset: 0));
 
   @override
   void initState() {
     super.initState();
-    getText();
   }
 
-  void getText() async {
-    TextModel text =
-        await ref.read(textProvider.notifier).findNoteByIndex(widget.index);
-    setState(() {
-      heading = text.heading;
-      description = text.description;
-      _controller = QuillController(
-          document: _buildDocument(heading, description),
-          selection: TextSelection.collapsed(offset: 0));
-    });
-  }
-
-  Document _buildDocument(String heading, String description) {
+  Document _buildDocument(String description) {
     final delta = Delta()
-      ..insert(heading)
-      ..insert(description);
+      ..insert(description)
+      ..insert('\n');
     return Document.fromDelta(delta);
   }
 
@@ -57,22 +46,21 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final text = ref.read(textProvider.notifier).findNoteByIndex(widget.index);
+    _controller = QuillController(
+        document: _buildDocument(text.description),
+        selection: TextSelection.collapsed(offset: 0));
+    _titleController.text = text.heading;
     return PopScope(
         onPopInvokedWithResult: (bool didPop, Object? result) async {
-          String updatedHeading = _controller.document
-              .toPlainText()
-              .split('\n')[0]; // Assuming first line is heading
-          print(updatedHeading);
-          String updatedDescription = _controller.document
-              .toPlainText()
-              .substring(updatedHeading.length); // Rest as description
-          print(updatedDescription);
-
-          // Update the text in the provider (save it in the state)
-          ref
-              .read(textProvider.notifier)
-              .updateText(widget.index, updatedHeading, updatedDescription);
-
+          String updatedHeading = _titleController.text;
+          String updatedDescription = _controller.document.toPlainText();
+          if (updatedHeading.length == 0 && updatedDescription.length == 0) {
+            ref.read(textProvider.notifier).deleteText(widget.index);
+          } else {
+            ref.read(textProvider.notifier).updateText(widget.index,
+                updatedHeading, updatedDescription, text.isPinned);
+          }
           // Allow the pop action (navigate back)
         },
         child: Scaffold(
@@ -89,11 +77,32 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                   child: Card(
                     child: Padding(
                       padding: EdgeInsets.all(8),
-                      child: QuillEditor.basic(
-                        controller: _controller,
-                        configurations: const QuillEditorConfigurations(
-                          autoFocus: true,
-                        ),
+                      child: Column(
+                        children: [
+                          TextField(
+                            controller: _titleController,
+                            cursorColor: AppColors.onboardLightYellow,
+                            cursorWidth: 3,
+                            cursorRadius: Radius.circular(20),
+                            decoration: InputDecoration(
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.white, width: 1),
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: AppColors.onboardLightYellow,
+                                    width: 2),
+                              ),
+                            ),
+                            autofocus: true,
+                          ),
+                          QuillEditor.basic(
+                              controller: _controller,
+                              configurations: const QuillEditorConfigurations(
+                                autoFocus: true,
+                              ))
+                        ],
                       ),
                     ),
                   ),
