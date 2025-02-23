@@ -13,4 +13,12 @@ class ShareService {
       print("Error sharing file: $e");
     }
   }
+
+  static Future<void> shareNote(String data) async {
+    try {
+      await Share.share(data);
+    } catch (e) {
+      print("error is coming $e");
+    }
+  }
 }

@@ -32,11 +32,14 @@ class _AddNewNoteState extends ConsumerState<AddNewNote> {
   }
 
   void onBackFn(bool didPop, Object? result) async {
+    saveNote();
+  }
+
+  void saveNote() {
     String title = _titleController.text;
     String description = _controller.document.toPlainText();
-    print("********************** $title");
-    print("********************** $description");
     if (!(title.isEmpty || description.isEmpty)) {
+      title = '$title\n';
       ref.read(textProvider.notifier).addNewText(title, description);
     }
   }
@@ -52,6 +55,15 @@ class _AddNewNoteState extends ConsumerState<AddNewNote> {
             title: HomeTitle(title: 'New Note'),
             automaticallyImplyLeading: false,
             actions: [
+              IconButton(
+                  onPressed: () {
+                    saveNote();
+                    context.push('/home/textScreen');
+                  },
+                  icon: Icon(
+                    Icons.save,
+                    color: Colors.black,
+                  )),
               Padding(
                 padding: EdgeInsets.only(right: AppSpacing.small),
                 child: IconButton(
@@ -63,7 +75,7 @@ class _AddNewNoteState extends ConsumerState<AddNewNote> {
                     color: Colors.black,
                   ),
                 ),
-              )
+              ),
             ],
           ),
           body: Padding(

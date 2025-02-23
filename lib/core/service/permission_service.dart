@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-
 Future<int> getAndroidSdkVersion() async {
   if (Platform.isAndroid) {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -66,7 +65,8 @@ class PermissionService {
         PermissionStatus videoStatus = await Permission.videos.request();
         if (photoStatus.isGranted && videoStatus.isGranted) {
           return true;
-        } else if (photoStatus.isPermanentlyDenied || videoStatus.isPermanentlyDenied) {
+        } else if (photoStatus.isPermanentlyDenied ||
+            videoStatus.isPermanentlyDenied) {
           await openAppSettings();
         } else {
           return false;

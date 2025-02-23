@@ -44,7 +44,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
 
   Document _buildDocument(String heading, String description) {
     final delta = Delta()
-      ..insert(heading, {'header': 2})
+      ..insert(heading)
       ..insert(description);
     return Document.fromDelta(delta);
   }
@@ -59,8 +59,6 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
   Widget build(BuildContext context) {
     return PopScope(
         onPopInvokedWithResult: (bool didPop, Object? result) async {
-          // print(
-          //     " controller *************************************** ${_controller.document}");
           String updatedHeading = _controller.document
               .toPlainText()
               .split('\n')[0]; // Assuming first line is heading

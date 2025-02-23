@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:my_shelf_project/core/service/share_service.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
@@ -24,6 +25,7 @@ class _TextScreenState extends ConsumerState<TextScreen> {
   final List<String> source = ['Passwords', 'Notes'];
   // bool isPressed = false;
   final Map<int, bool> isPressed = {};
+  final Map<int, bool> isPinned = {};
   // final Map<String, bool> _isPlaying = {};
   int selectedSource = 0;
 
@@ -48,9 +50,17 @@ class _TextScreenState extends ConsumerState<TextScreen> {
     });
   }
 
+  void setToPinned(index) {
+    ref.read(textProvider.notifier).setTogglePin(index);
+  }
+
+  void loadPinnedFiles() {}
+
   @override
   Widget build(BuildContext context) {
     final textList = ref.watch(textProvider);
+    final bool textPinnedNotifier =
+        ref.read(textProvider.notifier).showOnlyPinned;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -105,8 +115,11 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                   children: [
 
                     HomeToggler(
-                      initialValue: true,
-                      onChanged: (value) {},
+                      initialValue: textPinnedNotifier,
+                      onChanged: (textPinnedNotifier) {
+                        print("text Pinned Notifier $textPinnedNotifier");
+                        ref.read(textProvider.notifier).togglePinned();
+                      },
                       color: AppColors.onboardDarkYellow,
                     ),
                     SizedBox(width: 5,),
@@ -164,6 +177,7 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                             width: MediaQuery.of(context).size.width * 0.45,
                             child: GestureDetector(
                               onLongPress: () => selectPressedNote(index),
+                              onDoubleTap: () => setToPinned(index),
                               child: (isPressed[index] ?? false)
                                   ? Container(
                                       height: 125,
@@ -184,7 +198,10 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                                             width: 10,
                                           ),
                                           IconButton(
-                                              onPressed: () {},
+                                              onPressed: () {
+                                                ShareService.shareNote(
+                                                    data.description);
+                                              },
                                               icon: Icon(
                                                 Icons.ios_share,
                                                 color: Colors.black,

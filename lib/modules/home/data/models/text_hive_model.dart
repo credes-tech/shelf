@@ -9,8 +9,12 @@ class TextHive {
   @HiveField(1)
   String description;
 
+  @HiveField(2)
+  bool isPinned;
+
   TextHive({
     required this.heading,
     required this.description,
+    required this.isPinned,
   });
 }

@@ -13,4 +13,5 @@ class TextRepository {
       _hiveService.updateText(index, newHeading, newDescription);
 
   Future<void> deleteText(int index) => _hiveService.deleteText(index);
+  Future<void> setTogglePin(int index) => _hiveService.setTogglePin(index);
 }
