@@ -19,6 +19,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final FocusNode _emailFocusNode = FocusNode();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
@@ -27,6 +28,24 @@ class _RegisterPageState extends State<RegisterPage> {
   String? nameError;
   String? passwordError;
   String? confirmPasswordError;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).requestFocus(_emailFocusNode);
+    });
+  }
+
+  @override
+  void dispose() {
+    _emailFocusNode.dispose();
+    _emailController.dispose();
+    _nameController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   void validate() {
     final password = _passwordController.text.trim();
@@ -45,6 +64,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
   @override
   Widget build(BuildContext context) {
+    final bool isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
     return Scaffold(
       backgroundColor: AppColors.onboardLightBlue,
       body: Center(
@@ -55,7 +75,7 @@ class _RegisterPageState extends State<RegisterPage> {
               children: [
                 SizedBox(height: MediaQuery.of(context).size.height * 0.1),
 
-                AuthLogo(),
+                if (!isKeyboardOpen) AuthLogo(),
 
                 SizedBox(height: MediaQuery.of(context).size.height * 0.05),
 
@@ -66,7 +86,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                       SizedBox(height: MediaQuery.of(context).size.height * 0.05),
 
-                      AuthTextField(controller: _emailController, hintText: "user@gmail.com", prefixIcon: Icons.person, errorText: emailError,),
+                      AuthTextField(controller: _emailController, hintText: "user@gmail.com", prefixIcon: Icons.person, errorText: emailError, focusNode: _emailFocusNode,),
 
                       const SizedBox(height: 20),
 

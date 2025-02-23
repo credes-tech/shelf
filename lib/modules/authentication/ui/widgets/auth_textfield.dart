@@ -7,6 +7,7 @@ class AuthTextField extends StatelessWidget {
   final IconData? suffixIcon;
   final bool obscureText;
   final String? errorText;
+  final FocusNode? focusNode;
 
   const AuthTextField({
     super.key,
@@ -16,6 +17,7 @@ class AuthTextField extends StatelessWidget {
     this.obscureText = false,
     this.suffixIcon,
     required this.errorText,
+    this.focusNode,
   });
 
   @override
@@ -24,6 +26,7 @@ class AuthTextField extends StatelessWidget {
       controller: controller,
       obscureText: obscureText,
       keyboardType: TextInputType.text,
+      focusNode: focusNode,
       decoration: InputDecoration(
         hintText: hintText,
         errorText: errorText,

@@ -19,10 +19,27 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final FocusNode _emailFocusNode = FocusNode();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String? emailError;
   String? passwordError;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).requestFocus(_emailFocusNode);
+    });
+  }
+
+  @override
+  void dispose() {
+    _emailFocusNode.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   void validate() {
     setState(() {
@@ -37,6 +54,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
     return Scaffold(
       backgroundColor: AppColors.onboardLightBlue,
       body: Center(
@@ -48,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
 
               SizedBox(height: MediaQuery.of(context).size.height * 0.05),
 
-              AuthLogo(),
+              if (!isKeyboardOpen) AuthLogo(),
 
               SizedBox(height: MediaQuery.of(context).size.height * 0.1),
 
@@ -61,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     SizedBox(height: MediaQuery.of(context).size.height * 0.05),
 
-                    AuthTextField(controller: _emailController, hintText: "user@gmail.com", prefixIcon: Icons.person, errorText: emailError,),
+                    AuthTextField(controller: _emailController, hintText: "user@gmail.com", prefixIcon: Icons.person, errorText: emailError, focusNode: _emailFocusNode,),
 
                     const SizedBox(height: 20),
 
