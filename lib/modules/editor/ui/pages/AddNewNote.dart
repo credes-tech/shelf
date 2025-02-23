@@ -56,16 +56,6 @@ class _AddNewNoteState extends ConsumerState<AddNewNote> {
             title: HomeTitle(title: 'New Note'),
             automaticallyImplyLeading: false,
             actions: [
-              IconButton(
-                  onPressed: () {
-                    Future.delayed(Duration(milliseconds: 300)).then((_) {
-                      context.pop();
-                    });
-                  },
-                  icon: Icon(
-                    Icons.save,
-                    color: Colors.black,
-                  )),
               Padding(
                 padding: EdgeInsets.only(right: AppSpacing.small),
                 child: IconButton(
