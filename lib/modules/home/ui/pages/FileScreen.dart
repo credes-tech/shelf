@@ -135,8 +135,6 @@ class _FileScreenState extends ConsumerState<FileScreen> {
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
                         childAspectRatio: 0.8,
-                        crossAxisSpacing: 4,
-                        mainAxisSpacing: 4,
                       ),
                       itemBuilder: (context, index) {
                         final file = fileList[index];
@@ -160,10 +158,9 @@ class _FileScreenState extends ConsumerState<FileScreen> {
                             );
                           },
                           child: Stack(
-                            alignment: Alignment.topRight,
                             children: [
                               AspectRatio(
-                                  aspectRatio: 0.9,
+                                  aspectRatio: 0.8,
                                   child: FileCard(file: file)),
                               if (file.isPinned)
                                 Positioned(
