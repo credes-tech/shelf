@@ -58,8 +58,9 @@ class _AddNewNoteState extends ConsumerState<AddNewNote> {
             actions: [
               IconButton(
                   onPressed: () {
-                    // saveNote();
-                    context.pop();
+                    Future.delayed(Duration(milliseconds: 300)).then((_) {
+                      context.pop();
+                    });
                   },
                   icon: Icon(
                     Icons.save,
@@ -69,7 +70,9 @@ class _AddNewNoteState extends ConsumerState<AddNewNote> {
                 padding: EdgeInsets.only(right: AppSpacing.small),
                 child: IconButton(
                   onPressed: () {
-                    context.pop();
+                    Future.delayed(Duration(milliseconds: 300)).then((_) {
+                      context.pop();
+                    });
                   },
                   icon: Icon(
                     Icons.cancel,
