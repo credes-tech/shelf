@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:my_shelf_project/modules/editor/ui/pages/NotesScreen.dart';
 
 class NotesCard extends StatelessWidget {
   final String title;
@@ -12,43 +11,56 @@ class NotesCard extends StatelessWidget {
     required this.description,
     required this.onTap,
   });
+
   @override
   Widget build(BuildContext context) {
+    print(description.length);
+    String newDesc = (description.length > 35)
+        ? description.substring(0, 33) + "..."
+        : description;
+    String newTitle =
+        (title.length > 10) ? title.substring(0, 9) + "..." : title;
+    newDesc = newDesc.replaceAll('\n', '');
+
+    newTitle = newTitle.replaceAll('\n', '');
+    // String newDesc = description;
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
       color: Color(0xFFEEEEEE),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+      child: Container(
+        width: 200,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  newTitle,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
-              ),
-              SizedBox(height: 5),
-              Text(
-                description,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
+                Text(
+                  newDesc,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                  maxLines: null,
+                  overflow: TextOverflow.visible,
                 ),
-                maxLines: null,
-                overflow: TextOverflow.visible,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

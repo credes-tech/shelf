@@ -45,7 +45,7 @@ class AppTextStyles {
 
   static const TextStyle homeTitle = TextStyle(
       fontFamily: 'Montserrat',
-      fontSize: 32,
+      fontSize: 26,
       fontWeight: FontWeight.w600,
       color: Colors.black,
       letterSpacing: -2,
@@ -54,7 +54,7 @@ class AppTextStyles {
 
   static const TextStyle homePills = TextStyle(
       fontFamily: 'Montserrat',
-      fontSize: 16,
+      fontSize: 14,
       fontWeight: FontWeight.w600,
       color: Colors.white,
       letterSpacing: -0.8
@@ -62,9 +62,17 @@ class AppTextStyles {
 
   static const TextStyle homePinned = TextStyle(
       fontFamily: 'Inter',
-      fontSize: 18,
-      fontWeight: FontWeight.w400,
-      color: Colors.black
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+      color: Colors.white
+  );
+
+  static const TextStyle pinLabelText = TextStyle(
+      fontFamily: 'Montserrat',
+      fontSize: 12,
+      fontWeight: FontWeight.w500,
+      color: Colors.black,
+      letterSpacing: -0.8
   );
 
   static const TextStyle audioTitle = TextStyle(
