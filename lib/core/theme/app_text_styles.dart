@@ -61,9 +61,9 @@ class AppTextStyles {
   static const TextStyle authSubHeading = TextStyle(
     fontFamily: 'Inter',
     fontSize: 24,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w600,
     color: Colors.white,
-    letterSpacing: -1,
+    //letterSpacing: -1,
   );
 
   static const TextStyle signIn = TextStyle(
