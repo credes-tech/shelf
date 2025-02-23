@@ -5,7 +5,7 @@ import 'package:my_shelf_project/modules/home/HomeRoutes.dart';
 import 'package:my_shelf_project/modules/onboarding/OnboardingRoutes.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: "/home/chats",
+  initialLocation: "/login",
   routes: [
     ...OnboardingRoutes.routes,
     ...AuthenticationRoutes.routes,
