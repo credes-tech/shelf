@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
-
-import '../../../../core/theme/app_text_styles.dart';
+import 'package:go_router/go_router.dart';
+import 'package:my_shelf_project/modules/authentication/ui/widgets/auth_apple_button.dart';
+import 'package:my_shelf_project/modules/authentication/ui/widgets/auth_button.dart';
+import 'package:my_shelf_project/modules/authentication/ui/widgets/auth_google_button.dart';
+import 'package:my_shelf_project/modules/authentication/ui/widgets/auth_logo.dart';
+import 'package:my_shelf_project/modules/authentication/ui/widgets/auth_nav_button.dart';
+import 'package:my_shelf_project/modules/authentication/ui/widgets/auth_subtitle.dart';
+import 'package:my_shelf_project/modules/authentication/ui/widgets/auth_textfield.dart';
+import '../../../../core/service/validator_service.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -10,235 +19,79 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
+  String? emailError;
+  String? nameError;
+  String? passwordError;
+  String? confirmPasswordError;
+
+  void validate() {
+    final password = _passwordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
+
+    setState(() {
+      emailError = ValidatorService.validateEmail(_emailController.text);
+      nameError = ValidatorService.validateName(_nameController.text);
+      passwordError = ValidatorService.validatePassword(_passwordController.text);
+      confirmPasswordError = password == confirmPassword ? null : "Passwords do not match";
+    });
+
+    if (emailError == null && nameError == null && passwordError == null && confirmPasswordError == null) {
+      print("Valid Inputs");
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF73C6D2), // Light blue background#73C6D2
-      body: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: Center(
+      backgroundColor: AppColors.onboardLightBlue,
+      body: Center(
           child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xLarge),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Logo
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset('assets/logo/shelf_logo.png',
-                      height: 70,
-                      width: 70,
-                    ),
-                    const SizedBox(width: 10),
-                    // Title
-                    const Text(
-                      "shelf",
-                      style: AppTextStyles.authHeading,
-                      textAlign: TextAlign.start,
-                      softWrap: true,
-                    ),
-                  ],
-                ),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.1),
 
-                const SizedBox(height: 80),
+                AuthLogo(),
 
-                Form(
-                  key: _formKey,
-                  child: Column(
+                SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+
+                Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Sign Up",
-                        style: AppTextStyles.authSubHeading,
-                      ),
+                      const AuthSubtitle(text: "Sign Up"),
 
-                      const SizedBox(height: 30),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.05),
 
-                      // Email TextField
-                      TextFormField(
-                        controller: _emailController,
-                        decoration: InputDecoration(
-                          hintText: "username@email.com",
-                          hintStyle: const TextStyle(color: Colors.white70), // Light white hint text
-                          prefixIcon: const Icon(Icons.person, color: Colors.white), // White icon
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(46),
-                            borderSide: const BorderSide(color: Colors.white, width: 2),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(46),
-                            borderSide: const BorderSide(color: Colors.white, width: 2),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(46),
-                            borderSide: const BorderSide(color: Colors.white, width: 2),
-                          ),
-                          disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(46),
-                            borderSide: const BorderSide(color: Colors.white54, width: 2), // Slightly faded white
-                          ),
-                          filled: true,
-                          fillColor: Colors.transparent, // Semi-transparent background
-                        ),
-                        style: const TextStyle(color: Colors.white), // White text input color
-                        cursorColor: Colors.white,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Email is required";
-                          }
-                          if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value)) {
-                            return "Enter a valid email";
-                          }
-                          return null;
-                        },
-                      ),
+                      AuthTextField(controller: _emailController, hintText: "user@gmail.com", prefixIcon: Icons.person, errorText: emailError,),
 
                       const SizedBox(height: 20),
 
-                      TextFormField(
-                        controller: _nameController,
-                        decoration: InputDecoration(
-                          hintText: "name",
-                          hintStyle: const TextStyle(color: Colors.white70), // Light white hint text
-                          prefixIcon: const Icon(Icons.person, color: Colors.white), // White icon
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(46),
-                            borderSide: const BorderSide(color: Colors.white, width: 2),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(46),
-                            borderSide: const BorderSide(color: Colors.white, width: 2),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(46),
-                            borderSide: const BorderSide(color: Colors.white, width: 2),
-                          ),
-                          disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(46),
-                            borderSide: const BorderSide(color: Colors.white54, width: 2), // Slightly faded white
-                          ),
-                          filled: true,
-                          fillColor: Colors.transparent, // Semi-transparent background
-                        ),
-                        style: const TextStyle(color: Colors.white), // White text input color
-                        cursorColor: Colors.white, // White cursor
-                      ),
+                      AuthTextField(controller: _nameController, hintText: "name", prefixIcon: Icons.person, errorText: nameError,),
 
                       const SizedBox(height: 20),
 
-                      // Password TextField
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          hintText: "Password",
-                          hintStyle: const TextStyle(color: Colors.white70),
-                          prefixIcon: const Icon(Icons.lock, color: Colors.white),
-                          suffixIcon: const Icon(Icons.visibility_off, color: Colors.white),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(46),
-                            borderSide: const BorderSide(color: Colors.white, width: 2),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(46),
-                            borderSide: const BorderSide(color: Colors.white, width: 2),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(46),
-                            borderSide: const BorderSide(color: Colors.white, width: 2),
-                          ),
-                          disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(46),
-                            borderSide: const BorderSide(color: Colors.white54, width: 2), // Slightly faded white
-                          ),
-                          filled: true,
-                          fillColor: Colors.transparent, // Semi-transparent background
-                        ),
-                        style: const TextStyle(color: Colors.white), // White text input color
-                        cursorColor: Colors.white,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your password';
-                          } else if (value.length < 6) {
-                            return 'Password must be at least 6 characters long';
-                          }
-                          return null;
-                        },
-                      ),
+                      AuthTextField(controller: _passwordController, hintText: "Password", prefixIcon: Icons.lock, suffixIcon: Icons.visibility_off_sharp, obscureText: true, errorText: passwordError,),
 
                       const SizedBox(height: 20),
 
-                      TextFormField(
-                        controller: _confirmPasswordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          hintText: "Confirm Password",
-                          hintStyle: const TextStyle(color: Colors.white70),
-                          prefixIcon: const Icon(Icons.lock, color: Colors.white),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(46),
-                            borderSide: const BorderSide(color: Colors.white, width: 2),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(46),
-                            borderSide: const BorderSide(color: Colors.white, width: 2),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(46),
-                            borderSide: const BorderSide(color: Colors.white, width: 2),
-                          ),
-                          disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(46),
-                            borderSide: const BorderSide(color: Colors.white54, width: 2), // Slightly faded white
-                          ),
-                          filled: true,
-                          fillColor: Colors.transparent, // Semi-transparent background
-                        ),
-                        style: const TextStyle(color: Colors.white), // White text input color
-                        cursorColor: Colors.white, //
-                      ),
+                      AuthTextField(controller: _confirmPasswordController, hintText: "Confirm Password", prefixIcon: Icons.lock, errorText: confirmPasswordError,),
                     ],
                   ),
-                ),
 
                 const SizedBox(height: 40),
 
                 // Sign-in Button
-                SizedBox(
-                  height: 50,
-                  //width: 130,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black.withOpacity(0.1), // Semi-transparent white
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(33),
-                      ),
-                      elevation: 0, // Removes button shadow
-                    ),
-                    child: const Text(
-                      "Sign Up",
-                      style: AppTextStyles.signIn, // Assuming this defines white, bold text
-                    ),
-                  ),
-                ),
+                AuthButton(text: "Sign Up", onPressed: validate,),
 
                 const SizedBox(height: 15),
 
-                // Forgot Password
-                TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    "Already a user?",
-                    style: AppTextStyles.forgot,
-                  ),
-                ),
+                AuthNavButton(text: "Already a user?", onPressed: () {
+                  GoRouter.of(context).go('/login');
+                }),
 
                 const SizedBox(height: 20),
 
@@ -246,36 +99,17 @@ class _RegisterPageState extends State<RegisterPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white
-                      ),
-                      child: IconButton(
-                        icon: Image.asset('assets/logo/google.png'), // Google icon
-                        onPressed: () {},
-                      ),
-                    ),
+                    AuthGoogleButton(onPressed: () {}),
+
                     const SizedBox(width: 20),
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.2), // Semi-transparent white
-                      ),
-                      //padding: const EdgeInsets.all(10), // Adjust padding for proper spacing
-                      child: IconButton(
-                        icon: Image.asset('assets/logo/apple.png'), // Apple icon
-                        onPressed: () {},
-                        splashRadius: 25, // Ensures a smooth circular touch effect
-                      ),
-                    )
+
+                    AuthAppleButton(onPressed: () {}),
                   ],
                 ),
               ],
             ),
           ),
         ),
-      ),
     );
   }
 }
