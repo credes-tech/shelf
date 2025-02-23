@@ -30,8 +30,8 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
   final List<String> source = ['Photo', 'Video', 'GIF'];
   int selectedSource = 0;
 
-  final String emptyHeading = "No media files found!";
-  final String emptyDescription = "Tap Add New button to save your media files";
+  final String emptyHeading = "No media found!";
+  final String emptyDescription = "Tap Add New button to save your files";
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +78,7 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
               inactiveColor: AppColors.onboardLightBlue),
           Container(
             padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.large, vertical: AppSpacing.medium),
+                horizontal: AppSpacing.medium, vertical: AppSpacing.xSmall),
             decoration: BoxDecoration(
                 color: Colors.transparent,
                 borderRadius: BorderRadius.only(
@@ -90,16 +90,10 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      Icons.stars_rounded,
-                      size: 35,
-                      color: Colors.black,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
+
+
                     HomeToggler(
                       initialValue: mediaPinnedNotifier,
                       onChanged: (mediaPinnedNotifier) {
@@ -107,8 +101,12 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                       },
                       color: AppColors.onboardDarkBlue,
                     ),
+                    SizedBox(width: 5,),
+                    Text("Quick Access",style: AppTextStyles.pinLabelText),
+
                   ],
                 ),
+
                 ElevatedButton(
                   onPressed: onTapMediaBtn,
                   style: ElevatedButton.styleFrom(
@@ -124,8 +122,8 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                       SizedBox(width: 8),
                       Icon(
                         Icons.add_circle_rounded,
-                        size: 35,
-                        color: Colors.black,
+                        size: 30,
+                        color: AppColors.onboardLightBlue
                       )
                     ],
                   ),

@@ -96,8 +96,7 @@ class PermissionService {
       int sdkInt = await getAndroidSdkVersion();
       if (sdkInt >= 33) {
         // Android 13 and above
-        PermissionStatus fileStatus =
-            await Permission.manageExternalStorage.request();
+        PermissionStatus fileStatus = await Permission.manageExternalStorage.request();
         if (fileStatus.isGranted) {
           return true;
         } else if (fileStatus.isPermanentlyDenied) {

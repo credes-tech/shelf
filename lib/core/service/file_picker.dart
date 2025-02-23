@@ -34,6 +34,15 @@ class FilePickerService {
     return null;
   }
 
+  Future<String?> pickDocFile() async {
+    String? docFilePath = await getFilePath();
+    if(FileValidator.isValidDocFile(docFilePath!) && !(await FileValidator.isDuplicateDocFile(docFilePath))){
+      String? filePath = await saveFileToLocalStorage(docFilePath,"Files");
+      return filePath;
+    }
+    return null;
+  }
+
 
 
   static Future<String?> saveFileToLocalStorage(String filePath,String type) async {

@@ -79,10 +79,10 @@ class _HomeTogglerState extends State<HomeToggler> {
                 child: Stack(
                   children: [
                     Positioned(
-                      right: 1,
+                      right: 2,
                       top: 2,
                       child: Icon(
-                        Icons.chevron_right,
+                        Icons.star,
                         color: isChecked ? color : Colors.white,
                         size: 16,
                       ),
