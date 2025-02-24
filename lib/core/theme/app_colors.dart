@@ -11,14 +11,19 @@ class AppColors {
   //Onboarding
   static const Color onboardDarkGreen = Color(0xFF54A252);
   static const Color onboardLightGreen = Color(0xFFAECE3D);
-  static const Color onboardDarkOrange = Color(0xFFFF900A);
-  static const Color onboardLightOrange = Color(0xFFFDCF00);
+  static const Color onboardDarkOrange = Color(0xFFD3780B);
+  static const Color onboardLightOrange = Color(0xFFFF900A);
   static const Color onboardDarkPink = Color(0xFFC38C8A);
   static const Color onboardLightPink = Color(0xFFEF9692);
   static const Color onboardDarkBlue = Color(0xFF3E919D);
   static const Color onboardLightBlue = Color(0xFF73C6D2);
   static const Color onboardDarkYellow = Color(0xFFDABA2C);
   static const Color onboardLightYellow = Color(0xFFFDCF00);
+
+  static const Color navBarOrange = Color(0xFF824C0C);
+  static const Color navBarYellow = Color(0xFF957D11);
+  static const Color navBarBlue = Color(0xFF134C54);
+  static const Color navBarPink = Color(0xFF845654);
 
   //ghostMode
   static const Color ghostModeRed = Color(0xFFEEEEEE);
