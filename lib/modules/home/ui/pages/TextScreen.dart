@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:my_shelf_project/core/service/share_service.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 import 'package:my_shelf_project/modules/home/domain/providers/text_provider.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/HomeCard.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomePillBar.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeToggler.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/NotesCard.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class TextScreen extends ConsumerStatefulWidget {
   const TextScreen({super.key});
@@ -21,11 +24,44 @@ class TextScreen extends ConsumerStatefulWidget {
 
 class _TextScreenState extends ConsumerState<TextScreen> {
   final List<String> source = ['Passwords', 'Notes'];
+  // bool isPressed = false;
+  final Map<int, bool> isPressed = {};
+  final Map<int, bool> isPinned = {};
+  // final Map<String, bool> _isPlaying = {};
   int selectedSource = 0;
+
+  void selectPressedNote(int index) {
+    setState(() {
+      if (!isPressed.containsKey(index)) isPressed[index] = false;
+      isPressed[index] = true;
+    });
+  }
+
+  void onTapDeleteBtn(index) {
+    setState(() {
+      isPressed.remove(index);
+    });
+    ref.read(textProvider.notifier).deleteText(index);
+  }
+
+  void _toggleOption(int index) {
+    setState(() {
+      if (!isPressed.containsKey(index)) isPressed[index] = false;
+      isPressed[index] = false;
+    });
+  }
+
+  void setToPinned(index) {
+    ref.read(textProvider.notifier).setTogglePin(index);
+  }
+
+  void loadPinnedFiles() {}
 
   @override
   Widget build(BuildContext context) {
     final textList = ref.watch(textProvider);
+    final bool textPinnedNotifier =
+        ref.read(textProvider.notifier).showOnlyPinned;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -64,7 +100,7 @@ class _TextScreenState extends ConsumerState<TextScreen> {
               inactiveColor: AppColors.onboardLightYellow),
           Container(
             padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.large, vertical: AppSpacing.medium),
+                horizontal: AppSpacing.medium, vertical: AppSpacing.xSmall),
             decoration: BoxDecoration(
                 color: Colors.transparent,
                 borderRadius: BorderRadius.only(
@@ -76,21 +112,19 @@ class _TextScreenState extends ConsumerState<TextScreen> {
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      Icons.stars_rounded,
-                      size: 35,
-                      color: Colors.black,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
+
                     HomeToggler(
-                      initialValue: true,
-                      onChanged: (value) {},
+                      initialValue: textPinnedNotifier,
+                      onChanged: (textPinnedNotifier) {
+                        print("text Pinned Notifier $textPinnedNotifier");
+                        ref.read(textProvider.notifier).togglePinned();
+                      },
                       color: AppColors.onboardDarkYellow,
                     ),
+                    SizedBox(width: 5,),
+                    Text("Quick Access",style: AppTextStyles.pinLabelText),
                   ],
                 ),
                 ElevatedButton(
@@ -110,8 +144,8 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                       SizedBox(width: 8),
                       Icon(
                         Icons.add_circle_rounded,
-                        size: 35,
-                        color: Colors.black,
+                        size: 30,
+                        color: AppColors.onboardLightYellow
                       )
                     ],
                   ),
@@ -120,29 +154,108 @@ class _TextScreenState extends ConsumerState<TextScreen> {
             ),
           ),
           textList.isEmpty
-              ? Text("Text are empty right now")
+              ? HomeCard(
+                  icon: Icons.add,
+                  description: "Tap Add New button to add new Note",
+                  title: "No Notes found",
+                  iconColor: AppColors.onboardDarkYellow,
+                )
               : Expanded(
                   child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
+                    scrollDirection: Axis.vertical,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.medium),
-                      child: Wrap(
-                        direction: Axis.vertical,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        runSpacing: AppSpacing.small,
-                        spacing: AppSpacing.small,
-                        children: textList.asMap().entries.map((value) {
-                          int index = value.key;
+                      child: StaggeredGrid.count(
+                        crossAxisCount: 2, // 2 columns
+                        mainAxisSpacing: 1,
+                        crossAxisSpacing: 1,
+                        children: textList.reversed
+                            .toList()
+                            .asMap()
+                            .entries
+                            .map((value) {
+                          int index = textList.length - value.key - 1;
                           var data = value.value;
-                          return SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.45,
-                              child: NotesCard(
-                                  title: data.heading,
-                                  description: data.description,
-                                  onTap: () {
-                                    context.push('/home/texts/note/$index');
-                                  }));
+                          return StaggeredGridTile.fit(
+                            crossAxisCellCount: 1,
+                            child: GestureDetector(
+                              onLongPress: () => selectPressedNote(index),
+                              onDoubleTap: () => setToPinned(index),
+                              child: (isPressed[index] ?? false)
+                                  ? Container(
+                                      height: 125,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                          color: AppColors.onboardLightYellow),
+                                      margin: EdgeInsets.symmetric(
+                                          horizontal: AppSpacing.xxSmall,
+                                          vertical: AppSpacing.xSmall),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          IconButton(
+                                              onPressed: () {
+                                                ShareService.shareNote(
+                                                    data.description);
+                                              },
+                                              icon: Icon(
+                                                Icons.ios_share,
+                                                color: Colors.black,
+                                              )),
+                                          IconButton(
+                                              onPressed: () =>
+                                                  onTapDeleteBtn(index),
+                                              icon: Icon(
+                                                Icons.delete,
+                                                color: Colors.black,
+                                              )),
+                                          IconButton(
+                                              onPressed: () =>
+                                                  _toggleOption(index),
+                                              icon: Icon(
+                                                Icons.close_rounded,
+                                                color: Colors.black,
+                                              ))
+                                        ],
+                                      ),
+                                    )
+                                  : Stack(
+                                      children: [
+                                        NotesCard(
+                                          title: data.heading,
+                                          description: data.description,
+                                          onTap: () {
+                                            context.push(
+                                                '/home/texts/note/$index');
+                                          },
+                                        ),
+                                        if (data.isPinned)
+                                          Positioned(
+                                            top: 10,
+                                            right: 10,
+                                            child: CircleAvatar(
+                                              backgroundColor: Colors.white,
+                                              radius: 10,
+                                              child: Icon(
+                                                Icons.stars_rounded,
+                                                size: 20,
+                                                color:
+                                                    AppColors.onboardDarkYellow,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                            ),
+                          );
                         }).toList(),
                       ),
                     ),
@@ -172,5 +285,4 @@ class _TextScreenState extends ConsumerState<TextScreen> {
       ),
     );
   }
-
 }

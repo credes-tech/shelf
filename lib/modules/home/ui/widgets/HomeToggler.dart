@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 
 class HomeToggler extends StatefulWidget {
@@ -80,10 +79,10 @@ class _HomeTogglerState extends State<HomeToggler> {
                 child: Stack(
                   children: [
                     Positioned(
-                      right: 1,
+                      right: 2,
                       top: 2,
                       child: Icon(
-                        Icons.chevron_right,
+                        Icons.star,
                         color: isChecked ? color : Colors.white,
                         size: 16,
                       ),

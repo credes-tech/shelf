@@ -13,7 +13,6 @@ class HomeRoutes {
         return HomeScreen(child: child);
       },
       routes: [
-        GoRoute(path: "/home/chats", builder: (context, state) => ChatScreen()),
         GoRoute(path: "/home/media", builder: (context, state) => MediaScreen()),
         GoRoute(path: "/home/audio", builder: (context, state) => AudioScreen()),
         GoRoute(path: "/home/texts", builder: (context, state) => TextScreen()),
