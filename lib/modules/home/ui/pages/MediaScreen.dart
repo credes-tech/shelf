@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -16,7 +15,6 @@ import 'package:my_shelf_project/modules/home/ui/widgets/HomeCard.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomePillBar.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
-import 'package:my_shelf_project/modules/home/ui/widgets/HomeToggler.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/VideoThumbnail.dart';
 
 class MediaScreen extends ConsumerStatefulWidget {
@@ -29,6 +27,8 @@ class MediaScreen extends ConsumerStatefulWidget {
 class _MediaScreenState extends ConsumerState<MediaScreen> {
   final List<String> source = ['Photo', 'Video', 'GIF'];
   int selectedSource = 0;
+  bool isSubCategoryActive = false;
+  bool isPinActive = false;
 
   final String emptyHeading = "No media found!";
   final String emptyDescription = "Tap Add New button to save your files";
@@ -37,14 +37,55 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
   Widget build(BuildContext context) {
     final mediaList = ref.watch(mediaProvider);
     final List<MediaModel> pinnedMedia = getPinnedMedia(mediaList);
-    final bool mediaPinnedNotifier =
-        ref.read(mediaProvider.notifier).showOnlyPinned;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: AppColors.background,
-        title: HomeTitle(title: 'Media'),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: AppSpacing.xSmall),
+          child: IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.account_circle_rounded),
+            color: Colors.black,
+            iconSize: 30,
+          ),
+        ),
+        title: GestureDetector(
+          onTap: toggleSubCategory,
+          child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                HomeTitle(title: 'Media'),
+                Icon(
+                  isSubCategoryActive
+                      ? Icons.arrow_drop_up_rounded
+                      : Icons.arrow_drop_down_rounded,
+                  size: 25,
+                  color: Colors.black,
+                )
+              ]),
+        ),
+        titleSpacing: 0.0,
         actions: [
+          IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.search_rounded,
+                color: Colors.black,
+              )),
+          IconButton(
+              onPressed: () => pinController(),
+              icon: Icon(
+                isPinActive ? Icons.star_rounded : Icons.star_border_rounded,
+                color: Colors.black,
+              )),
+          IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.filter_list_rounded,
+                color: Colors.black,
+              )),
           Padding(
             padding: EdgeInsets.only(right: AppSpacing.medium),
             child: PopupMenuButton<String>(
@@ -71,65 +112,14 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          HomePillBar(
-              source: source,
-              selectedSource: selectedSource,
-              activeColor: AppColors.onboardDarkBlue,
-              inactiveColor: AppColors.onboardLightBlue),
-          Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.medium, vertical: AppSpacing.xSmall),
-            decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(20.0),
-                    bottomRight: Radius.circular(20.0))),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-
-
-                    HomeToggler(
-                      initialValue: mediaPinnedNotifier,
-                      onChanged: (mediaPinnedNotifier) {
-                        ref.read(mediaProvider.notifier).togglePinnedFilter();
-                      },
-                      color: AppColors.onboardDarkBlue,
-                    ),
-                    SizedBox(width: 5,),
-                    Text("Quick Access",style: AppTextStyles.pinLabelText),
-
-                  ],
-                ),
-
-                ElevatedButton(
-                  onPressed: onTapMediaBtn,
-                  style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.only(
-                          left: AppSpacing.medium,
-                          right: AppSpacing.xSmall,
-                          top: AppSpacing.xSmall,
-                          bottom: AppSpacing.xSmall),
-                      backgroundColor: AppColors.onboardDarkBlue),
-                  child: Row(
-                    children: [
-                      Text("Add New", style: AppTextStyles.homePinned),
-                      SizedBox(width: 8),
-                      Icon(
-                        Icons.add_circle_rounded,
-                        size: 30,
-                        color: AppColors.onboardLightBlue
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
+          if (isSubCategoryActive)
+            HomePillBar(
+                source: source,
+                selectedSource: selectedSource,
+                activeColor: AppColors.onboardDarkBlue,
+                inactiveColor: AppColors.onboardLightBlue),
+          SizedBox(
+            height: 10,
           ),
           mediaList.isEmpty
               ? HomeCard(
@@ -152,9 +142,7 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                                 height: 180,
                                 child: ListView.builder(
                                     scrollDirection: Axis.horizontal,
-                                    itemCount: pinnedMedia.length <= 5
-                                        ? pinnedMedia.length
-                                        : 6,
+                                    itemCount: pinnedMedia.length <= 5 ? pinnedMedia.length : 6,
                                     itemBuilder: (context, index) {
                                       final media = pinnedMedia[index];
                                       return Stack(
@@ -164,24 +152,15 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                                             aspectRatio: 1.2,
                                             child: Container(
                                               width: 150,
-                                              margin: EdgeInsets.only(
-                                                  right: AppSpacing.xxSmall),
+                                              margin: EdgeInsets.only(right: AppSpacing.xxSmall),
                                               decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                                border: Border.all(
-                                                    color: Colors.black12),
+                                                borderRadius: BorderRadius.circular(20),
+                                                border: Border.all(color: Colors.black12),
                                               ),
                                               clipBehavior: Clip.antiAlias,
-                                              child: FileValidator
-                                                          .getMediaFileType(
-                                                              media.fileType) ==
-                                                      "video"
-                                                  ? VideoThumbnail(
-                                                      videoPath: media.filePath)
-                                                  : Image.file(
-                                                      File(media.filePath),
-                                                      fit: BoxFit.cover),
+                                              child: FileValidator.getMediaFileType(media.fileType) == "video"
+                                                  ? VideoThumbnail(videoPath: media.filePath)
+                                                  : Image.file(File(media.filePath), fit: BoxFit.cover),
                                             ),
                                           ),
                                           Positioned(
@@ -195,10 +174,9 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                                                     child: Icon(
                                                         Icons.ios_share_rounded,
                                                         color: AppColors.onboardDarkBlue,
-                                                        size: 18)),
-                                                color:
-                                                    AppColors.onboardDarkBlue,
-                                              ))
+                                                        size: 18),),
+                                                color: AppColors.onboardDarkBlue,
+                                              ),)
                                         ],
                                       );
                                     }),
@@ -213,16 +191,13 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                           crossAxisSpacing: 2,
                           mainAxisSpacing: 2,
                         ),
-                        padding:
-                            EdgeInsets.symmetric(horizontal: AppSpacing.medium),
+                        padding: EdgeInsets.symmetric(horizontal: AppSpacing.medium),
                         itemCount: mediaList.length,
                         itemBuilder: (context, index) {
                           final media = mediaList[index];
                           return GestureDetector(
                               onLongPress: () async {
-                                await ref
-                                    .read(mediaProvider.notifier)
-                                    .deleteMedia(index);
+                                await ref.read(mediaProvider.notifier).deleteMedia(index);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text("Media deleted")),
                                 );
@@ -232,7 +207,8 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                                   '/home/media/view',
                                   extra: {
                                     'filePath': media.filePath,
-                                    'fileType': FileValidator.getMediaFileType(media.fileType),
+                                    'fileType': FileValidator.getMediaFileType(
+                                        media.fileType),
                                   },
                                 );
                               },
@@ -246,16 +222,11 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(12),
-                                          border: Border.all(
-                                              color: Colors.black12)),
+                                          border: Border.all(color: Colors.black12)),
                                       clipBehavior: Clip.hardEdge,
-                                      child: FileValidator.getMediaFileType(
-                                                  media.fileType) ==
-                                              "video"
-                                          ? VideoThumbnail(
-                                              videoPath: media.filePath)
-                                          : Image.file(File(media.filePath),
-                                              fit: BoxFit.cover),
+                                      child: FileValidator.getMediaFileType(media.fileType) == "video"
+                                          ? VideoThumbnail(videoPath: media.filePath)
+                                          : Image.file(File(media.filePath), fit: BoxFit.cover),
                                     ),
                                   ),
                                   if (media.isPinned)
@@ -280,6 +251,18 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                 )),
         ],
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: onTapMediaBtn, // Keep the original function
+        backgroundColor: AppColors.onboardDarkBlue, // Use the same color
+        label: Row(
+          children: [
+            Text("Add New", style: AppTextStyles.homePinned), // Keep the text
+            SizedBox(width: 8),
+            Icon(Icons.add_circle_rounded, size: 30, color: AppColors.onboardLightBlue) // Keep the icon
+          ],
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
@@ -318,5 +301,18 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
 
   void togglePinMedia(String filename) {
     ref.read(mediaProvider.notifier).togglePin(filename);
+  }
+
+  toggleSubCategory() {
+    setState(() {
+      isSubCategoryActive = !isSubCategoryActive;
+    });
+  }
+
+  pinController() {
+    bool pinStatus = ref.read(mediaProvider.notifier).togglePinnedFilter();
+    setState(() {
+      isPinActive = pinStatus;
+    });
   }
 }
