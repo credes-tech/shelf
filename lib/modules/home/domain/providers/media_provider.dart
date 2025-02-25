@@ -71,9 +71,10 @@ class MediaNotifier extends StateNotifier<List<MediaModel>> {
     state = List.from(state)..removeAt(index);
   }
 
-  void togglePinnedFilter() {
+  bool togglePinnedFilter() {
     showOnlyPinned = !showOnlyPinned;
     loadPinnedFiles();
+    return showOnlyPinned;
   }
 }
 

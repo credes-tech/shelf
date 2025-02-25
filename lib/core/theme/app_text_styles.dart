@@ -45,7 +45,7 @@ class AppTextStyles {
 
   static const TextStyle homeTitle = TextStyle(
       fontFamily: 'Montserrat',
-      fontSize: 26,
+      fontSize: 24,
       fontWeight: FontWeight.w600,
       color: Colors.black,
       letterSpacing: -2,

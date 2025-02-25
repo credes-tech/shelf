@@ -26,7 +26,7 @@ class HomePillBar extends StatelessWidget {
         children: [
           Expanded(
             child: SizedBox(
-              height: 50,
+              height: 45,
               child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: source.length,
