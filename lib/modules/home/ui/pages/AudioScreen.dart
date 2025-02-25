@@ -29,6 +29,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
   final AudioPlayer _audioPlayer = AudioPlayer();
   final Map<String, bool> _isPlaying = {};
   final Map<String, bool> _isOpen = {};
+  bool isSubCategoryActive = false;
 
   final String emptyHeading = "No audio found!";
   final String emptyDescription = "Tap Add New button to save your files";
@@ -61,11 +62,10 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
       });
     });
     _audioPlayer.onPlayerStateChanged.listen((PlayerState s) {
-      if(s==PlayerState.paused){
+      if (s == PlayerState.paused) {
         _isPlaying.updateAll((key, value) => false);
       }
     });
-
   }
 
   Future<void> _togglePlayPause(String filePath) async {
@@ -131,7 +131,6 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     }
   }
 
-
   @override
   void dispose() {
     _audioPlayer.dispose(); // Release resources
@@ -147,8 +146,37 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: AppColors.background,
-        title: HomeTitle(title: 'Audio'),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: AppSpacing.xSmall),
+          child: IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.account_circle_rounded),
+            color: Colors.black,
+            iconSize: 30,
+          ),
+        ),
+        title: GestureDetector(
+          onTap: _toggleSubCategory,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              HomeTitle(title: 'Audio'),
+              Icon(
+                isSubCategoryActive
+                    ? Icons.arrow_drop_up_rounded
+                    : Icons.arrow_drop_down_rounded,
+                size: 25,
+                color: Colors.black,
+              )
+            ],
+          ),
+        ),
+        titleSpacing: 0.0,
         actions: [
+          IconButton(onPressed: () {}, icon: Icon(Icons.search_rounded)),
+          IconButton(onPressed: () {}, icon: Icon(Icons.star_border_rounded)),
+          IconButton(onPressed: () {}, icon: Icon(Icons.filter_list_rounded)),
           Padding(
             padding: EdgeInsets.only(right: AppSpacing.medium),
             child: PopupMenuButton<String>(
@@ -193,7 +221,6 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     HomeToggler(
                       initialValue: audioPinnedNotifier,
                       onChanged: (audioPinnedNotifier) {
@@ -201,8 +228,10 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                       },
                       color: AppColors.onboardDarkOrange,
                     ),
-                    SizedBox(width: 5,),
-                    Text("Quick Access",style: AppTextStyles.pinLabelText),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text("Quick Access", style: AppTextStyles.pinLabelText),
                   ],
                 ),
                 ElevatedButton(
@@ -230,8 +259,11 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
             ),
           ),
           audioList.isEmpty
-
-              ? HomeCard(title: emptyHeading,description: emptyDescription, icon: Icons.audiotrack_rounded, iconColor: AppColors.onboardDarkOrange)
+              ? HomeCard(
+                  title: emptyHeading,
+                  description: emptyDescription,
+                  icon: Icons.audiotrack_rounded,
+                  iconColor: AppColors.onboardDarkOrange)
               : Expanded(
                   child: ListView.builder(
                       itemCount: audioList.length,
@@ -518,6 +550,12 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
       _isOpen.remove(currentFilePath);
     });
     await ref.read(audioProvider.notifier).deleteAudio(index);
+  }
+
+  _toggleSubCategory() {
+    setState(() {
+      isSubCategoryActive = !isSubCategoryActive;
+    });
   }
 
   void togglePinAudio(String filePath, String fileName) {

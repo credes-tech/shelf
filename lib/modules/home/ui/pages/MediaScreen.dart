@@ -142,7 +142,9 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                                 height: 180,
                                 child: ListView.builder(
                                     scrollDirection: Axis.horizontal,
-                                    itemCount: pinnedMedia.length <= 5 ? pinnedMedia.length : 6,
+                                    itemCount: pinnedMedia.length <= 5
+                                        ? pinnedMedia.length
+                                        : 6,
                                     itemBuilder: (context, index) {
                                       final media = pinnedMedia[index];
                                       return Stack(
@@ -152,31 +154,45 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                                             aspectRatio: 1.2,
                                             child: Container(
                                               width: 150,
-                                              margin: EdgeInsets.only(right: AppSpacing.xxSmall),
+                                              margin: EdgeInsets.only(
+                                                  right: AppSpacing.xxSmall),
                                               decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(20),
-                                                border: Border.all(color: Colors.black12),
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                border: Border.all(
+                                                    color: Colors.black12),
                                               ),
                                               clipBehavior: Clip.antiAlias,
-                                              child: FileValidator.getMediaFileType(media.fileType) == "video"
-                                                  ? VideoThumbnail(videoPath: media.filePath)
-                                                  : Image.file(File(media.filePath), fit: BoxFit.cover),
+                                              child: FileValidator
+                                                          .getMediaFileType(
+                                                              media.fileType) ==
+                                                      "video"
+                                                  ? VideoThumbnail(
+                                                      videoPath: media.filePath)
+                                                  : Image.file(
+                                                      File(media.filePath),
+                                                      fit: BoxFit.cover),
                                             ),
                                           ),
                                           Positioned(
-                                              top: 0,
-                                              right: 0,
-                                              child: IconButton(
-                                                onPressed: () => ShareService.shareFile(media.filePath),
-                                                icon: CircleAvatar(
-                                                    radius: 14,
-                                                    backgroundColor: Colors.white,
-                                                    child: Icon(
-                                                        Icons.ios_share_rounded,
-                                                        color: AppColors.onboardDarkBlue,
-                                                        size: 18),),
-                                                color: AppColors.onboardDarkBlue,
-                                              ),)
+                                            top: 0,
+                                            right: 0,
+                                            child: IconButton(
+                                              onPressed: () =>
+                                                  ShareService.shareFile(
+                                                      media.filePath),
+                                              icon: CircleAvatar(
+                                                radius: 14,
+                                                backgroundColor: Colors.white,
+                                                child: Icon(
+                                                    Icons.ios_share_rounded,
+                                                    color: AppColors
+                                                        .onboardDarkBlue,
+                                                    size: 18),
+                                              ),
+                                              color: AppColors.onboardDarkBlue,
+                                            ),
+                                          )
                                         ],
                                       );
                                     }),
@@ -191,13 +207,16 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                           crossAxisSpacing: 2,
                           mainAxisSpacing: 2,
                         ),
-                        padding: EdgeInsets.symmetric(horizontal: AppSpacing.medium),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: AppSpacing.medium),
                         itemCount: mediaList.length,
                         itemBuilder: (context, index) {
                           final media = mediaList[index];
                           return GestureDetector(
                               onLongPress: () async {
-                                await ref.read(mediaProvider.notifier).deleteMedia(index);
+                                await ref
+                                    .read(mediaProvider.notifier)
+                                    .deleteMedia(index);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text("Media deleted")),
                                 );
@@ -222,11 +241,16 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(12),
-                                          border: Border.all(color: Colors.black12)),
+                                          border: Border.all(
+                                              color: Colors.black12)),
                                       clipBehavior: Clip.hardEdge,
-                                      child: FileValidator.getMediaFileType(media.fileType) == "video"
-                                          ? VideoThumbnail(videoPath: media.filePath)
-                                          : Image.file(File(media.filePath), fit: BoxFit.cover),
+                                      child: FileValidator.getMediaFileType(
+                                                  media.fileType) ==
+                                              "video"
+                                          ? VideoThumbnail(
+                                              videoPath: media.filePath)
+                                          : Image.file(File(media.filePath),
+                                              fit: BoxFit.cover),
                                     ),
                                   ),
                                   if (media.isPinned)
@@ -258,7 +282,8 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
           children: [
             Text("Add New", style: AppTextStyles.homePinned), // Keep the text
             SizedBox(width: 8),
-            Icon(Icons.add_circle_rounded, size: 30, color: AppColors.onboardLightBlue) // Keep the icon
+            Icon(Icons.add_circle_rounded,
+                size: 30, color: AppColors.onboardLightBlue) // Keep the icon
           ],
         ),
       ),
