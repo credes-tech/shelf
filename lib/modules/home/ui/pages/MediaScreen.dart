@@ -248,6 +248,7 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                             },
                           ),
                         ],
+
                       ),
                     )),
         ],
@@ -260,6 +261,7 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
             Text("Add New", style: AppTextStyles.homePinned),
             SizedBox(width: 8),
             Icon(Icons.add_circle_rounded,
+
                 size: 30, color: AppColors.onboardLightBlue)
           ],
         ),
