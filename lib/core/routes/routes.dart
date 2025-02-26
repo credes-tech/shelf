@@ -3,7 +3,6 @@ import 'package:my_shelf_project/modules/authentication/AuthenticationRoutes.dar
 import 'package:my_shelf_project/modules/editor/NotesRoutes.dart';
 import 'package:my_shelf_project/modules/file/FileRoutes.dart';
 import 'package:my_shelf_project/modules/home/HomeRoutes.dart';
-import 'package:my_shelf_project/modules/media/MediaRoutes.dart';
 import 'package:my_shelf_project/modules/onboarding/OnboardingRoutes.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -13,7 +12,6 @@ final GoRouter appRouter = GoRouter(
     ...AuthenticationRoutes.routes,
     ...HomeRoutes.routes,
     ...NotesRoutes.routes,
-    ...MediaRoutes.routes,
     ...FileRoutes.routes
   ],
 );
