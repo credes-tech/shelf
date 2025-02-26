@@ -10,11 +10,14 @@ class MediaItem extends StatelessWidget {
   const MediaItem({
     super.key,
     required this.media,
-    required this.isPinActive
+    required this.isPinActive,
+    required this.isSelected
   });
 
   final MediaModel media;
   final bool isPinActive;
+  final bool isSelected;
+
 
   @override
   Widget build(BuildContext context) {
@@ -23,18 +26,31 @@ class MediaItem extends StatelessWidget {
       children: [
         AspectRatio(
           aspectRatio: 1,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.black12),
+          child: AnimatedOpacity(
+            duration: Duration(milliseconds: 300),
+            opacity: isSelected ? 0.3 : 1,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.black12),
+              ),
+              clipBehavior: Clip.hardEdge,
+              child: FileValidator.getMediaFileType(media.fileType) == "video"
+                  ? VideoThumbnailView(videoPath: media.filePath)
+                  : Image.file(File(media.filePath), fit: BoxFit.cover),
             ),
-            clipBehavior: Clip.hardEdge,
-            child: FileValidator.getMediaFileType(media.fileType) == "video"
-                ? VideoThumbnailView(videoPath: media.filePath)
-                : Image.file(File(media.filePath), fit: BoxFit.cover),
           ),
         ),
-        if (media.isPinned && isPinActive)
+        if(isSelected)
+          Positioned(
+              bottom: 3,
+              left: 3,
+              child: Icon(
+                Icons.check_rounded,
+                size: 14,
+                color: AppColors.onboardDarkBlue,
+              )),
+        if(media.isPinned && isPinActive)
           Positioned(
               top: -1,
               right: -1,

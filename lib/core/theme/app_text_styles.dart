@@ -90,6 +90,14 @@ class AppTextStyles {
       letterSpacing: -0.2
   );
 
+  static const TextStyle pinCaption = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: 12,
+      fontWeight: FontWeight.w500,
+      color: Colors.black,
+      letterSpacing: -0.2
+  );
+
   static const TextStyle audioTitle = TextStyle(
       fontFamily: 'Montserrat',
       fontSize: 18,

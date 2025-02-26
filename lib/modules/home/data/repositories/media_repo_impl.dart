@@ -14,6 +14,8 @@ class MediaRepository {
 
   Future<void> deleteMedia(int index) => _hiveService.deleteMedia(index);
 
+  Future<void> deleteMultipleMedia(List<String> filePaths) => _hiveService.deleteMultipleMediaByPaths(filePaths);
+
   Future<bool> isMediaExists(String fileName) => _hiveService.isMediaExists(fileName);
 
   Future<void> togglePin(String fileName) => _hiveService.togglePin(fileName);
