@@ -201,10 +201,16 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           HomePillBar(
-              source: source,
-              selectedSource: selectedSource,
-              activeColor: AppColors.onboardDarkOrange,
-              inactiveColor: AppColors.onboardLightOrange),
+            source: source,
+            selectedSource: selectedSource,
+            activeColor: AppColors.onboardDarkOrange,
+            inactiveColor: AppColors.onboardLightOrange,
+            onSelected: (index) {
+              setState(() {
+                selectedSource = index; // Update selected pill
+              });
+            },
+          ),
           Container(
             padding: EdgeInsets.symmetric(
                 horizontal: AppSpacing.medium, vertical: AppSpacing.xSmall),

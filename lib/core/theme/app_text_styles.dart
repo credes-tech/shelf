@@ -67,12 +67,27 @@ class AppTextStyles {
       color: Colors.white
   );
 
+  static const TextStyle homeMenuItemText = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: 12,
+      fontWeight: FontWeight.w600,
+      color: Colors.black
+  );
+
   static const TextStyle pinLabelText = TextStyle(
       fontFamily: 'Montserrat',
       fontSize: 12,
       fontWeight: FontWeight.w500,
       color: Colors.black,
       letterSpacing: -0.8
+  );
+
+  static const TextStyle subCategoryDividerTitle = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: 12,
+      fontWeight: FontWeight.w500,
+      color: Colors.black26,
+      letterSpacing: -0.2
   );
 
   static const TextStyle audioTitle = TextStyle(

@@ -94,10 +94,16 @@ class _TextScreenState extends ConsumerState<TextScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           HomePillBar(
-              source: source,
-              selectedSource: selectedSource,
-              activeColor: AppColors.onboardDarkYellow,
-              inactiveColor: AppColors.onboardLightYellow),
+            source: source,
+            selectedSource: selectedSource,
+            activeColor: AppColors.onboardDarkYellow,
+            inactiveColor: AppColors.onboardLightYellow,
+            onSelected: (index) {
+              setState(() {
+                selectedSource = index; // Update selected pill
+              });
+            },
+          ),
           Container(
             padding: EdgeInsets.symmetric(
                 horizontal: AppSpacing.medium, vertical: AppSpacing.xSmall),
@@ -114,7 +120,6 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     HomeToggler(
                       initialValue: textPinnedNotifier,
                       onChanged: (textPinnedNotifier) {
@@ -123,8 +128,10 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                       },
                       color: AppColors.onboardDarkYellow,
                     ),
-                    SizedBox(width: 5,),
-                    Text("Quick Access",style: AppTextStyles.pinLabelText),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text("Quick Access", style: AppTextStyles.pinLabelText),
                   ],
                 ),
                 ElevatedButton(
@@ -142,11 +149,8 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                     children: [
                       Text("Add New", style: AppTextStyles.homePinned),
                       SizedBox(width: 8),
-                      Icon(
-                        Icons.add_circle_rounded,
-                        size: 30,
-                        color: AppColors.onboardLightYellow
-                      )
+                      Icon(Icons.add_circle_rounded,
+                          size: 30, color: AppColors.onboardLightYellow)
                     ],
                   ),
                 )
