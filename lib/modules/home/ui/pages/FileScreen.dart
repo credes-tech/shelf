@@ -67,10 +67,16 @@ class _FileScreenState extends ConsumerState<FileScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           HomePillBar(
-              source: source,
-              selectedSource: selectedSource,
-              activeColor: AppColors.onboardDarkPink,
-              inactiveColor: AppColors.onboardLightPink),
+            source: source,
+            selectedSource: selectedSource,
+            activeColor: AppColors.onboardDarkPink,
+            inactiveColor: AppColors.onboardLightPink,
+            onSelected: (index) {
+              setState(() {
+                selectedSource = index; // Update selected pill
+              });
+            },
+          ),
           Container(
             padding: EdgeInsets.symmetric(
                 horizontal: AppSpacing.medium, vertical: AppSpacing.xSmall),

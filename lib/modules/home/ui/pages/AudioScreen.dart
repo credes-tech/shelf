@@ -61,11 +61,10 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
       });
     });
     _audioPlayer.onPlayerStateChanged.listen((PlayerState s) {
-      if(s==PlayerState.paused){
+      if (s == PlayerState.paused) {
         _isPlaying.updateAll((key, value) => false);
       }
     });
-
   }
 
   Future<void> _togglePlayPause(String filePath) async {
@@ -131,7 +130,6 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     }
   }
 
-
   @override
   void dispose() {
     _audioPlayer.dispose(); // Release resources
@@ -173,10 +171,16 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           HomePillBar(
-              source: source,
-              selectedSource: selectedSource,
-              activeColor: AppColors.onboardDarkOrange,
-              inactiveColor: AppColors.onboardLightOrange),
+            source: source,
+            selectedSource: selectedSource,
+            activeColor: AppColors.onboardDarkOrange,
+            inactiveColor: AppColors.onboardLightOrange,
+            onSelected: (index) {
+              setState(() {
+                selectedSource = index; // Update selected pill
+              });
+            },
+          ),
           Container(
             padding: EdgeInsets.symmetric(
                 horizontal: AppSpacing.medium, vertical: AppSpacing.xSmall),
@@ -193,7 +197,6 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     HomeToggler(
                       initialValue: audioPinnedNotifier,
                       onChanged: (audioPinnedNotifier) {
@@ -201,8 +204,10 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                       },
                       color: AppColors.onboardDarkOrange,
                     ),
-                    SizedBox(width: 5,),
-                    Text("Quick Access",style: AppTextStyles.pinLabelText),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text("Quick Access", style: AppTextStyles.pinLabelText),
                   ],
                 ),
                 ElevatedButton(
@@ -230,8 +235,11 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
             ),
           ),
           audioList.isEmpty
-
-              ? HomeCard(title: emptyHeading,description: emptyDescription, icon: Icons.audiotrack_rounded, iconColor: AppColors.onboardDarkOrange)
+              ? HomeCard(
+                  title: emptyHeading,
+                  description: emptyDescription,
+                  icon: Icons.audiotrack_rounded,
+                  iconColor: AppColors.onboardDarkOrange)
               : Expanded(
                   child: ListView.builder(
                       itemCount: audioList.length,
