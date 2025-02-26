@@ -10,14 +10,12 @@ import 'package:my_shelf_project/modules/home/ui/pages/TextScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required Widget child});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-
   final List<Widget> _pages = [
     AudioScreen(),
     MediaScreen(),
