@@ -30,6 +30,8 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
   int selectedSource = 0;
   bool isSubCategoryActive = false;
   bool isPinActive = false;
+  bool isMultiSelectActive = false;
+  List<MediaModel> selectedMedia = [];
 
   final String emptyHeading = "No media found!";
   final String emptyDescription = "Tap Add New button to save your files";
@@ -59,45 +61,77 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
         ),
         titleSpacing: 0.0,
         actions: [
-          IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.search_rounded,
-                color: Colors.black,
-              )),
-          IconButton(
-              onPressed: () => pinController(),
-              icon: Icon(
-                isPinActive ? Icons.star_rounded : Icons.star_border_rounded,
-                color: Colors.black,
-              )),
-          Padding(
-            padding: EdgeInsets.only(right: AppSpacing.medium),
-            child: PopupMenuButton<String>(
-              icon: SvgPicture.asset('assets/svg/menu.svg', width: 28),
-              color: AppColors.onboardLightBlue,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
-              elevation: 1,
-              onSelected: (value) {
-                print("Selected: $value");
-              },
-              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                _buildPopupMenuItem(
-                    "List View", Icons.list_rounded, Colors.black),
-                _buildPopupMenuItem(
-                    "Grid View", Icons.grid_view_rounded, Colors.black),
-                _buildPopupMenuItem(
-                    "Manage Items", Icons.edit_note_rounded, Colors.black),
-                _buildPopupMenuItem(
-                    "Sort Items", Icons.sort_rounded, Colors.black),
-                _buildPopupMenuItem(
-                    "Manage Storage", Icons.storage_rounded, Colors.black),
-                _buildPopupMenuItem(
-                    "Recent Deleted", Icons.delete_sweep_rounded, Colors.black),
+          if (isMultiSelectActive)
+            IconButton(
+                onPressed: deleteMediaFiles,
+                icon: Icon(
+                  Icons.delete_rounded,
+                  color: Colors.black,
+                )),
+          if (isMultiSelectActive)
+            IconButton(
+                onPressed: clearSelection,
+                icon: Icon(
+                  Icons.close_rounded,
+                  color: Colors.black,
+                )),
+          if (!isSubCategoryActive && !isMultiSelectActive)
+            IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.search_rounded,
+                  color: Colors.black,
+                )),
+          if (!isSubCategoryActive && !isMultiSelectActive)
+            Stack(
+              children: [
+                IconButton(
+                  onPressed: () => pinController(),
+                  icon: Icon(
+                    isPinActive
+                        ? Icons.star_rounded
+                        : Icons.star_border_rounded,
+                    color: Colors.black,
+                  ),
+                ),
+                Positioned(
+                    bottom: 8,
+                    right: 8,
+                    child: Text(
+                      "${pinnedMedia.length}",
+                      style: AppTextStyles.pinCaption,
+                    ))
               ],
             ),
-          ),
+          if (!isSubCategoryActive && !isMultiSelectActive)
+            Padding(
+              padding: EdgeInsets.only(
+                  right: AppSpacing.medium, left: AppSpacing.small),
+              child: PopupMenuButton<String>(
+                icon: SvgPicture.asset('assets/svg/menu.svg', width: 28),
+                color: AppColors.onboardLightBlue,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30)),
+                elevation: 1,
+                onSelected: (value) {
+                  print("Selected: $value");
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  _buildPopupMenuItem(
+                      "List View", Icons.list_rounded, Colors.black),
+                  _buildPopupMenuItem(
+                      "Grid View", Icons.grid_view_rounded, Colors.black),
+                  _buildPopupMenuItem(
+                      "Manage Items", Icons.edit_note_rounded, Colors.black),
+                  _buildPopupMenuItem(
+                      "Sort Items", Icons.sort_rounded, Colors.black),
+                  _buildPopupMenuItem(
+                      "Manage Storage", Icons.storage_rounded, Colors.black),
+                  _buildPopupMenuItem("Recent Deleted",
+                      Icons.delete_sweep_rounded, Colors.black),
+                ],
+              ),
+            ),
         ],
       ),
       body: Column(
@@ -134,7 +168,8 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SubCategoryDivider(subCategoryTitle: source[selectedSource]),
+                          SubCategoryDivider(
+                              subCategoryTitle: source[selectedSource]),
                           GridView.builder(
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),
@@ -146,17 +181,21 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                             ),
                             padding: EdgeInsets.symmetric(
                                 horizontal: AppSpacing.medium),
-                            itemCount: getSelectedSourceLength(source[selectedSource], mediaList),
+                            itemCount: getSelectedSourceLength(
+                                source[selectedSource], mediaList),
                             itemBuilder: (context, index) {
-                              final selectedMediaList = getSelectedSourceItems(source[selectedSource], mediaList);
+                              final selectedMediaList = getSelectedSourceItems(
+                                  source[selectedSource], mediaList);
                               final media = selectedMediaList[index];
                               return GestureDetector(
-                                  onLongPress: () => deleteFile(index),
                                   onTap: () => openFile(media.filePath),
                                   onDoubleTap: () =>
                                       togglePinMedia(media.filename),
                                   child: MediaItem(
-                                      media: media, isPinActive: true));
+                                    media: media,
+                                    isPinActive: true,
+                                    isSelected: false,
+                                  ));
                             },
                           ),
                         ],
@@ -180,14 +219,16 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                                 height: 150,
                                 child: ListView.builder(
                                     scrollDirection: Axis.horizontal,
-                                    itemCount: pinnedMedia.length <= 5
-                                        ? pinnedMedia.length
-                                        : 6,
+                                    itemCount: pinnedMedia.length,
                                     itemBuilder: (context, index) {
                                       final media = pinnedMedia[index];
-                                      return MediaItem(
-                                        media: media,
-                                        isPinActive: false,
+                                      return GestureDetector(
+                                        onTap: () => openFile(media.filePath),
+                                        child: MediaItem(
+                                          media: media,
+                                          isPinActive: false,
+                                          isSelected: false,
+                                        ),
                                       );
                                     }),
                               ),
@@ -211,16 +252,13 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                               itemBuilder: (context, index) {
                                 final media = recentMedia[index];
                                 return GestureDetector(
-                                    onLongPress: () async {
-                                      await ref
-                                          .read(mediaProvider.notifier)
-                                          .deleteMedia(index);
-                                    },
                                     onTap: () => openFile(media.filePath),
                                     onDoubleTap: () =>
                                         togglePinMedia(media.filename),
                                     child: MediaItem(
-                                        media: media, isPinActive: false));
+                                        media: media,
+                                        isPinActive: false,
+                                        isSelected: false));
                               },
                             ),
                           SubCategoryDivider(subCategoryTitle: 'All Files'),
@@ -239,35 +277,34 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                             itemBuilder: (context, index) {
                               final media = mediaList[index];
                               return GestureDetector(
-                                  onLongPress: () => deleteFile(index),
-                                  onTap: () => openFile(media.filePath),
-                                  onDoubleTap: () =>
-                                      togglePinMedia(media.filename),
+                                  onLongPress: () => !isMultiSelectActive
+                                      ? manageMultipleFiles(media)
+                                      : null,
+                                  onTap: () => isMultiSelectActive
+                                      ? selectedMedia.contains(media)
+                                          ? removeFile(media)
+                                          : addFile(media)
+                                      : openFile(media.filePath),
+                                  onDoubleTap: () => togglePinMedia(media.filename),
                                   child: MediaItem(
-                                      media: media, isPinActive: true));
+                                      media: media,
+                                      isPinActive: true,
+                                      isSelected:
+                                          selectedMedia.contains(media)));
                             },
                           ),
                         ],
-
                       ),
                     )),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: onTapMediaBtn,
-        backgroundColor: AppColors.onboardDarkBlue,
-        label: Row(
-          children: [
-            Text("Add New", style: AppTextStyles.homePinned),
-            SizedBox(width: 8),
-            Icon(Icons.add_circle_rounded,
-
-                size: 30, color: AppColors.onboardLightBlue)
-          ],
-        ),
-        elevation: 3,
+        backgroundColor: AppColors.onboardLightBlue,
+        label: Icon(Icons.add_circle_rounded, size: 20, color: Colors.white),
+        elevation: 0,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );
   }
 
@@ -322,8 +359,8 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
     return mediaList.length;
   }
 
-  List<MediaModel> getSelectedSourceItems(String source, List<MediaModel> mediaList) {
-    print(source);
+  List<MediaModel> getSelectedSourceItems(
+      String source, List<MediaModel> mediaList) {
     switch (source) {
       case "All Files":
         return mediaList;
@@ -338,6 +375,12 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
   }
 
   toggleSubCategory() {
+    if (isPinActive) {
+      pinController();
+    }
+    if (isMultiSelectActive) {
+      return;
+    }
     setState(() {
       isSubCategoryActive = !isSubCategoryActive;
     });
@@ -347,9 +390,6 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
     bool pinStatus = ref.read(mediaProvider.notifier).togglePinnedFilter();
     setState(() {
       isPinActive = pinStatus;
-      if(!isPinActive) {
-        selectedSource = 0;
-      }
     });
   }
 
@@ -357,7 +397,38 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
     await OpenFilex.open(filePath);
   }
 
-  deleteFile(int index) async {
-    await ref.read(mediaProvider.notifier).deleteMedia(index);
+  manageMultipleFiles(MediaModel mediaFile) {
+    setState(() {
+      isMultiSelectActive = true;
+    });
+    addFile(mediaFile);
+  }
+
+  addFile(MediaModel mediaFile) {
+    setState(() {
+      selectedMedia = List.from(selectedMedia)..add(mediaFile);
+    });
+  }
+
+  removeFile(MediaModel mediaFile) {
+    if(selectedMedia.length==1){
+      clearSelection();
+    } else{
+      setState(() {
+        selectedMedia = List.from(selectedMedia)..remove(mediaFile);
+      });
+    }
+  }
+
+  void clearSelection() {
+    setState(() {
+      isMultiSelectActive = false;
+      selectedMedia.clear();
+    });
+  }
+
+  void deleteMediaFiles() async{
+    await ref.read(mediaProvider.notifier).deleteMedia(selectedMedia);
+    clearSelection();
   }
 }

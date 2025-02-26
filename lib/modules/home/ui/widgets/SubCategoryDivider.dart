@@ -15,22 +15,24 @@ class SubCategoryDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.medium),
+          horizontal: AppSpacing.large),
       child: Row(
         children: [
-          // Space between text and bar
           Expanded(
             child: Divider(
-              color: Colors.black12, // Line color
-              thickness: 0.5, // Line thickness
+              color: Colors.black12,
+              thickness: 0.5,
             ),
           ),
           SizedBox(
             width: 8,
           ),
-          Text(
-            subCategoryTitle,
-            style: AppTextStyles.subCategoryDividerTitle,
+          Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.xSmall),
+            child: Text(
+              subCategoryTitle,
+              style: AppTextStyles.subCategoryDividerTitle,
+            ),
           ),
         ],
       ),
