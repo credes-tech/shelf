@@ -5,6 +5,7 @@ import 'package:my_shelf_project/modules/file/FileRoutes.dart';
 import 'package:my_shelf_project/modules/home/HomeRoutes.dart';
 import 'package:my_shelf_project/modules/media/MediaRoutes.dart';
 import 'package:my_shelf_project/modules/onboarding/OnboardingRoutes.dart';
+import 'package:my_shelf_project/modules/profile/ProfileRoutes.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: "/home/media",
@@ -14,6 +15,7 @@ final GoRouter appRouter = GoRouter(
     ...HomeRoutes.routes,
     ...NotesRoutes.routes,
     ...MediaRoutes.routes,
-    ...FileRoutes.routes
+    ...FileRoutes.routes,
+    ...ProfileRoutes.routes
   ],
 );
