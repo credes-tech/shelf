@@ -29,6 +29,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
   final AudioPlayer _audioPlayer = AudioPlayer();
   final Map<String, bool> _isPlaying = {};
   final Map<String, bool> _isOpen = {};
+  bool isPinActive = false;
   bool isSubCategoryActive = false;
 
   final String emptyHeading = "No audio found!";
@@ -68,9 +69,27 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     });
   }
 
-  Future<void> _togglePlayPause(String filePath) async {
+  void _togglePlayPause(String filePath, {BuildContext? context}) {
+    if (context != null) {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) => Container(
+          padding: EdgeInsets.all(16),
+          height: 200,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Details',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Divider(),
+              Text('You selected:', style: TextStyle(fontSize: 16)),
+            ],
+          ),
+        ),
+      );
+    }
     if (_isPlaying[filePath] == true) {
-      await _audioPlayer.pause();
+      _audioPlayer.pause();
       setState(() {
         _isPlaying[filePath] = false;
       });
@@ -81,7 +100,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
         _isPlaying[filePath] = true;
         _position = Duration.zero;
       });
-      await _audioPlayer.play(DeviceFileSource(filePath));
+      _audioPlayer.play(DeviceFileSource(filePath));
     }
   }
 
@@ -139,9 +158,9 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final audioList = ref.watch(audioProvider);
     final bool audioPinnedNotifier =
         ref.read(audioProvider.notifier).showOnlyPinned;
+    final audioList = ref.watch(audioProvider);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -174,9 +193,18 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
         ),
         titleSpacing: 0.0,
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.search_rounded)),
-          IconButton(onPressed: () {}, icon: Icon(Icons.star_border_rounded)),
-          IconButton(onPressed: () {}, icon: Icon(Icons.filter_list_rounded)),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.search_rounded),
+            color: Colors.black,
+          ),
+          IconButton(
+            onPressed: () => pinController(audioPinnedNotifier),
+            icon: Icon(
+              isPinActive ? Icons.star_rounded : Icons.star_border_rounded,
+            ),
+            color: Colors.black,
+          ),
           Padding(
             padding: EdgeInsets.only(right: AppSpacing.medium),
             child: PopupMenuButton<String>(
@@ -200,70 +228,18 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          HomePillBar(
-            source: source,
-            selectedSource: selectedSource,
-            activeColor: AppColors.onboardDarkOrange,
-            inactiveColor: AppColors.onboardLightOrange,
-            onSelected: (index) {
-              setState(() {
-                selectedSource = index; // Update selected pill
-              });
-            },
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.medium, vertical: AppSpacing.xSmall),
-            decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(20.0),
-                    bottomRight: Radius.circular(20.0))),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    HomeToggler(
-                      initialValue: audioPinnedNotifier,
-                      onChanged: (audioPinnedNotifier) {
-                        ref.read(audioProvider.notifier).togglePinnedFilter();
-                      },
-                      color: AppColors.onboardDarkOrange,
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text("Quick Access", style: AppTextStyles.pinLabelText),
-                  ],
-                ),
-                ElevatedButton(
-                  onPressed: onTapAudioBtn,
-                  style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.only(
-                          left: AppSpacing.medium,
-                          right: AppSpacing.xSmall,
-                          top: AppSpacing.xSmall,
-                          bottom: AppSpacing.xSmall),
-                      backgroundColor: AppColors.onboardDarkOrange),
-                  child: Row(
-                    children: [
-                      Text("Add New", style: AppTextStyles.homePinned),
-                      SizedBox(width: 8),
-                      Icon(
-                        Icons.add_circle_rounded,
-                        size: 30,
-                        color: AppColors.onboardLightOrange,
-                      )
-                    ],
-                  ),
-                )
-              ],
+          if (isSubCategoryActive)
+            HomePillBar(
+              source: source,
+              selectedSource: selectedSource,
+              activeColor: AppColors.onboardDarkOrange,
+              inactiveColor: AppColors.onboardLightOrange,
+              onSelected: (index) {
+                setState(() {
+                  selectedSource = index; // Update selected pill
+                });
+              },
             ),
-          ),
           audioList.isEmpty
               ? HomeCard(
                   title: emptyHeading,
@@ -451,64 +427,80 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                             ),
                                           ],
                                         )
-                                      : Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            IconButton(
-                                              onPressed: () => _togglePlayPause(
-                                                  audio.filePath),
-                                              icon: Icon(
-                                                Icons.play_circle_fill_rounded,
-                                                size: 40,
-                                                color: Colors.black,
+                                      : Container(
+                                          height: 69,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              IconButton(
+                                                onPressed: () =>
+                                                    _togglePlayPause(
+                                                        audio.filePath,
+                                                        context: context),
+                                                icon: Icon(
+                                                  Icons
+                                                      .play_circle_fill_rounded,
+                                                  size: 40,
+                                                  color: Colors.black,
+                                                ),
                                               ),
-                                            ),
-                                            Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                SizedBox(
-                                                  height: 30,
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      (audio.isPinned
-                                                          ? 0.6
-                                                          : 0.7),
-                                                  child:
-                                                      AudioText(audio: audio),
-                                                )
-                                              ],
-                                            ),
-                                            audio.isPinned
-                                                ? SizedBox(
+                                              Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  SizedBox(
+                                                    height: 30,
                                                     width:
                                                         MediaQuery.of(context)
                                                                 .size
                                                                 .width *
-                                                            0.05,
+                                                            (audio.isPinned
+                                                                ? 0.6
+                                                                : 0.7),
+                                                    child:
+                                                        AudioText(audio: audio),
                                                   )
-                                                : SizedBox(),
-                                            audio.isPinned
-                                                ? Icon(
-                                                    Icons.stars_rounded,
-                                                    size: 30,
-                                                    color: AppColors
-                                                        .onboardDarkOrange,
-                                                  )
-                                                : SizedBox()
-                                          ],
+                                                ],
+                                              ),
+                                              audio.isPinned
+                                                  ? SizedBox(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.05,
+                                                    )
+                                                  : SizedBox(),
+                                              audio.isPinned
+                                                  ? Icon(
+                                                      Icons.stars_rounded,
+                                                      size: 30,
+                                                      color: AppColors
+                                                          .onboardDarkOrange,
+                                                    )
+                                                  : SizedBox()
+                                            ],
+                                          ),
                                         ),
                                 ),
                         );
                       }),
                 ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => onTapAudioBtn(context),
+        backgroundColor: Colors.black,
+        child: Icon(
+          Icons.add_box,
+          size: 50,
+          color: Colors.white,
+        ),
       ),
     );
   }
@@ -531,7 +523,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     );
   }
 
-  void onTapAudioBtn() async {
+  void onTapAudioBtn(BuildContext context) async {
     bool isGranted = await PermissionService.requestAudioPermission();
     if (isGranted == true) {
       await ref.read(audioProvider.notifier).pickAndSaveAudio();
@@ -569,5 +561,13 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
       return;
     }
     ref.read(audioProvider.notifier).togglePin(fileName);
+  }
+
+  void pinController(bool audioPinnedNotifier) {
+    ref.read(audioProvider.notifier).togglePinnedFilter();
+    setState(() {
+      isPinActive = audioPinnedNotifier;
+    });
+    print(isPinActive);
   }
 }
