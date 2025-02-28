@@ -6,6 +6,7 @@ import '../../model/user_model.dart';
 class AuthRemoteDataSource {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   // Sign Up User
   Future<UserModel?> signUp({
@@ -70,9 +71,7 @@ class AuthRemoteDataSource {
   Future<UserModel?> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) {
-        return null;
-      }
+      if (googleUser == null) return null; // User canceled sign-in
 
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
@@ -83,23 +82,24 @@ class AuthRemoteDataSource {
       UserCredential userCredential = await _auth.signInWithCredential(credential);
       User? user = userCredential.user;
 
-      if (user != null) {
-        DocumentSnapshot doc = await _firestore.collection('users').doc(user.uid).get();
-        if (!doc.exists) {
-          UserModel newUser = UserModel(
-            uid: user.uid,
-            email: user.email ?? '',
-            name: user.displayName ?? '',
-          );
-          await _firestore.collection('users').doc(user.uid).set(newUser.toMap());
-          return newUser;
-        }
-        return UserModel.fromMap(doc.data() as Map<String, dynamic>);
+      if (user == null) return null;
+
+      DocumentSnapshot doc = await _firestore.collection('users').doc(user.uid).get();
+
+      if (!doc.exists) {
+        UserModel newUser = UserModel(
+          uid: user.uid,
+          email: user.email ?? '',
+          name: user.displayName ?? '',
+        );
+        await _firestore.collection('users').doc(user.uid).set(newUser.toMap());
+        return newUser;
       }
+
+      return UserModel.fromMap(doc.data() as Map<String, dynamic>);
     } catch (e) {
-      throw 'Google Sign-In Failed: $e';
+      throw 'Google Sign-In Failed: $e'; // Use debugPrint instead of throwing a string
     }
-    return null;
   }
 
   // Logout User
