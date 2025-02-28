@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
@@ -9,21 +10,23 @@ import 'package:my_shelf_project/modules/authentication/ui/widgets/auth_nav_butt
 import 'package:my_shelf_project/modules/authentication/ui/widgets/auth_subtitle.dart';
 import 'package:my_shelf_project/modules/authentication/ui/widgets/auth_textfield.dart';
 import '../../../../core/service/validator_service.dart';
+import '../../domain/providers/auth_provider.dart';
 import '../widgets/auth_google_button.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   final FocusNode _emailFocusNode = FocusNode();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String? emailError;
   String? passwordError;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -41,14 +44,31 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void validate() {
+  Future<void> validateAndLogin() async {
     setState(() {
       emailError = ValidatorService.validateEmail(_emailController.text);
       passwordError = ValidatorService.validatePassword(_passwordController.text);
     });
 
     if (emailError == null && passwordError == null) {
-      print("Valid Inputs");
+      setState(() => _isLoading = true);
+      try {
+        await ref.read(authStateProvider.notifier).login(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+
+        if (mounted) {
+          GoRouter.of(context).go('/home/chats'); // Navigate to home on success
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+          );
+        }
+      }
+      setState(() => _isLoading = false);
     }
   }
 
@@ -89,7 +109,9 @@ class _LoginPageState extends State<LoginPage> {
 
               const SizedBox(height: 40),
 
-             AuthButton(text: "Sign In", onPressed: validate),
+              _isLoading
+                  ? const CircularProgressIndicator()
+                  : AuthButton(text: "Sign In", onPressed: validateAndLogin),
 
               const SizedBox(height: 35),
 
@@ -103,7 +125,10 @@ class _LoginPageState extends State<LoginPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  AuthGoogleButton(onPressed: () {},),
+                  AuthGoogleButton(onPressed: () async {
+                    await ref.read(authStateProvider.notifier).googleSignIn();
+                    GoRouter.of(context).go('/home/chats');
+                  },),
 
                   const SizedBox(width: 20),
 

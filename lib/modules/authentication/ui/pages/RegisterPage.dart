@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:my_shelf_project/modules/authentication/ui/widgets/auth_apple_button.dart';
 import 'package:my_shelf_project/modules/authentication/ui/widgets/auth_button.dart';
@@ -10,15 +11,16 @@ import 'package:my_shelf_project/modules/authentication/ui/widgets/auth_textfiel
 import '../../../../core/service/validator_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../domain/providers/auth_provider.dart';
 
-class RegisterPage extends StatefulWidget {
+class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  _RegisterPageState createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _RegisterPageState extends ConsumerState<RegisterPage> {
   final FocusNode _emailFocusNode = FocusNode();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -28,6 +30,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String? nameError;
   String? passwordError;
   String? confirmPasswordError;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -47,7 +50,7 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  void validate() {
+  void validateAndRegister() async {
     final password = _passwordController.text.trim();
     final confirmPassword = _confirmPasswordController.text.trim();
 
@@ -59,7 +62,24 @@ class _RegisterPageState extends State<RegisterPage> {
     });
 
     if (emailError == null && nameError == null && passwordError == null && confirmPasswordError == null) {
-      print("Valid Inputs");
+      setState(() => _isLoading = true);
+      try {
+        await ref.read(authStateProvider.notifier).login(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+
+        if (mounted) {
+          GoRouter.of(context).go('/home/chats'); // Navigate to home on success
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+          );
+        }
+      }
+      setState(() => _isLoading = false);
     }
   }
   @override
@@ -104,8 +124,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
                 const SizedBox(height: 40),
 
-                // Sign-in Button
-                AuthButton(text: "Sign Up", onPressed: validate,),
+                _isLoading
+                    ? const CircularProgressIndicator()
+                : AuthButton(text: "Sign Up", onPressed: validateAndRegister,),
 
                 const SizedBox(height: 15),
 
@@ -119,7 +140,12 @@ class _RegisterPageState extends State<RegisterPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    AuthGoogleButton(onPressed: () {}),
+                    AuthGoogleButton(onPressed: () {
+                      AuthGoogleButton(onPressed: () async {
+                        await ref.read(authStateProvider.notifier).googleSignIn();
+                        GoRouter.of(context).go('/home/chats');
+                      },);
+                    }),
 
                     const SizedBox(width: 20),
 

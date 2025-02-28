@@ -16,6 +16,11 @@ class AuthRepository {
     return await _authRemoteDataSource.login(email: email, password: password);
   }
 
+  //Google sign in
+  Future<UserModel?> googleSignIn() async {
+    return await _authRemoteDataSource.signInWithGoogle();
+  }
+
   // Logout
   Future<void> logout() async {
     await _authRemoteDataSource.logout();

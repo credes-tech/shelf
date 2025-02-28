@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../../model/user_model.dart';
 
 class AuthRemoteDataSource {
@@ -61,6 +62,42 @@ class AuthRemoteDataSource {
       throw _handleAuthException(e);
     } catch (e) {
       throw 'Unexpected Error: $e';
+    }
+    return null;
+  }
+
+  // Google Sign-In
+  Future<UserModel?> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        return null;
+      }
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      UserCredential userCredential = await _auth.signInWithCredential(credential);
+      User? user = userCredential.user;
+
+      if (user != null) {
+        DocumentSnapshot doc = await _firestore.collection('users').doc(user.uid).get();
+        if (!doc.exists) {
+          UserModel newUser = UserModel(
+            uid: user.uid,
+            email: user.email ?? '',
+            name: user.displayName ?? '',
+          );
+          await _firestore.collection('users').doc(user.uid).set(newUser.toMap());
+          return newUser;
+        }
+        return UserModel.fromMap(doc.data() as Map<String, dynamic>);
+      }
+    } catch (e) {
+      throw 'Google Sign-In Failed: $e';
     }
     return null;
   }
