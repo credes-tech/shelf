@@ -35,9 +35,9 @@ class AudioNotifier extends StateNotifier<List<AudioModel>> {
     fetchAudios();
   }
 
-  void togglePinnedFilter() {
+  Future<void> togglePinnedFilter() async {
     showOnlyPinned = !showOnlyPinned;
-    loadPinnedFiles();
+    await loadPinnedFiles();
   }
 
   Future<void> pickAndSaveAudio() async {

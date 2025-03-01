@@ -161,6 +161,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     final bool audioPinnedNotifier =
         ref.read(audioProvider.notifier).showOnlyPinned;
     final audioList = ref.watch(audioProvider);
+    print("audioList $audioList");
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -199,7 +200,10 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
             color: Colors.black,
           ),
           IconButton(
-            onPressed: () => pinController(audioPinnedNotifier),
+            onPressed: () async {
+              await ref.read(audioProvider.notifier).togglePinnedFilter();
+              pinController(audioPinnedNotifier);
+            },
             icon: Icon(
               isPinActive ? Icons.star_rounded : Icons.star_border_rounded,
             ),
@@ -435,18 +439,6 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.center,
                                             children: [
-                                              IconButton(
-                                                onPressed: () =>
-                                                    _togglePlayPause(
-                                                        audio.filePath,
-                                                        context: context),
-                                                icon: Icon(
-                                                  Icons
-                                                      .play_circle_fill_rounded,
-                                                  size: 40,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
                                               Column(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.center,
@@ -483,7 +475,19 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                                       color: AppColors
                                                           .onboardDarkOrange,
                                                     )
-                                                  : SizedBox()
+                                                  : SizedBox(),
+                                              IconButton(
+                                                onPressed: () =>
+                                                    _togglePlayPause(
+                                                        audio.filePath,
+                                                        context: context),
+                                                icon: Icon(
+                                                  Icons
+                                                      .play_circle_fill_rounded,
+                                                  size: 40,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -564,10 +568,8 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
   }
 
   void pinController(bool audioPinnedNotifier) {
-    ref.read(audioProvider.notifier).togglePinnedFilter();
     setState(() {
       isPinActive = audioPinnedNotifier;
     });
-    print(isPinActive);
   }
 }
