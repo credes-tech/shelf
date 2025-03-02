@@ -8,6 +8,7 @@ import 'package:my_shelf_project/core/service/share_service.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
+import 'package:my_shelf_project/modules/home/domain/models/audio_model.dart';
 import 'package:my_shelf_project/modules/home/domain/providers/audio_provider.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/AudioText.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeCard.dart';
@@ -15,6 +16,7 @@ import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomePillBar.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeToggler.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/MusicPlayerCard.dart';
 
 class AudioScreen extends ConsumerStatefulWidget {
   const AudioScreen({super.key});
@@ -27,11 +29,12 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
   final GlobalKey _popupKey = GlobalKey();
   final List<String> source = ['Recordings', 'Audio Files'];
   final AudioPlayer _audioPlayer = AudioPlayer();
+
   final Map<String, bool> _isPlaying = {};
   final Map<String, bool> _isOpen = {};
   bool isPinActive = false;
   bool isSubCategoryActive = false;
-
+  AudioModel? currentlyPlaying = null;
   final String emptyHeading = "No audio found!";
   final String emptyDescription = "Tap Add New button to save your files";
 
@@ -69,29 +72,13 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     });
   }
 
-  void _togglePlayPause(String filePath, {BuildContext? context}) {
-    if (context != null) {
-      showModalBottomSheet(
-        context: context,
-        builder: (context) => Container(
-          padding: EdgeInsets.all(16),
-          height: 200,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Details',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              Divider(),
-              Text('You selected:', style: TextStyle(fontSize: 16)),
-            ],
-          ),
-        ),
-      );
-    }
-    if (_isPlaying[filePath] == true) {
+  void _togglePlayPause(AudioModel audio) {
+    String filePath = audio.filePath;
+    if (_isPlaying[audio.filePath] == true) {
       _audioPlayer.pause();
       setState(() {
         _isPlaying[filePath] = false;
+        currentlyPlaying = null;
       });
     } else {
       _audioPlayer.stop();
@@ -99,9 +86,13 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
         _isPlaying.updateAll((key, value) => false);
         _isPlaying[filePath] = true;
         _position = Duration.zero;
+        currentlyPlaying = audio;
       });
       _audioPlayer.play(DeviceFileSource(filePath));
     }
+    // setState(() {
+    //
+    // });
   }
 
   void _toggleOption(String filePath) {
@@ -322,179 +313,75 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                   margin: EdgeInsets.symmetric(
                                       horizontal: AppSpacing.medium,
                                       vertical: AppSpacing.xSmall),
-                                  child: (_isPlaying[audio.filePath] == true)
-                                      ? Column(
+                                  child: SizedBox(
+                                    height: 69,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             SizedBox(
-                                              height: 20,
-                                            ),
-                                            SizedBox(
-                                              height: 30,
+                                              height: 50,
                                               width: MediaQuery.of(context)
                                                       .size
                                                       .width *
-                                                  0.6,
-                                              child: AudioText(audio: audio),
-                                            ),
-                                            TweenAnimationBuilder<double>(
-                                              tween: Tween<double>(
-                                                  begin: 0,
-                                                  end: _position.inSeconds
-                                                      .toDouble()),
-                                              duration: Duration(
-                                                  milliseconds:
-                                                      300), // Smooth transition effect
-                                              builder: (context, value, child) {
-                                                return Slider(
-                                                  min: 0,
-                                                  max: _duration.inSeconds
-                                                      .toDouble(),
-                                                  value: _isSeeking
-                                                      ? value
-                                                      : _position.inSeconds
-                                                          .toDouble(),
-                                                  onChanged: (newValue) {
-                                                    setState(() {
-                                                      _isSeeking = true;
-                                                    });
-                                                  },
-                                                  onChangeStart: (newValue) {
-                                                    setState(() {
-                                                      _isSeeking = true;
-                                                    });
-                                                  },
-                                                  onChangeEnd: (newValue) {
-                                                    setState(() {
-                                                      _isSeeking = false;
-                                                      _seekTo(newValue);
-                                                    });
-                                                  },
-                                                  activeColor: AppColors
-                                                      .onboardDarkOrange,
-                                                  inactiveColor: Colors.white,
-                                                  thumbColor: AppColors
-                                                      .onboardLightOrange,
-                                                );
-                                              },
-                                            ),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                IconButton(
-                                                    onPressed: () =>
-                                                        ShareService.shareFile(
-                                                            audio.filePath),
-                                                    icon: Icon(
-                                                      Icons.ios_share,
-                                                      color: Colors.black,
-                                                    )),
-                                                IconButton(
-                                                    onPressed: _seekBackward,
-                                                    icon: Icon(
-                                                      Icons.replay_10_rounded,
-                                                      color: Colors.black,
-                                                    )),
-                                                IconButton(
-                                                  onPressed: () =>
-                                                      _togglePlayPause(
-                                                          audio.filePath),
-                                                  icon: Icon(
-                                                    Icons
-                                                        .pause_circle_filled_rounded,
-                                                    size: 60,
-                                                    color: AppColors
-                                                        .onboardDarkOrange,
-                                                  ),
-                                                ),
-                                                IconButton(
-                                                    onPressed: _seekForward,
-                                                    icon: Icon(
-                                                      Icons.forward_10_rounded,
-                                                      color: Colors.black,
-                                                    )),
-                                                IconButton(
-                                                    onPressed: () =>
-                                                        onTapDeleteBtn(index),
-                                                    icon: Icon(
-                                                      Icons.delete,
-                                                      color: Colors.black,
-                                                    ))
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
+                                                  (audio.isPinned ? 0.6 : 0.7),
+                                              child: AudioText(
+                                                audio: audio,
+                                              ),
+                                            )
                                           ],
-                                        )
-                                      : Container(
-                                          height: 69,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  SizedBox(
-                                                    height: 30,
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            (audio.isPinned
-                                                                ? 0.6
-                                                                : 0.7),
-                                                    child:
-                                                        AudioText(audio: audio),
-                                                  )
-                                                ],
-                                              ),
-                                              audio.isPinned
-                                                  ? SizedBox(
-                                                      width:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width *
-                                                              0.05,
-                                                    )
-                                                  : SizedBox(),
-                                              audio.isPinned
-                                                  ? Icon(
-                                                      Icons.stars_rounded,
-                                                      size: 30,
-                                                      color: AppColors
-                                                          .onboardDarkOrange,
-                                                    )
-                                                  : SizedBox(),
-                                              IconButton(
-                                                onPressed: () =>
-                                                    _togglePlayPause(
-                                                        audio.filePath,
-                                                        context: context),
-                                                icon: Icon(
-                                                  Icons
-                                                      .play_circle_fill_rounded,
-                                                  size: 40,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                            ],
+                                        ),
+                                        audio.isPinned
+                                            ? SizedBox(
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.05,
+                                              )
+                                            : SizedBox(),
+                                        audio.isPinned
+                                            ? Icon(
+                                                Icons.stars_rounded,
+                                                size: 30,
+                                                color:
+                                                    AppColors.onboardDarkOrange,
+                                              )
+                                            : SizedBox(),
+                                        IconButton(
+                                          onPressed: () =>
+                                              _togglePlayPause(audio),
+                                          icon: Icon(
+                                            (_isPlaying[audio.filePath] == true)
+                                                ? Icons
+                                                    .pause_circle_filled_rounded
+                                                : Icons
+                                                    .play_circle_filled_rounded,
+                                            size: 40,
+                                            color: Colors.black,
                                           ),
                                         ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                         );
                       }),
                 ),
+          if (currentlyPlaying != null)
+            Positioned(
+              bottom: -20,
+              left: 0,
+              right: 0,
+              child: MusicPlayerCard(audio: currentlyPlaying),
+            ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -508,6 +395,12 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
       ),
     );
   }
+
+  // Widget get _popupAudioModal {
+  //   return Container(
+  //     child: ,
+  //   );
+  // }
 
   PopupMenuItem<String> _buildPopupMenuItem(
       String text, IconData icon, Color iconColor) {
@@ -572,4 +465,93 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
       isPinActive = audioPinnedNotifier;
     });
   }
+
+  // widget showAudioModal() {
+  //   return Column(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: [
+  //       SizedBox(
+  //         height: 20,
+  //       ),
+  //       SizedBox(
+  //         height: 30,
+  //         width: MediaQuery.of(context).size.width * 0.6,
+  //         child: AudioText(
+  //           audio: audio,
+  //         ),
+  //       ),
+  //       TweenAnimationBuilder<double>(
+  //         tween: Tween<double>(begin: 0, end: _position.inSeconds.toDouble()),
+  //         duration: Duration(milliseconds: 300), // Smooth transition effect
+  //         builder: (context, value, child) {
+  //           return Slider(
+  //             min: 0,
+  //             max: _duration.inSeconds.toDouble(),
+  //             value: _isSeeking ? value : _position.inSeconds.toDouble(),
+  //             onChanged: (newValue) {
+  //               setState(() {
+  //                 _isSeeking = true;
+  //               });
+  //             },
+  //             onChangeStart: (newValue) {
+  //               setState(() {
+  //                 _isSeeking = true;
+  //               });
+  //             },
+  //             onChangeEnd: (newValue) {
+  //               setState(() {
+  //                 _isSeeking = false;
+  //                 _seekTo(newValue);
+  //               });
+  //             },
+  //             activeColor: AppColors.onboardDarkOrange,
+  //             inactiveColor: Colors.white,
+  //             thumbColor: AppColors.onboardLightOrange,
+  //           );
+  //         },
+  //       ),
+  //       Row(
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         crossAxisAlignment: CrossAxisAlignment.center,
+  //         children: [
+  //           IconButton(
+  //               onPressed: () => ShareService.shareFile(audio.filePath),
+  //               icon: Icon(
+  //                 Icons.ios_share,
+  //                 color: Colors.black,
+  //               )),
+  //           IconButton(
+  //               onPressed: _seekBackward,
+  //               icon: Icon(
+  //                 Icons.replay_10_rounded,
+  //                 color: Colors.black,
+  //               )),
+  //           IconButton(
+  //             onPressed: () => _togglePlayPause(audio.filePath),
+  //             icon: Icon(
+  //               Icons.pause_circle_filled_rounded,
+  //               size: 60,
+  //               color: AppColors.onboardDarkOrange,
+  //             ),
+  //           ),
+  //           IconButton(
+  //               onPressed: _seekForward,
+  //               icon: Icon(
+  //                 Icons.forward_10_rounded,
+  //                 color: Colors.black,
+  //               )),
+  //           IconButton(
+  //               onPressed: () => onTapDeleteBtn(index),
+  //               icon: Icon(
+  //                 Icons.delete,
+  //                 color: Colors.black,
+  //               ))
+  //         ],
+  //       ),
+  //       SizedBox(
+  //         height: 10,
+  //       ),
+  //     ],
+  //   );
+  // }
 }
