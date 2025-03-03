@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:marquee/marquee.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
+import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 import 'package:my_shelf_project/modules/home/domain/models/audio_model.dart';
 
 class MusicPlayerCard extends StatelessWidget {
@@ -15,6 +17,30 @@ class MusicPlayerCard extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.delete,
+                  color: Colors.black,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                      color: Colors.black12,
+                      borderRadius: BorderRadius.circular(10)),
+                  height: 8,
+                  width: 125,
+                ),
+                Icon(
+                  Icons.star_border,
+                  color: Colors.black,
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 5,
+            ),
             Row(
               children: [
                 // Album Art
@@ -34,12 +60,25 @@ class MusicPlayerCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        audio!.filename,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                      // IconButton(onPressed: () {}, icon: Icon(Icons.delete)),
+                      SizedBox(
+                        height: 30,
+                        child: Marquee(
+                          text: audio!.filename,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.black,
+                          ),
+                          scrollAxis: Axis.horizontal,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          blankSpace: 20.0,
+                          velocity: 30.0,
+                          pauseAfterRound: Duration(seconds: 1),
+                          accelerationDuration: Duration(seconds: 1),
+                          accelerationCurve: Curves.linear,
+                          decelerationDuration: Duration(milliseconds: 500),
+                          decelerationCurve: Curves.easeOut,
                         ),
                       ),
                       _infoRow("Artist", "---"),
@@ -53,37 +92,112 @@ class MusicPlayerCard extends StatelessWidget {
               ],
             ),
             SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                _tag("Most Recent"),
-                _tag("Morning Beats"),
+                Wrap(
+                  spacing: 8,
+                  children: [
+                    _tag("Most Recent"),
+                    _tag("Morning Beats"),
+                  ],
+                ),
               ],
             ),
-            SizedBox(height: 8),
-
+            const SizedBox(
+              height: 5,
+            ),
             // Progress Bar
-            Slider(
-              value: 0.2,
-              onChanged: (v) {},
-              min: 0,
-              max: 1,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Slider(
+                  value: 0.2,
+                  onChanged: (v) {},
+                  min: 0,
+                  max: 1,
+                ),
+                Transform.translate(
+                  offset: Offset(0, -13),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "0:00",
+                          style: TextStyle(color: Colors.black, fontSize: 12),
+                        ),
+                        Text(
+                          "4:23",
+                          style: TextStyle(color: Colors.black, fontSize: 12),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
 
-            // Controls
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                IconButton(icon: Icon(Icons.repeat), onPressed: () {}),
-                IconButton(icon: Icon(Icons.skip_previous), onPressed: () {}),
+                Expanded(
+                    child: IconButton(
+                        icon: Icon(
+                          Icons.repeat,
+                          size: 20,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {})),
+                Expanded(
+                    child: IconButton(
+                        icon: Icon(
+                          Icons.skip_previous,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {})),
+                Expanded(
+                    child: IconButton(
+                        icon: Icon(
+                          Icons.replay_5,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {})),
                 IconButton(
-                  icon: Icon(Icons.play_circle_filled, size: 48),
-                  onPressed: () {},
-                ),
-                IconButton(icon: Icon(Icons.skip_next), onPressed: () {}),
-                IconButton(icon: Icon(Icons.playlist_add), onPressed: () {}),
+                    icon: Icon(
+                      Icons.play_circle_filled,
+                      size: 58,
+                      color: AppColors.onboardDarkOrange,
+                    ),
+                    onPressed: () {}),
+                Expanded(
+                    child: IconButton(
+                        icon: Icon(
+                          Icons.forward_5,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {})),
+                Expanded(
+                    child: IconButton(
+                        icon: Icon(
+                          Icons.skip_next,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {})),
+                Expanded(
+                    child: IconButton(
+                        icon: Icon(
+                          Icons.playlist_add,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {})),
               ],
-            ),
+            )
           ],
         ),
       ),
