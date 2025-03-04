@@ -42,7 +42,7 @@ class AudioNotifier extends StateNotifier<List<AudioModel>> {
     final player = AudioPlayer();
     await player.setSourceUrl(filepath);
     final duration = await player.getDuration() ?? Duration.zero;
-    print("audio duration for filepath $filepath is $duration");
+    // print("audio duration for filepath $filepath is $duration");
     await player.dispose();
     return duration;
   }

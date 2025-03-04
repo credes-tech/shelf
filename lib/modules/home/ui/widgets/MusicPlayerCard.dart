@@ -6,6 +6,7 @@ import 'package:my_shelf_project/modules/home/domain/models/audio_model.dart';
 
 class MusicPlayerCard extends StatelessWidget {
   final AudioModel? audio;
+  final
   const MusicPlayerCard({super.key, required this.audio});
   @override
   Widget build(BuildContext context) {
@@ -113,12 +114,37 @@ class MusicPlayerCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Slider(
-                  value: 0.2,
-                  onChanged: (v) {},
-                  min: 0,
-                  max: 1,
-                ),
+
+                TweenAnimationBuilder<double>(
+                          tween: Tween<double>(begin: 0, end: _position.inSeconds.toDouble()),
+                          duration: Duration(milliseconds: 300), // Smooth transition effect
+                          builder: (context, value, child) {
+                            return Slider(
+                              min: 0,
+                              max: _duration.inSeconds.toDouble(),
+                              value: _isSeeking ? value : _position.inSeconds.toDouble(),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  _isSeeking = true;
+                                });
+                              },
+                              onChangeStart: (newValue) {
+                                setState(() {
+                                  _isSeeking = true;
+                                });
+                              },
+                              onChangeEnd: (newValue) {
+                                setState(() {
+                                  _isSeeking = false;
+                                  _seekTo(newValue);
+                                });
+                              },
+                              activeColor: AppColors.onboardDarkOrange,
+                              inactiveColor: Colors.white,
+                              thumbColor: AppColors.onboardLightOrange,
+                            );
+                          },
+                        ),
                 Transform.translate(
                   offset: Offset(0, -13),
                   child: Padding(
