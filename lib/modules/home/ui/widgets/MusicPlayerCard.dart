@@ -1,15 +1,38 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:marquee/marquee.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
-import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 import 'package:my_shelf_project/modules/home/domain/models/audio_model.dart';
 
-class MusicPlayerCard extends StatelessWidget {
+class MusicPlayerCard extends ConsumerStatefulWidget {
   final AudioModel? audio;
-  final
-  const MusicPlayerCard({super.key, required this.audio});
+  final AudioPlayer audioPlayer;
+  final Duration position;
+  final Duration duration;
+  final bool isSeeking;
+  final void Function(dynamic) onChanged;
+  final void Function(dynamic) onChangeStart;
+  final void Function(dynamic) onChangeEnd;
+  const MusicPlayerCard({
+    super.key,
+    required this.audioPlayer,
+    required this.audio,
+    required this.position,
+    required this.duration,
+    required this.isSeeking,
+    required this.onChanged,
+    required this.onChangeStart,
+    required this.onChangeEnd,
+  });
+  @override
+  ConsumerState<MusicPlayerCard> createState() => _MusicPlayerCardState();
+}
+
+class _MusicPlayerCardState extends ConsumerState<MusicPlayerCard> {
   @override
   Widget build(BuildContext context) {
+    AudioModel audio = widget.audio!;
     return Card(
       color: Colors.white,
       margin: EdgeInsets.all(0),
@@ -65,7 +88,7 @@ class MusicPlayerCard extends StatelessWidget {
                       SizedBox(
                         height: 30,
                         child: Marquee(
-                          text: audio!.filename,
+                          text: audio.filename,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
@@ -114,37 +137,24 @@ class MusicPlayerCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-
                 TweenAnimationBuilder<double>(
-                          tween: Tween<double>(begin: 0, end: _position.inSeconds.toDouble()),
-                          duration: Duration(milliseconds: 300), // Smooth transition effect
-                          builder: (context, value, child) {
-                            return Slider(
-                              min: 0,
-                              max: _duration.inSeconds.toDouble(),
-                              value: _isSeeking ? value : _position.inSeconds.toDouble(),
-                              onChanged: (newValue) {
-                                setState(() {
-                                  _isSeeking = true;
-                                });
-                              },
-                              onChangeStart: (newValue) {
-                                setState(() {
-                                  _isSeeking = true;
-                                });
-                              },
-                              onChangeEnd: (newValue) {
-                                setState(() {
-                                  _isSeeking = false;
-                                  _seekTo(newValue);
-                                });
-                              },
-                              activeColor: AppColors.onboardDarkOrange,
-                              inactiveColor: Colors.white,
-                              thumbColor: AppColors.onboardLightOrange,
-                            );
-                          },
-                        ),
+                  tween: Tween<double>(begin: 0, end: 0),
+                  duration:
+                      Duration(milliseconds: 300), // Smooth transition effect
+                  builder: (context, value, child) {
+                    return Slider(
+                      min: 0,
+                      max: 0,
+                      value: value,
+                      onChanged: (newValue) {},
+                      onChangeStart: (newValue) {},
+                      onChangeEnd: (newValue) {},
+                      activeColor: AppColors.onboardDarkOrange,
+                      inactiveColor: Colors.grey,
+                      thumbColor: AppColors.onboardLightOrange,
+                    );
+                  },
+                ),
                 Transform.translate(
                   offset: Offset(0, -13),
                   child: Padding(

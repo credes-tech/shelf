@@ -9,6 +9,7 @@ import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 import 'package:my_shelf_project/modules/home/domain/models/audio_model.dart';
+import 'package:my_shelf_project/modules/home/domain/providers/audio_player_provider.dart';
 import 'package:my_shelf_project/modules/home/domain/providers/audio_provider.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/AudioText.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeCard.dart';
@@ -20,7 +21,6 @@ import 'package:my_shelf_project/modules/home/ui/widgets/MusicPlayerCard.dart';
 
 class AudioScreen extends ConsumerStatefulWidget {
   const AudioScreen({super.key});
-
   @override
   ConsumerState<AudioScreen> createState() => _AudioScreenState();
 }
@@ -29,7 +29,6 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
   final GlobalKey _popupKey = GlobalKey();
   final List<String> source = ['Recordings', 'Audio Files'];
   final AudioPlayer _audioPlayer = AudioPlayer();
-
   final Map<String, bool> _isPlaying = {};
   final Map<String, bool> _isOpen = {};
   bool isPinActive = false;
@@ -38,7 +37,6 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
   final String emptyDescription = "Tap Add New button to save your files";
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
-
   bool _isSeeking = false;
   int selectedSource = 0;
 
@@ -49,7 +47,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
       duration = d;
     });
     await player.setSourceUrl(filepath);
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(milliseconds: 100));
     await player.dispose();
   }
 
@@ -59,27 +57,8 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     Future.delayed(Duration.zero, () {
       ref.read(audioProvider.notifier).fetchAudios();
     });
-
-    _audioPlayer.onDurationChanged.listen((Duration d) {
-      setState(() {
-        _duration = d;
-      });
-    });
-    _audioPlayer.onPositionChanged.listen((Duration p) {
-      setState(() {
-        _position = p;
-      });
-    });
-    _audioPlayer.onPlayerComplete.listen((_) {
-      setState(() {
-        _isPlaying.updateAll((key, value) => false);
-      });
-    });
-    _audioPlayer.onPlayerStateChanged.listen((PlayerState s) {
-      if (s == PlayerState.paused) {
-        _isPlaying.updateAll((key, value) => false);
-      }
-    });
+    final playerController = ref.read(audioPlayerControllerProvider.notifier);
+    playerController.initializePlayerListeners();
   }
 
   void _pauseAudio(AudioModel audio) {
@@ -92,7 +71,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     }
   }
 
-  void _playAudio(AudioModel audio) {
+  void _playAudio(AudioModel audio) async {
     String filePath = audio.filePath;
     _audioPlayer.stop();
     setState(() {
@@ -101,6 +80,9 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
       _position = Duration.zero;
     });
     _audioPlayer.play(DeviceFileSource(filePath));
+    // setState(() {
+    _duration = await _audioPlayer.getDuration() ?? Duration.zero;
+    // });
   }
 
   void _togglePlayPause(BuildContext context, AudioModel audio) async {
@@ -109,7 +91,29 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
       context: context,
       isDismissible: true,
       builder: (BuildContext context) {
-        return MusicPlayerCard(audio: audio);
+        return MusicPlayerCard(
+          audio: audio,
+          position: _position,
+          duration: _duration,
+          audioPlayer: _audioPlayer,
+          isSeeking: _isSeeking,
+          onChanged: (newValue) {
+            setState(() {
+              _isSeeking = true;
+            });
+          },
+          onChangeEnd: (newValue) {
+            setState(() {
+              _isSeeking = false;
+              _seekTo(newValue);
+            });
+          },
+          onChangeStart: (newValue) {
+            setState(() {
+              _isSeeking = true;
+            });
+          },
+        );
       },
     );
     if (result == null) {
@@ -172,8 +176,8 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
   @override
   Widget build(BuildContext context) {
     // print("audioDuration $_duration");
-    final bool audioPinnedNotifier =
-        ref.read(audioProvider.notifier).showOnlyPinned;
+    // final playerState = ref.watch(audioPlayerControllerProvider);
+
     final audioList = ref.watch(audioProvider);
     // loadAllDuration(audioList);
     return Scaffold(
@@ -216,7 +220,8 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
           IconButton(
             onPressed: () async {
               await ref.read(audioProvider.notifier).togglePinnedFilter();
-              pinController(audioPinnedNotifier);
+
+              pinController();
             },
             icon: Icon(
               isPinActive ? Icons.star_rounded : Icons.star_border_rounded,
@@ -477,19 +482,13 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     ref.read(audioProvider.notifier).togglePin(fileName);
   }
 
-  void pinController(bool audioPinnedNotifier) {
+  void pinController() {
+    bool audioPinnedNotifier = ref.read(audioProvider.notifier).showOnlyPinned;
     setState(() {
       isPinActive = audioPinnedNotifier;
     });
   }
 
-  showAudioModal(context) {
-    return showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return Container(child: Text("Hii "));
-        });
-  }
   // widget showAudioModal() {
   //   return Column(
   //     mainAxisAlignment: MainAxisAlignment.center,
