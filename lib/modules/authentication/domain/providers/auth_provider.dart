@@ -1,8 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/datasource/remote/firebase_service.dart';
-import '../../data/model/user_model.dart';
-import '../../data/repository/auth_repository_impl.dart';
+import 'package:my_shelf_project/modules/authentication/data/datasource/remote/firebase_service.dart';
+import 'package:my_shelf_project/modules/authentication/data/model/user_model.dart';
+import 'package:my_shelf_project/modules/authentication/data/repository/auth_repository_impl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 
 final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
   return AuthRemoteDataSource();
