@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -49,16 +50,16 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyA8LBGuYiUHUS2hrVgnKVmaCMetNrvhhsg',
+  static FirebaseOptions android = FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_ANDROID_API_KEY']!,
     appId: '1:43076874233:android:fe72df0538a0c0cbe01728',
     messagingSenderId: '43076874233',
     projectId: 'shelf-credes',
     storageBucket: 'shelf-credes.firebasestorage.app',
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBw592bqOrmqwY5O2Ut-jpw9clZIUOuAY4',
+  static FirebaseOptions ios = FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_IOS_API_KEY']!,
     appId: '1:43076874233:ios:18809ef3eb4cb9bfe01728',
     messagingSenderId: '43076874233',
     projectId: 'shelf-credes',
@@ -67,4 +68,5 @@ class DefaultFirebaseOptions {
     iosClientId: '43076874233-89pc398ggv5bi2gr96440j7153lhhjmu.apps.googleusercontent.com',
     iosBundleId: 'org.shelf.shelf',
   );
+
 }

@@ -22,13 +22,32 @@ class TextHiveService {
     await box.add(data);
   }
 
-  Future<void> updateText(int index, String newHeading, String newDescription) async {
+  Future<void> deleteText(int index) async {
+    final box = Hive.box<TextHive>(_boxName);
+    await box.deleteAt(index);
+  }
+
+  Future<void> setTogglePin(int index) async {
+    final box = Hive.box<TextHive>(_boxName);
+    var existingText = box.getAt(index);
+    if (existingText != null) {
+      final updatedText = TextHive(
+          heading: existingText.heading,
+          description: existingText.description,
+          isPinned: !existingText.isPinned);
+      await box.putAt(index, updatedText);
+    }
+  }
+
+  Future<void> updateText(int index, String newHeading, String newDescription,
+      bool isPinned) async {
     final box = Hive.box<TextHive>(_boxName);
     var existingText = box.getAt(index);
 
     if (existingText != null) {
       existingText.heading = newHeading;
       existingText.description = newDescription;
+      existingText.isPinned = isPinned;
       await box.putAt(index, existingText);
     }
   }
