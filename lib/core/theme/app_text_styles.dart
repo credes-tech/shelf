@@ -43,6 +43,37 @@ class AppTextStyles {
     fontFamily: 'Inter'
   );
 
+  static const TextStyle forgot = TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w700,
+      color: Colors.white,
+      fontFamily: 'Inter'
+  );
+
+  static const TextStyle authHeading = TextStyle(
+    fontSize: 48,
+    fontWeight: FontWeight.w800,
+    color: Colors.white,
+    fontFamily: 'Montserrat',
+    letterSpacing: -4,
+  );
+
+  static const TextStyle authSubHeading = TextStyle(
+    fontFamily: 'Inter',
+    fontSize: 24,
+    fontWeight: FontWeight.w600,
+    color: Colors.white,
+    //letterSpacing: -1,
+  );
+
+  static const TextStyle signIn = TextStyle(
+    fontSize: 20,
+    fontWeight: FontWeight.w800,
+    color: Colors.white,
+    fontFamily: 'Montserrat',
+   // letterSpacing: -4,
+  );
+
   static const TextStyle homeTitle = TextStyle(
       fontFamily: 'Montserrat',
       fontSize: 26,
