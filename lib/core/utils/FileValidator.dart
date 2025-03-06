@@ -22,8 +22,7 @@ class FileValidator {
   }
 
   static bool isValidMediaFile(String filePath) {
-    List<String> mediaFormats = [
-      "jpg", "png", "gif", "webp", "mp4", "mov", "mkv"];
+    List<String> mediaFormats = ["jpg", "png", "gif", "webp", "mp4", "mov", "mkv"];
     String fileExtension = filePath.split('.').last.toLowerCase();
     return mediaFormats.contains(fileExtension);
   }

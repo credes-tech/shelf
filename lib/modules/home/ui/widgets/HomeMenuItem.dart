@@ -23,7 +23,7 @@ class HomeMenuItem extends StatelessWidget {
         children: [
           Icon(icon, color: iconColor, size: 24),
           SizedBox(width: 5),
-          Text(itemValue, style: AppTextStyles.homePinned),
+          Text(itemValue, style: AppTextStyles.homeMenuItemText),
         ],
       ),
     );

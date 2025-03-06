@@ -10,15 +10,12 @@ import 'package:my_shelf_project/modules/home/ui/pages/TextScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required Widget child});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 1;
-
-
+  int _selectedIndex = 0;
   final List<Widget> _pages = [
     AudioScreen(),
     MediaScreen(),
@@ -26,18 +23,25 @@ class _HomeScreenState extends State<HomeScreen> {
     TextScreen(),
   ];
 
-  final List<Color> _bottomNavColors = [
+  final List<Color> _bottomNavInactiveColors = [
     AppColors.onboardDarkOrange,
     AppColors.onboardDarkBlue,
     AppColors.onboardDarkPink,
     AppColors.onboardDarkYellow,
   ];
 
-  final List<Color> _bottomNavInactiveColors = [
+  final List<Color> _bottomNavColors = [
     AppColors.onboardLightOrange,
     AppColors.onboardLightBlue,
     AppColors.onboardLightPink,
     AppColors.onboardLightYellow,
+  ];
+
+  final List<Color> _navBarColors = [
+    AppColors.navBarOrange,
+    AppColors.navBarBlue,
+    AppColors.navBarPink,
+    AppColors.navBarYellow,
   ];
 
   void _onItemTapped(int index) {
@@ -56,9 +60,14 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: Container(
         color: Colors.transparent,
-        margin: EdgeInsets.symmetric(horizontal: AppSpacing.medium,vertical: AppSpacing.large),
+        margin: EdgeInsets.symmetric(
+            horizontal: AppSpacing.medium, vertical: AppSpacing.medium),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(35),
+          // borderRadius: BorderRadius.only(
+          //   topRight: Radius.circular(20),
+          //   topLeft: Radius.circular(20),
+          // ),
+          borderRadius: BorderRadius.circular(50),
           child: Theme(
             data: ThemeData(
               canvasColor: _bottomNavColors[_selectedIndex],
@@ -66,15 +75,42 @@ class _HomeScreenState extends State<HomeScreen> {
             child: BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
               items: [
-                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/audio.svg',colorFilter: ColorFilter.mode(_setColour(index:0), BlendMode.srcIn),width: 32), label: "Audio"),
-                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/image.svg',colorFilter: ColorFilter.mode(_setColour(index:1), BlendMode.srcIn),width: 32), label: "Media"),
-                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/document.svg',colorFilter: ColorFilter.mode(_setColour(index:2), BlendMode.srcIn),width: 32), label: "Files"),
-                BottomNavigationBarItem(icon: SvgPicture.asset('assets/svg/password.svg',colorFilter: ColorFilter.mode(_setColour(index:3), BlendMode.srcIn),width: 32), label: "Texts"),
+                BottomNavigationBarItem(
+                    icon: SvgPicture.asset('assets/svg/audio.svg',
+                        colorFilter: ColorFilter.mode(
+                            _setColour(index: 0), BlendMode.srcIn),
+                        width: 32),
+                    label: "Audio"),
+                BottomNavigationBarItem(
+                    icon: SvgPicture.asset('assets/svg/image.svg',
+                        colorFilter: ColorFilter.mode(
+                            _setColour(index: 1), BlendMode.srcIn),
+                        width: 32),
+                    label: "Media"),
+                BottomNavigationBarItem(
+                    icon: SvgPicture.asset('assets/svg/document.svg',
+                        colorFilter: ColorFilter.mode(
+                            _setColour(index: 2), BlendMode.srcIn),
+                        width: 32),
+                    label: "Files"),
+                BottomNavigationBarItem(
+                  icon: SvgPicture.asset(
+                    'assets/svg/password.svg',
+                    colorFilter: ColorFilter.mode(
+                      _setColour(index: 3),
+                      BlendMode.srcIn,
+                    ),
+                    width: 32,
+                  ),
+                  label: "Texts",
+                ),
               ],
-              unselectedItemColor: _bottomNavInactiveColors[_selectedIndex],
-              elevation: 10,
-              showSelectedLabels: false,
-              showUnselectedLabels: false,
+              currentIndex: _selectedIndex,
+              selectedItemColor: _navBarColors[_selectedIndex],
+              unselectedItemColor: Colors.white,
+              // elevation: 100,
+              showSelectedLabels: true,
+              showUnselectedLabels: true,
               onTap: _onItemTapped,
             ),
           ),
@@ -84,6 +120,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _setColour({required int index}) {
-    return (_selectedIndex==index)?Colors.black:Colors.white;
+    return (_selectedIndex == index) ? _navBarColors[index] : Colors.white;
   }
 }

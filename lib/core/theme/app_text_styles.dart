@@ -76,7 +76,16 @@ class AppTextStyles {
 
   static const TextStyle homeTitle = TextStyle(
       fontFamily: 'Montserrat',
-      fontSize: 26,
+      fontSize: 24,
+      fontWeight: FontWeight.w600,
+      color: Colors.black,
+      letterSpacing: -2,
+      height: 1
+  );
+
+  static const TextStyle profileTitle = TextStyle(
+      fontFamily: 'Montserrat',
+      fontSize: 20,
       fontWeight: FontWeight.w600,
       color: Colors.black,
       letterSpacing: -2,
@@ -98,12 +107,35 @@ class AppTextStyles {
       color: Colors.white
   );
 
+  static const TextStyle homeMenuItemText = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: 12,
+      fontWeight: FontWeight.w600,
+      color: Colors.black
+  );
+
   static const TextStyle pinLabelText = TextStyle(
       fontFamily: 'Montserrat',
       fontSize: 12,
       fontWeight: FontWeight.w500,
       color: Colors.black,
       letterSpacing: -0.8
+  );
+
+  static const TextStyle subCategoryDividerTitle = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: 12,
+      fontWeight: FontWeight.w500,
+      color: Colors.black26,
+      letterSpacing: -0.2
+  );
+
+  static const TextStyle pinCaption = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: 12,
+      fontWeight: FontWeight.w500,
+      color: Colors.black,
+      letterSpacing: -0.2
   );
 
   static const TextStyle audioTitle = TextStyle(
@@ -129,6 +161,32 @@ class AppTextStyles {
       color: AppColors.onboardLightYellow,
       letterSpacing: -0.8
   );
+
+  static const TextStyle profileTextItems = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: 18,
+      fontWeight: FontWeight.w500,
+      color: Colors.black
+  );
+
+  static const TextStyle profileSubHeading = TextStyle(
+      fontFamily: 'Montserrat',
+      fontSize: 18,
+      fontWeight: FontWeight.w600,
+      color: Colors.black,
+      letterSpacing: -1,
+      height: 1
+  );
+
+  static getTextColor(Color color) {
+    return TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 18,
+        fontWeight: FontWeight.w500,
+        color: color
+    );
+  }
+
 
 
 

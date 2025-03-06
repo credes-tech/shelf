@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_shelf_project/core/service/file_picker.dart';
 import 'package:my_shelf_project/modules/home/data/datasource/local/audio_hive_service.dart';
@@ -9,6 +10,7 @@ import 'package:my_shelf_project/modules/home/domain/models/audio_model.dart';
 class AudioNotifier extends StateNotifier<List<AudioModel>> {
   final AudioRepository _audioRepo;
   final FilePickerService _filePickerService;
+  final Map<String, Duration> audioDurations = {};
   bool showOnlyPinned = false;
 
   AudioNotifier(this._audioRepo, this._filePickerService) : super([]) {
@@ -16,9 +18,36 @@ class AudioNotifier extends StateNotifier<List<AudioModel>> {
   }
 
   void fetchAudios() {
-    state = _audioRepo.fetchAllAudio().map((hiveAudio) {
+    final audios = _audioRepo.fetchAllAudio().map((hiveAudio) {
       return AudioModel.fromHiveModel(hiveAudio);
     }).toList();
+    state = audios;
+    loadAllDurations(audios);
+  }
+
+  Future<void> loadAllDurations(List<AudioModel> audioList) async {
+    for (int index = 0; index < audioList.length; index++) {
+      final audio = audioList[index];
+      print(
+          "Index $index -> file path is ${audio.filePath} and ${audio.filename}");
+
+      if (!audioDurations.containsKey(audio.filePath)) {
+        audioDurations[audio.filePath] =
+            await _fetchAudioDuration(audio.filePath);
+      }
+    }
+  }
+
+  Future<Duration> _fetchAudioDuration(String filepath) async {
+    final player = AudioPlayer();
+    await player.setSourceUrl(filepath);
+    final duration = await player.getDuration() ?? Duration.zero;
+    await player.dispose();
+    return duration;
+  }
+
+  Duration? getDuration(String filePath) {
+    return audioDurations[filePath];
   }
 
   Future<void> loadPinnedFiles() async {
@@ -35,9 +64,9 @@ class AudioNotifier extends StateNotifier<List<AudioModel>> {
     fetchAudios();
   }
 
-  void togglePinnedFilter() {
+  Future<void> togglePinnedFilter() async {
     showOnlyPinned = !showOnlyPinned;
-    loadPinnedFiles();
+    await loadPinnedFiles();
   }
 
   Future<void> pickAndSaveAudio() async {

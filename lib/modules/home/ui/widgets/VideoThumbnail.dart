@@ -1,48 +1,60 @@
-
-
-
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
+import 'package:get_thumbnail_video/video_thumbnail.dart';
+import 'package:path_provider/path_provider.dart';
 
-class VideoThumbnail extends StatefulWidget {
+class VideoThumbnailView extends StatefulWidget {
   final String videoPath;
-  const VideoThumbnail({super.key,required this.videoPath});
+  const VideoThumbnailView({super.key, required this.videoPath});
 
   @override
-  _VideoThumbnailState createState() => _VideoThumbnailState();
+  _VideoThumbnailViewState createState() => _VideoThumbnailViewState();
 }
 
-class _VideoThumbnailState extends State<VideoThumbnail> {
-  late VideoPlayerController _controller;
+class _VideoThumbnailViewState extends State<VideoThumbnailView> {
+  String? _thumbnailPath;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.file(File(widget.videoPath))
-      ..initialize().then((_) {
-        setState(() {});
-      });
+    _generateThumbnail();
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  Future<void> _generateThumbnail() async {
+    final tempDir = await getTemporaryDirectory();
+    final  thumbnail = await VideoThumbnail.thumbnailFile(
+      video: widget.videoPath,
+      thumbnailPath: tempDir.path,
+      maxHeight: 200,
+      quality: 75,
+    );
+
+    setState(() {
+      _thumbnailPath = thumbnail.path;
+      _isLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return _controller.value.isInitialized
-        ? Stack(
-      children: [
-        Positioned.fill(child: VideoPlayer(_controller)),
-        Center(
-          child: Icon(Icons.play_circle_filled, color: Colors.white, size: 40),
-        ),
-      ],
-    )
-        : Center(child: CircularProgressIndicator());
+    return _isLoading
+        ? Center(child: CircularProgressIndicator())
+        : _thumbnailPath != null
+            ? Stack(
+                children: [
+                  Positioned.fill(
+                    child: Image.file(
+                      File(_thumbnailPath!),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Center(
+                    child: Icon(Icons.play_circle_fill_rounded,
+                        color: Colors.white, size: 20),
+                  ),
+                ],
+              )
+            : Center(child: Text("Failed to load thumbnail"));
   }
 }
