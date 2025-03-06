@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
+import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 import 'package:my_shelf_project/modules/home/ui/pages/AudioScreen.dart';
 import 'package:my_shelf_project/modules/home/ui/pages/ChatScreen.dart';
 import 'package:my_shelf_project/modules/home/ui/pages/FileScreen.dart';
@@ -54,67 +55,76 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: Container(
-        color: Colors.transparent,
-        margin: EdgeInsets.symmetric(
-            horizontal: AppSpacing.medium, vertical: AppSpacing.medium),
-        child: ClipRRect(
-          // borderRadius: BorderRadius.only(
-          //   topRight: Radius.circular(20),
-          //   topLeft: Radius.circular(20),
-          // ),
-          borderRadius: BorderRadius.circular(50),
-          child: Theme(
-            data: ThemeData(
-              canvasColor: _bottomNavColors[_selectedIndex],
-            ),
-            child: BottomNavigationBar(
-              type: BottomNavigationBarType.fixed,
-              items: [
-                BottomNavigationBarItem(
-                    icon: SvgPicture.asset('assets/svg/audio.svg',
-                        colorFilter: ColorFilter.mode(
-                            _setColour(index: 0), BlendMode.srcIn),
-                        width: 32),
-                    label: "Audio"),
-                BottomNavigationBarItem(
-                    icon: SvgPicture.asset('assets/svg/image.svg',
-                        colorFilter: ColorFilter.mode(
-                            _setColour(index: 1), BlendMode.srcIn),
-                        width: 32),
-                    label: "Media"),
-                BottomNavigationBarItem(
-                    icon: SvgPicture.asset('assets/svg/document.svg',
-                        colorFilter: ColorFilter.mode(
-                            _setColour(index: 2), BlendMode.srcIn),
-                        width: 32),
-                    label: "Files"),
-                BottomNavigationBarItem(
-                  icon: SvgPicture.asset(
-                    'assets/svg/password.svg',
-                    colorFilter: ColorFilter.mode(
-                      _setColour(index: 3),
-                      BlendMode.srcIn,
-                    ),
-                    width: 32,
-                  ),
-                  label: "Texts",
+      body: Stack(
+        children: [
+          IndexedStack(
+            index: _selectedIndex,
+            children: _pages,
+          ),
+          Positioned(
+            bottom: 20,
+            left: AppSpacing.large,
+            right: 95,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(35),
+              child: Theme(
+                data: ThemeData(
+                  canvasColor: _bottomNavColors[_selectedIndex],
                 ),
-              ],
-              currentIndex: _selectedIndex,
-              selectedItemColor: _navBarColors[_selectedIndex],
-              unselectedItemColor: Colors.white,
-              // elevation: 100,
-              showSelectedLabels: true,
-              showUnselectedLabels: true,
-              onTap: _onItemTapped,
+                child: BottomNavigationBar(
+                  type: BottomNavigationBarType.fixed,
+                  items: [
+
+                    BottomNavigationBarItem(
+                        icon: Padding(
+                          padding: EdgeInsets.only(left: AppSpacing.xxSmall,bottom: AppSpacing.xxSmall,right: AppSpacing.xxSmall,top: AppSpacing.xSmall),
+                          child: SvgPicture.asset('assets/svg/audio.svg',
+                              colorFilter: ColorFilter.mode(
+                                  _setColour(index: 0), BlendMode.srcIn),
+                              width: 30),
+                        ),
+                        label: "Audio"),
+                    BottomNavigationBarItem(
+                        icon: Padding(
+                          padding: EdgeInsets.only(left: AppSpacing.xxSmall,bottom: AppSpacing.xxSmall,right: AppSpacing.xxSmall,top: AppSpacing.xSmall),
+                          child: SvgPicture.asset('assets/svg/image.svg',
+                              colorFilter: ColorFilter.mode(
+                                  _setColour(index: 1), BlendMode.srcIn),
+                              width: 30),
+                        ),
+                        label: "Media"),
+                    BottomNavigationBarItem(
+                        icon: Padding(
+                          padding: EdgeInsets.only(left: AppSpacing.xxSmall,bottom: AppSpacing.xxSmall,right: AppSpacing.xxSmall,top: AppSpacing.xSmall),
+                          child: SvgPicture.asset('assets/svg/document.svg',
+                              colorFilter: ColorFilter.mode(
+                                  _setColour(index: 2), BlendMode.srcIn),
+                              width: 30),
+                        ),
+                        label: "Files"),
+                    BottomNavigationBarItem(
+                        icon: Padding(
+                          padding: EdgeInsets.only(left: AppSpacing.xxSmall,bottom: AppSpacing.xxSmall,right: AppSpacing.xxSmall,top: AppSpacing.xSmall),
+                          child: SvgPicture.asset('assets/svg/password.svg',
+                              colorFilter: ColorFilter.mode(
+                                  _setColour(index: 3), BlendMode.srcIn),
+                              width: 30),
+                        ),
+                        label: "Texts"),
+                  ],
+                  currentIndex: _selectedIndex,
+                  selectedItemColor: _navBarColors[_selectedIndex],
+                  unselectedItemColor: Colors.white,
+                  showSelectedLabels: true,
+                  showUnselectedLabels: true,
+                  selectedLabelStyle: AppTextStyles.navLabel,
+                  unselectedLabelStyle: AppTextStyles.navLabel,
+                  onTap: _onItemTapped,
+                ),
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

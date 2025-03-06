@@ -187,6 +187,14 @@ class AppTextStyles {
     );
   }
 
+  static const TextStyle navLabel = TextStyle(
+    fontFamily: 'Montserrat',
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: -0.9,
+    height: 1.5,
+  );
+
 
 
 

@@ -121,190 +121,199 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                       "List View", Icons.list_rounded, Colors.black),
                   _buildPopupMenuItem(
                       "Grid View", Icons.grid_view_rounded, Colors.black),
-                  _buildPopupMenuItem(
-                      "Manage Items", Icons.edit_note_rounded, Colors.black),
-                  _buildPopupMenuItem(
-                      "Sort Items", Icons.sort_rounded, Colors.black),
-                  _buildPopupMenuItem(
-                      "Manage Storage", Icons.storage_rounded, Colors.black),
-                  _buildPopupMenuItem("Recent Deleted",
-                      Icons.delete_sweep_rounded, Colors.black),
                 ],
               ),
             ),
         ],
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
+      body: Stack(
         children: [
-          if (isSubCategoryActive)
-            HomePillBar(
-              source: source,
-              selectedSource: selectedSource,
-              activeColor: AppColors.onboardDarkBlue,
-              inactiveColor: AppColors.onboardLightBlue,
-              onSelected: (index) {
-                setState(() {
-                  selectedSource = index;
-                });
-              },
-            ),
-          SizedBox(
-            height: 10,
-          ),
-          mediaList.isEmpty
-              ? HomeCard(
-                  title: emptyHeading,
-                  description: emptyDescription,
-                  icon: Icons.perm_media_rounded,
-                  iconColor: AppColors.onboardDarkBlue)
-              : isSubCategoryActive
-                  ? Expanded(
-                      child: SingleChildScrollView(
-                      physics: AlwaysScrollableScrollPhysics(),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SubCategoryDivider(
-                              subCategoryTitle: source[selectedSource]),
-                          GridView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 5,
-                              crossAxisSpacing: 2,
-                              mainAxisSpacing: 2,
-                            ),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: AppSpacing.medium),
-                            itemCount: getSelectedSourceLength(
-                                source[selectedSource], mediaList),
-                            itemBuilder: (context, index) {
-                              final selectedMediaList = getSelectedSourceItems(
-                                  source[selectedSource], mediaList);
-                              final media = selectedMediaList[index];
-                              return GestureDetector(
-                                  onTap: () => openFile(media.filePath),
-                                  onDoubleTap: () =>
-                                      togglePinMedia(media.filename),
-                                  child: MediaItem(
-                                    media: media,
-                                    isPinActive: true,
-                                    isSelected: false,
-                                  ));
-                            },
-                          ),
-                        ],
-                      ),
-                    ))
-                  : Expanded(
-                      child: SingleChildScrollView(
-                      physics: AlwaysScrollableScrollPhysics(),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (pinnedMedia.isNotEmpty)
-                            SubCategoryDivider(subCategoryTitle: 'Pinned'),
-                          if (pinnedMedia.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: AppSpacing.medium,
-                                  vertical: AppSpacing.xSmall),
-                              child: SizedBox(
-                                height: 150,
-                                child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: pinnedMedia.length,
-                                    itemBuilder: (context, index) {
-                                      final media = pinnedMedia[index];
-                                      return GestureDetector(
-                                        onTap: () => openFile(media.filePath),
-                                        child: MediaItem(
-                                          media: media,
-                                          isPinActive: false,
-                                          isSelected: false,
-                                        ),
-                                      );
-                                    }),
-                              ),
-                            ),
-                          if (recentMedia.isNotEmpty)
-                            SubCategoryDivider(
-                                subCategoryTitle: 'Recently Added'),
-                          if (recentMedia.isNotEmpty)
-                            GridView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 4,
-                                crossAxisSpacing: 2,
-                                mainAxisSpacing: 2,
-                              ),
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: AppSpacing.medium),
-                              itemCount: recentMedia.length,
-                              itemBuilder: (context, index) {
-                                final media = recentMedia[index];
-                                return GestureDetector(
-                                    onTap: () => openFile(media.filePath),
-                                    onDoubleTap: () =>
-                                        togglePinMedia(media.filename),
-                                    child: MediaItem(
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (isSubCategoryActive)
+                HomePillBar(
+                  source: source,
+                  selectedSource: selectedSource,
+                  activeColor: AppColors.onboardDarkBlue,
+                  inactiveColor: AppColors.onboardLightBlue,
+                  onSelected: (index) {
+                    setState(() {
+                      selectedSource = index;
+                    });
+                  },
+                ),
+              SizedBox(
+                height: 10,
+              ),
+              mediaList.isEmpty
+                  ? HomeCard(
+                      title: emptyHeading,
+                      description: emptyDescription,
+                      icon: Icons.perm_media_rounded,
+                      iconColor: AppColors.onboardDarkBlue)
+                  : isSubCategoryActive
+                      ? Expanded(
+                          child: SingleChildScrollView(
+                          physics: AlwaysScrollableScrollPhysics(),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SubCategoryDivider(
+                                  subCategoryTitle: source[selectedSource]),
+                              GridView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 5,
+                                  crossAxisSpacing: 2,
+                                  mainAxisSpacing: 2,
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: AppSpacing.medium),
+                                itemCount: getSelectedSourceLength(
+                                    source[selectedSource], mediaList),
+                                itemBuilder: (context, index) {
+                                  final selectedMediaList =
+                                      getSelectedSourceItems(
+                                          source[selectedSource], mediaList);
+                                  final media = selectedMediaList[index];
+                                  return GestureDetector(
+                                      onTap: () => openFile(media.filePath),
+                                      onDoubleTap: () =>
+                                          togglePinMedia(media.filename),
+                                      child: MediaItem(
                                         media: media,
-                                        isPinActive: false,
-                                        isSelected: false));
-                              },
-                            ),
-                          SubCategoryDivider(subCategoryTitle: 'All Files'),
-                          GridView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 6,
-                              crossAxisSpacing: 2,
-                              mainAxisSpacing: 2,
-                            ),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: AppSpacing.medium),
-                            itemCount: mediaList.length,
-                            itemBuilder: (context, index) {
-                              final media = mediaList[index];
-                              return GestureDetector(
-                                  onLongPress: () => !isMultiSelectActive
-                                      ? manageMultipleFiles(media)
-                                      : null,
-                                  onTap: () => isMultiSelectActive
-                                      ? selectedMedia.contains(media)
-                                          ? removeFile(media)
-                                          : addFile(media)
-                                      : openFile(media.filePath),
-                                  onDoubleTap: () => togglePinMedia(media.filename),
-                                  child: MediaItem(
-                                      media: media,
-                                      isPinActive: true,
-                                      isSelected:
-                                          selectedMedia.contains(media)));
-                            },
+                                        isPinActive: true,
+                                        isSelected: false,
+                                      ));
+                                },
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    )),
+                        ))
+                      : Expanded(
+                          child: SingleChildScrollView(
+                          physics: AlwaysScrollableScrollPhysics(),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (pinnedMedia.isNotEmpty)
+                                SubCategoryDivider(subCategoryTitle: 'Pinned'),
+                              if (pinnedMedia.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: AppSpacing.medium,
+                                      vertical: AppSpacing.xSmall),
+                                  child: SizedBox(
+                                    height: 150,
+                                    child: ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: pinnedMedia.length,
+                                        itemBuilder: (context, index) {
+                                          final media = pinnedMedia[index];
+                                          return GestureDetector(
+                                            onTap: () =>
+                                                openFile(media.filePath),
+                                            child: MediaItem(
+                                              media: media,
+                                              isPinActive: false,
+                                              isSelected: false,
+                                            ),
+                                          );
+                                        }),
+                                  ),
+                                ),
+                              if (recentMedia.isNotEmpty)
+                                SubCategoryDivider(
+                                    subCategoryTitle: 'Recently Added'),
+                              if (recentMedia.isNotEmpty)
+                                GridView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 4,
+                                    crossAxisSpacing: 2,
+                                    mainAxisSpacing: 2,
+                                  ),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: AppSpacing.medium),
+                                  itemCount: recentMedia.length,
+                                  itemBuilder: (context, index) {
+                                    final media = recentMedia[index];
+                                    return GestureDetector(
+                                        onTap: () => openFile(media.filePath),
+                                        onDoubleTap: () =>
+                                            togglePinMedia(media.filename),
+                                        child: MediaItem(
+                                            media: media,
+                                            isPinActive: false,
+                                            isSelected: false));
+                                  },
+                                ),
+                              SubCategoryDivider(subCategoryTitle: 'All Files'),
+                              GridView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 6,
+                                  crossAxisSpacing: 2,
+                                  mainAxisSpacing: 2,
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: AppSpacing.medium),
+                                itemCount: mediaList.length,
+                                itemBuilder: (context, index) {
+                                  final media = mediaList[index];
+                                  return GestureDetector(
+                                      onLongPress: () => !isMultiSelectActive
+                                          ? manageMultipleFiles(media)
+                                          : null,
+                                      onTap: () => isMultiSelectActive
+                                          ? selectedMedia.contains(media)
+                                              ? removeFile(media)
+                                              : addFile(media)
+                                          : openFile(media.filePath),
+                                      onDoubleTap: () =>
+                                          togglePinMedia(media.filename),
+                                      child: MediaItem(
+                                          media: media,
+                                          isPinActive: true,
+                                          isSelected:
+                                              selectedMedia.contains(media)));
+                                },
+                              ),
+                            ],
+                          ),
+                        )),
+            ],
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: EdgeInsets.only(right: AppSpacing.large, bottom: 25),
+              child: SizedBox(
+                width: 55,
+                height: 55,
+                child: FloatingActionButton(
+                  onPressed: onTapMediaBtn,
+                  backgroundColor: AppColors.onboardLightBlue,
+                  elevation: 0,
+                  shape: CircleBorder(),
+                  child: Icon(Icons.add_circle_rounded, size: 30, color: AppColors.navBarBlue),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: onTapMediaBtn,
-        backgroundColor: AppColors.onboardLightBlue,
-        label: Icon(Icons.add_circle_rounded, size: 20, color: Colors.white),
-        elevation: 0,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );
   }
 
@@ -411,9 +420,9 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
   }
 
   removeFile(MediaModel mediaFile) {
-    if(selectedMedia.length==1){
+    if (selectedMedia.length == 1) {
       clearSelection();
-    } else{
+    } else {
       setState(() {
         selectedMedia = List.from(selectedMedia)..remove(mediaFile);
       });
@@ -427,7 +436,7 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
     });
   }
 
-  void deleteMediaFiles() async{
+  void deleteMediaFiles() async {
     await ref.read(mediaProvider.notifier).deleteMedia(selectedMedia);
     clearSelection();
   }
