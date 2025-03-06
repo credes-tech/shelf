@@ -193,6 +193,9 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                                       ));
                                 },
                               ),
+                              SizedBox(
+                                height: 100,
+                              ),
                             ],
                           ),
                         ))
@@ -290,7 +293,11 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                                               selectedMedia.contains(media)));
                                 },
                               ),
+                              SizedBox(
+                                height: 100,
+                              ),
                             ],
+
                           ),
                         )),
             ],
@@ -304,10 +311,10 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                 height: 55,
                 child: FloatingActionButton(
                   onPressed: onTapMediaBtn,
-                  backgroundColor: AppColors.onboardLightBlue,
+                  backgroundColor: AppColors.onboardDarkBlue,
                   elevation: 0,
                   shape: CircleBorder(),
-                  child: Icon(Icons.add_circle_rounded, size: 30, color: AppColors.navBarBlue),
+                  child: Icon(Icons.add_circle_rounded, size: 25, color: AppColors.navBarBlue),
                 ),
               ),
             ),

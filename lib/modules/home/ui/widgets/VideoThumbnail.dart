@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get_thumbnail_video/video_thumbnail.dart';
+import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:path_provider/path_provider.dart';
 
 class VideoThumbnailView extends StatefulWidget {
@@ -23,7 +24,7 @@ class _VideoThumbnailViewState extends State<VideoThumbnailView> {
 
   Future<void> _generateThumbnail() async {
     final tempDir = await getTemporaryDirectory();
-    final  thumbnail = await VideoThumbnail.thumbnailFile(
+    final thumbnail = await VideoThumbnail.thumbnailFile(
       video: widget.videoPath,
       thumbnailPath: tempDir.path,
       maxHeight: 200,
@@ -39,7 +40,16 @@ class _VideoThumbnailViewState extends State<VideoThumbnailView> {
   @override
   Widget build(BuildContext context) {
     return _isLoading
-        ? Center(child: CircularProgressIndicator())
+        ? Center(
+            child: SizedBox(
+              width: 15,
+              height: 15,
+              child: CircularProgressIndicator(
+                strokeWidth: 1.5,
+                color: AppColors.onboardLightBlue,
+              ),
+            ),
+          )
         : _thumbnailPath != null
             ? Stack(
                 children: [
