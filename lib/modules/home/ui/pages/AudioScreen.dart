@@ -247,180 +247,190 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
           ),
         ],
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
+      body: Stack(
         children: [
-          if (isSubCategoryActive)
-            HomePillBar(
-              source: source,
-              selectedSource: selectedSource,
-              activeColor: AppColors.onboardDarkOrange,
-              inactiveColor: AppColors.onboardLightOrange,
-              onSelected: (index) {
-                setState(() {
-                  selectedSource = index; // Update selected pill
-                });
-              },
-            ),
-          audioList.isEmpty
-              ? HomeCard(
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              if (isSubCategoryActive)
+                HomePillBar(
+                  source: source,
+                  selectedSource: selectedSource,
+                  activeColor: AppColors.onboardDarkOrange,
+                  inactiveColor: AppColors.onboardLightOrange,
+                  onSelected: (index) {
+                    setState(() {
+                      selectedSource = index; // Update selected pill
+                    });
+                  },
+                ),
+              audioList.isEmpty
+                  ? HomeCard(
                   title: emptyHeading,
                   description: emptyDescription,
                   icon: Icons.audiotrack_rounded,
                   iconColor: AppColors.onboardDarkOrange)
-              : Expanded(
-                  child: ListView.builder(
-                      itemCount: audioList.length,
-                      itemBuilder: (context, index) {
-                        final audio = audioList[index];
-                        return GestureDetector(
-                          onLongPress: () => _toggleOption(audio.filePath),
-                          onDoubleTap: () =>
-                              togglePinAudio(audio.filePath, audio.filename),
-                          child: (_isOpen[audio.filePath] == true)
-                              ? Container(
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(35.0),
-                                      color: AppColors.onboardLightOrange),
-                                  margin: EdgeInsets.symmetric(
-                                      horizontal: AppSpacing.medium,
-                                      vertical: AppSpacing.xSmall),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      SizedBox(
-                                        width: 20,
-                                      ),
-                                      SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.45,
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: AppSpacing.medium),
-                                          child: Text(
-                                            audio.filename,
-                                            style: AppTextStyles.audioTitle,
-                                            softWrap: false,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ),
-                                      IconButton(
-                                          onPressed: () =>
-                                              ShareService.shareFile(
-                                                  audio.filePath),
-                                          icon: Icon(
-                                            Icons.ios_share,
-                                            color: Colors.black,
-                                          )),
-                                      IconButton(
-                                          onPressed: () =>
-                                              onTapDeleteBtn(index),
-                                          icon: Icon(
-                                            Icons.delete,
-                                            color: Colors.black,
-                                          )),
-                                      IconButton(
-                                          onPressed: () =>
-                                              _toggleOption(audio.filePath),
-                                          icon: Icon(
-                                            Icons.close_rounded,
-                                            color: Colors.black,
-                                          ))
-                                    ],
-                                  ),
-                                )
-                              : Container(
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(35.0),
-                                      color: AppColors.ghostModeRed),
-                                  margin: EdgeInsets.symmetric(
-                                      horizontal: AppSpacing.medium,
-                                      vertical: AppSpacing.xSmall),
-                                  child: SizedBox(
-                                    height: 69,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            SizedBox(
-                                              height: 50,
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  (audio.isPinned ? 0.6 : 0.7),
-                                              child: AudioText(
-                                                  audio: audio,
-                                                  duration: ref
-                                                          .read(audioProvider
-                                                              .notifier)
-                                                          .getDuration(
-                                                              audio.filePath) ??
-                                                      Duration.zero),
-                                            )
-                                          ],
-                                        ),
-                                        audio.isPinned
-                                            ? SizedBox(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.05,
-                                              )
-                                            : SizedBox(),
-                                        audio.isPinned
-                                            ? Icon(
-                                                Icons.stars_rounded,
-                                                size: 30,
-                                                color:
-                                                    AppColors.onboardDarkOrange,
-                                              )
-                                            : SizedBox(),
-                                        IconButton(
-                                          onPressed: () =>
-                                              _togglePlayPause(context, audio),
-                                          icon: Icon(
-                                            (_isPlaying[audio.filePath] == true)
-                                                ? Icons
-                                                    .pause_circle_filled_rounded
-                                                : Icons
-                                                    .play_circle_filled_rounded,
-                                            size: 40,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                  : Expanded(
+                child: ListView.builder(
+                    itemCount: audioList.length,
+                    itemBuilder: (context, index) {
+                      final audio = audioList[index];
+                      return GestureDetector(
+                        onLongPress: () => _toggleOption(audio.filePath),
+                        onDoubleTap: () =>
+                            togglePinAudio(audio.filePath, audio.filename),
+                        child: (_isOpen[audio.filePath] == true)
+                            ? Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(35.0),
+                              color: AppColors.onboardLightOrange),
+                          margin: EdgeInsets.symmetric(
+                              horizontal: AppSpacing.medium,
+                              vertical: AppSpacing.xSmall),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment:
+                            CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                              ),
+                              SizedBox(
+                                width:
+                                MediaQuery.of(context).size.width *
+                                    0.45,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: AppSpacing.medium),
+                                  child: Text(
+                                    audio.filename,
+                                    style: AppTextStyles.audioTitle,
+                                    softWrap: false,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                        );
-                      }),
+                              ),
+                              IconButton(
+                                  onPressed: () =>
+                                      ShareService.shareFile(
+                                          audio.filePath),
+                                  icon: Icon(
+                                    Icons.ios_share,
+                                    color: Colors.black,
+                                  )),
+                              IconButton(
+                                  onPressed: () =>
+                                      onTapDeleteBtn(index),
+                                  icon: Icon(
+                                    Icons.delete,
+                                    color: Colors.black,
+                                  )),
+                              IconButton(
+                                  onPressed: () =>
+                                      _toggleOption(audio.filePath),
+                                  icon: Icon(
+                                    Icons.close_rounded,
+                                    color: Colors.black,
+                                  ))
+                            ],
+                          ),
+                        )
+                            : Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(35.0),
+                              color: AppColors.ghostModeRed),
+                          margin: EdgeInsets.symmetric(
+                              horizontal: AppSpacing.medium,
+                              vertical: AppSpacing.xSmall),
+                          child: SizedBox(
+                            height: 69,
+                            child: Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment.start,
+                              crossAxisAlignment:
+                              CrossAxisAlignment.center,
+                              children: [
+                                Column(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      height: 50,
+                                      width: MediaQuery.of(context)
+                                          .size
+                                          .width *
+                                          (audio.isPinned ? 0.6 : 0.7),
+                                      child: AudioText(
+                                          audio: audio,
+                                          duration: ref
+                                              .read(audioProvider
+                                              .notifier)
+                                              .getDuration(
+                                              audio.filePath) ??
+                                              Duration.zero),
+                                    )
+                                  ],
+                                ),
+                                audio.isPinned
+                                    ? SizedBox(
+                                  width: MediaQuery.of(context)
+                                      .size
+                                      .width *
+                                      0.05,
+                                )
+                                    : SizedBox(),
+                                audio.isPinned
+                                    ? Icon(
+                                  Icons.stars_rounded,
+                                  size: 30,
+                                  color:
+                                  AppColors.onboardDarkOrange,
+                                )
+                                    : SizedBox(),
+                                IconButton(
+                                  onPressed: () =>
+                                      _togglePlayPause(context, audio),
+                                  icon: Icon(
+                                    (_isPlaying[audio.filePath] == true)
+                                        ? Icons
+                                        .pause_circle_filled_rounded
+                                        : Icons
+                                        .play_circle_filled_rounded,
+                                    size: 40,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+              ),
+            ],
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: EdgeInsets.only(right: AppSpacing.large, bottom: 25),
+              child: SizedBox(
+                width: 55,
+                height: 55,
+                child: FloatingActionButton(
+                  onPressed: ()=>onTapAudioBtn(context),
+                  backgroundColor: AppColors.onboardLightOrange,
+                  elevation: 0,
+                  shape: CircleBorder(),
+                  child: Icon(Icons.add_circle_rounded, size: 25, color: AppColors.navBarOrange),
                 ),
+              ),
+            ),
+          ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => onTapAudioBtn(context),
-        backgroundColor: AppColors.onboardDarkOrange,
-        elevation: 0,
-        child: Icon(
-          Icons.add_circle_rounded,
-          size: 20,
-          color: Colors.white,
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );
   }
 

@@ -62,132 +62,153 @@ class _FileScreenState extends ConsumerState<FileScreen> {
           ),
         ],
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
+      body: Stack(
         children: [
-          HomePillBar(
-            source: source,
-            selectedSource: selectedSource,
-            activeColor: AppColors.onboardDarkPink,
-            inactiveColor: AppColors.onboardLightPink,
-            onSelected: (index) {
-              setState(() {
-                selectedSource = index; // Update selected pill
-              });
-            },
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.medium, vertical: AppSpacing.xSmall),
-            decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(20.0),
-                    bottomRight: Radius.circular(20.0))),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              HomePillBar(
+                source: source,
+                selectedSource: selectedSource,
+                activeColor: AppColors.onboardDarkPink,
+                inactiveColor: AppColors.onboardLightPink,
+                onSelected: (index) {
+                  setState(() {
+                    selectedSource = index; // Update selected pill
+                  });
+                },
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(
+                    horizontal: AppSpacing.medium, vertical: AppSpacing.xSmall),
+                decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(20.0),
+                        bottomRight: Radius.circular(20.0))),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    HomeToggler(
-                      initialValue: filePinnedNotifier,
-                      onChanged: (filePinnedNotifier) {
-                        ref.read(fileProvider.notifier).togglePinnedFilter();
-                      },
-                      color: AppColors.onboardDarkPink,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        HomeToggler(
+                          initialValue: filePinnedNotifier,
+                          onChanged: (filePinnedNotifier) {
+                            ref.read(fileProvider.notifier).togglePinnedFilter();
+                          },
+                          color: AppColors.onboardDarkPink,
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text("Quick Access", style: AppTextStyles.pinLabelText),
+                      ],
                     ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text("Quick Access", style: AppTextStyles.pinLabelText),
+                    ElevatedButton(
+                      onPressed: onTapFileBtn,
+                      style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.only(
+                              left: AppSpacing.medium,
+                              right: AppSpacing.xSmall,
+                              top: AppSpacing.xSmall,
+                              bottom: AppSpacing.xSmall),
+                          backgroundColor: AppColors.onboardDarkPink),
+                      child: Row(
+                        children: [
+                          Text("Add New", style: AppTextStyles.homePinned),
+                          SizedBox(width: 8),
+                          Icon(Icons.add_circle_rounded,
+                              size: 30, color: AppColors.onboardLightPink)
+                        ],
+                      ),
+                    )
                   ],
                 ),
-                ElevatedButton(
-                  onPressed: onTapFileBtn,
-                  style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.only(
-                          left: AppSpacing.medium,
-                          right: AppSpacing.xSmall,
-                          top: AppSpacing.xSmall,
-                          bottom: AppSpacing.xSmall),
-                      backgroundColor: AppColors.onboardDarkPink),
-                  child: Row(
-                    children: [
-                      Text("Add New", style: AppTextStyles.homePinned),
-                      SizedBox(width: 8),
-                      Icon(Icons.add_circle_rounded,
-                          size: 30, color: AppColors.onboardLightPink)
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-          fileList.isEmpty
-              ? HomeCard(
+              ),
+              fileList.isEmpty
+                  ? HomeCard(
                   title: emptyHeading,
                   description: emptyDescription,
                   icon: Icons.picture_as_pdf_rounded,
                   iconColor: AppColors.onboardDarkPink)
-              : Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: GridView.builder(
-                      itemCount: fileList.length,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        childAspectRatio: 0.8,
-                      ),
-                      itemBuilder: (context, index) {
-                        final file = fileList[index];
-                        return GestureDetector(
-                          onTap: () {
-                            context.push(
-                              '/home/file/view',
-                              extra: {
-                                'filePath': file.filePath,
-                                'fileName': file.filename,
-                              },
-                            );
-                          },
-                          onDoubleTap: () => togglePinFile(file.filename),
-                          onLongPress: () async {
-                            await ref
-                                .read(fileProvider.notifier)
-                                .deleteFile(index);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("File deleted")),
-                            );
-                          },
-                          child: Stack(
-                            children: [
-                              AspectRatio(
-                                  aspectRatio: 0.8,
-                                  child: FileCard(file: file)),
-                              if (file.isPinned)
-                                Positioned(
-                                    top: 10,
-                                    right: 10,
-                                    child: CircleAvatar(
-                                      backgroundColor: Colors.white,
-                                      radius: 10,
-                                      child: Icon(
-                                        Icons.stars_rounded,
-                                        size: 20,
-                                        color: AppColors.onboardDarkPink,
-                                      ),
-                                    ))
-                            ],
-                          ),
-                        );
-                      },
+                  : Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: GridView.builder(
+                    itemCount: fileList.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      childAspectRatio: 0.8,
                     ),
+                    itemBuilder: (context, index) {
+                      final file = fileList[index];
+                      return GestureDetector(
+                        onTap: () {
+                          context.push(
+                            '/home/file/view',
+                            extra: {
+                              'filePath': file.filePath,
+                              'fileName': file.filename,
+                            },
+                          );
+                        },
+                        onDoubleTap: () => togglePinFile(file.filename),
+                        onLongPress: () async {
+                          await ref
+                              .read(fileProvider.notifier)
+                              .deleteFile(index);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("File deleted")),
+                          );
+                        },
+                        child: Stack(
+                          children: [
+                            AspectRatio(
+                                aspectRatio: 0.8,
+                                child: FileCard(file: file)),
+                            if (file.isPinned)
+                              Positioned(
+                                  top: 10,
+                                  right: 10,
+                                  child: CircleAvatar(
+                                    backgroundColor: Colors.white,
+                                    radius: 10,
+                                    child: Icon(
+                                      Icons.stars_rounded,
+                                      size: 20,
+                                      color: AppColors.onboardDarkPink,
+                                    ),
+                                  ))
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 ),
+              ),
+            ],
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: EdgeInsets.only(right: AppSpacing.large, bottom: 25),
+              child: SizedBox(
+                width: 55,
+                height: 55,
+                child: FloatingActionButton(
+                  onPressed: onTapFileBtn,
+                  backgroundColor: AppColors.onboardLightPink,
+                  elevation: 0,
+                  shape: CircleBorder(),
+                  child: Icon(Icons.add_circle_rounded, size: 25, color: AppColors.navBarPink),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

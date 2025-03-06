@@ -311,7 +311,7 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                 height: 55,
                 child: FloatingActionButton(
                   onPressed: onTapMediaBtn,
-                  backgroundColor: AppColors.onboardDarkBlue,
+                  backgroundColor: AppColors.onboardLightBlue,
                   elevation: 0,
                   shape: CircleBorder(),
                   child: Icon(Icons.add_circle_rounded, size: 25, color: AppColors.navBarBlue),

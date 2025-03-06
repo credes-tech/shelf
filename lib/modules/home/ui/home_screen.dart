@@ -17,18 +17,19 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _selectedIndex);
+  }
+
   final List<Widget> _pages = [
     AudioScreen(),
     MediaScreen(),
     FileScreen(),
     TextScreen(),
-  ];
-
-  final List<Color> _bottomNavInactiveColors = [
-    AppColors.onboardDarkOrange,
-    AppColors.onboardDarkBlue,
-    AppColors.onboardDarkPink,
-    AppColors.onboardDarkYellow,
   ];
 
   final List<Color> _bottomNavColors = [
@@ -49,6 +50,11 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedIndex = index;
     });
+    _pageController.animateToPage(
+      index,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -57,8 +63,13 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          IndexedStack(
-            index: _selectedIndex,
+          PageView(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
             children: _pages,
           ),
           Positioned(
@@ -74,10 +85,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: BottomNavigationBar(
                   type: BottomNavigationBarType.fixed,
                   items: [
-
                     BottomNavigationBarItem(
                         icon: Padding(
-                          padding: EdgeInsets.only(left: AppSpacing.xxSmall,bottom: AppSpacing.xxSmall,right: AppSpacing.xxSmall,top: AppSpacing.xSmall),
+                          padding: EdgeInsets.only(
+                              left: AppSpacing.xxSmall,
+                              bottom: AppSpacing.xxSmall,
+                              right: AppSpacing.xxSmall,
+                              top: AppSpacing.xSmall),
                           child: SvgPicture.asset('assets/svg/audio.svg',
                               colorFilter: ColorFilter.mode(
                                   _setColour(index: 0), BlendMode.srcIn),
@@ -86,7 +100,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         label: "Audio"),
                     BottomNavigationBarItem(
                         icon: Padding(
-                          padding: EdgeInsets.only(left: AppSpacing.xxSmall,bottom: AppSpacing.xxSmall,right: AppSpacing.xxSmall,top: AppSpacing.xSmall),
+                          padding: EdgeInsets.only(
+                              left: AppSpacing.xxSmall,
+                              bottom: AppSpacing.xxSmall,
+                              right: AppSpacing.xxSmall,
+                              top: AppSpacing.xSmall),
                           child: SvgPicture.asset('assets/svg/image.svg',
                               colorFilter: ColorFilter.mode(
                                   _setColour(index: 1), BlendMode.srcIn),
@@ -95,7 +113,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         label: "Media"),
                     BottomNavigationBarItem(
                         icon: Padding(
-                          padding: EdgeInsets.only(left: AppSpacing.xxSmall,bottom: AppSpacing.xxSmall,right: AppSpacing.xxSmall,top: AppSpacing.xSmall),
+                          padding: EdgeInsets.only(
+                              left: AppSpacing.xxSmall,
+                              bottom: AppSpacing.xxSmall,
+                              right: AppSpacing.xxSmall,
+                              top: AppSpacing.xSmall),
                           child: SvgPicture.asset('assets/svg/document.svg',
                               colorFilter: ColorFilter.mode(
                                   _setColour(index: 2), BlendMode.srcIn),
@@ -104,7 +126,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         label: "Files"),
                     BottomNavigationBarItem(
                         icon: Padding(
-                          padding: EdgeInsets.only(left: AppSpacing.xxSmall,bottom: AppSpacing.xxSmall,right: AppSpacing.xxSmall,top: AppSpacing.xSmall),
+                          padding: EdgeInsets.only(
+                              left: AppSpacing.xxSmall,
+                              bottom: AppSpacing.xxSmall,
+                              right: AppSpacing.xxSmall,
+                              top: AppSpacing.xSmall),
                           child: SvgPicture.asset('assets/svg/password.svg',
                               colorFilter: ColorFilter.mode(
                                   _setColour(index: 3), BlendMode.srcIn),
