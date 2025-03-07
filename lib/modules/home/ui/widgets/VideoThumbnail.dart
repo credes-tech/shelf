@@ -41,14 +41,7 @@ class _VideoThumbnailViewState extends State<VideoThumbnailView> {
   Widget build(BuildContext context) {
     return _isLoading
         ? Center(
-            child: SizedBox(
-              width: 15,
-              height: 15,
-              child: CircularProgressIndicator(
-                strokeWidth: 1.5,
-                color: AppColors.onboardLightBlue,
-              ),
-            ),
+            child: Icon(Icons.image_rounded,color: AppColors.onboardLightBlue,),
           )
         : _thumbnailPath != null
             ? Stack(
@@ -65,6 +58,6 @@ class _VideoThumbnailViewState extends State<VideoThumbnailView> {
                   ),
                 ],
               )
-            : Center(child: Text("Failed to load thumbnail"));
+            : Center(child: Icon(Icons.video_camera_back_rounded));
   }
 }

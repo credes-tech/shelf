@@ -78,6 +78,11 @@ class MediaNotifier extends StateNotifier<List<MediaModel>> {
     loadPinnedFiles();
     return showOnlyPinned;
   }
+
+  bool onlyTogglePin() {
+    showOnlyPinned = !showOnlyPinned;
+    return showOnlyPinned;
+  }
 }
 
 
