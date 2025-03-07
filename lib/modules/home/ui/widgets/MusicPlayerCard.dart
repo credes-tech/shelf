@@ -1,37 +1,54 @@
+import 'dart:developer';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:marquee/marquee.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/modules/home/domain/models/audio_model.dart';
+import 'package:my_shelf_project/modules/home/domain/providers/audio_player_provider.dart';
 
 class MusicPlayerCard extends ConsumerStatefulWidget {
   final AudioModel? audio;
-  final AudioPlayer audioPlayer;
-  final Duration position;
-  final Duration duration;
-  final bool isSeeking;
-  final void Function(dynamic) onChanged;
-  final void Function(dynamic) onChangeStart;
-  final void Function(dynamic) onChangeEnd;
+
   const MusicPlayerCard({
     super.key,
-    required this.audioPlayer,
     required this.audio,
-    required this.position,
-    required this.duration,
-    required this.isSeeking,
-    required this.onChanged,
-    required this.onChangeStart,
-    required this.onChangeEnd,
   });
   @override
   ConsumerState<MusicPlayerCard> createState() => _MusicPlayerCardState();
 }
 
 class _MusicPlayerCardState extends ConsumerState<MusicPlayerCard> {
+  final Map<String, bool> repeat = {};
+  String formatDuration(Duration duration) {
+    int hours = duration.inHours;
+    int minutes = duration.inMinutes.remainder(60);
+    int seconds = duration.inSeconds.remainder(60);
+
+    if (hours > 0) {
+      // Format for hours: H:M:SS
+      return '$hours:$minutes:${seconds.toString().padLeft(2, '0')}';
+    } else {
+      // Format for minutes: M:SS
+      return '$minutes:${seconds.toString().padLeft(2, '0')}';
+    }
+  }
+
+  void onPressRepeat(audio, controller) {
+    if (repeat.containsKey(audio.filePath)) {
+      setState(() {
+        repeat[audio.filePath] = !repeat[audio.filePath]!;
+      });
+    } else {
+      repeat[audio.filePath] = true;
+    }
+    controller.onRepeat = repeat[audio.filePath]!;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final controller = ref.watch(audioPlayerControllerProvider);
     AudioModel audio = widget.audio!;
     return Card(
       color: Colors.white,
@@ -138,17 +155,30 @@ class _MusicPlayerCardState extends ConsumerState<MusicPlayerCard> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 TweenAnimationBuilder<double>(
-                  tween: Tween<double>(begin: 0, end: 0),
+                  tween: Tween<double>(
+                      begin: 0, end: controller.position.inSeconds.toDouble()),
                   duration:
                       Duration(milliseconds: 300), // Smooth transition effect
                   builder: (context, value, child) {
                     return Slider(
                       min: 0,
-                      max: 0,
-                      value: value,
-                      onChanged: (newValue) {},
-                      onChangeStart: (newValue) {},
-                      onChangeEnd: (newValue) {},
+                      max: controller.duration.inSeconds.toDouble(),
+                      value: controller.isSeeking
+                          ? value
+                          : controller.position.inSeconds.toDouble(),
+                      onChanged: (newValue) {
+                        controller.isSeeking = true;
+                      },
+                      onChangeStart: (newValue) {
+                        controller.isSeeking = true;
+                        // Duration duration = Duration(seconds: newValue.toInt());
+                        // controller.seekTo(duration);
+                      },
+                      onChangeEnd: (newValue) {
+                        Duration duration = Duration(seconds: newValue.toInt());
+                        controller.seekTo(duration);
+                        controller.isSeeking = false;
+                      },
                       activeColor: AppColors.onboardDarkOrange,
                       inactiveColor: Colors.grey,
                       thumbColor: AppColors.onboardLightOrange,
@@ -165,11 +195,11 @@ class _MusicPlayerCardState extends ConsumerState<MusicPlayerCard> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "0:00",
+                          formatDuration(controller.position),
                           style: TextStyle(color: Colors.black, fontSize: 12),
                         ),
                         Text(
-                          "4:23",
+                          formatDuration(controller.duration),
                           style: TextStyle(color: Colors.black, fontSize: 12),
                         )
                       ],
@@ -183,13 +213,17 @@ class _MusicPlayerCardState extends ConsumerState<MusicPlayerCard> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Expanded(
-                    child: IconButton(
-                        icon: Icon(
-                          Icons.repeat,
-                          size: 20,
-                          color: Colors.black,
-                        ),
-                        onPressed: () {})),
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.repeat,
+                      size: 20,
+                      color: (repeat[audio.filePath] == true)
+                          ? AppColors.onboardDarkOrange
+                          : Colors.black,
+                    ),
+                    onPressed: () => onPressRepeat(audio, controller),
+                  ),
+                ),
                 Expanded(
                     child: IconButton(
                         icon: Icon(
@@ -198,26 +232,38 @@ class _MusicPlayerCardState extends ConsumerState<MusicPlayerCard> {
                         ),
                         onPressed: () {})),
                 Expanded(
-                    child: IconButton(
-                        icon: Icon(
-                          Icons.replay_5,
-                          color: Colors.black,
-                        ),
-                        onPressed: () {})),
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.replay_5,
+                      color: Colors.black,
+                    ),
+                    onPressed: controller.seekBackward,
+                  ),
+                ),
                 IconButton(
                     icon: Icon(
-                      Icons.play_circle_filled,
+                      controller.isPlaying
+                          ? Icons.pause_circle_filled
+                          : Icons.play_circle_filled,
                       size: 58,
                       color: AppColors.onboardDarkOrange,
                     ),
-                    onPressed: () {}),
+                    onPressed: () {
+                      if (controller.isPlaying) {
+                        controller.pause();
+                      } else {
+                        controller.play(audio.filePath);
+                      }
+                    }),
                 Expanded(
-                    child: IconButton(
-                        icon: Icon(
-                          Icons.forward_5,
-                          color: Colors.black,
-                        ),
-                        onPressed: () {})),
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.forward_5,
+                      color: Colors.black,
+                    ),
+                    onPressed: controller.seekForward,
+                  ),
+                ),
                 Expanded(
                     child: IconButton(
                         icon: Icon(
