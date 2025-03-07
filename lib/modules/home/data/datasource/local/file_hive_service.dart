@@ -27,6 +27,17 @@ class FileHiveService {
     await box.deleteAt(index);
   }
 
+  Future<void> deleteMultipleFileByPaths(List<String> filePaths) async {
+    final box = Hive.box<FileHive>(_boxName);
+    final keysToDelete = box.keys.where((key) {
+      final file = box.get(key);
+      return filePaths.contains(file?.filePath);
+    }).toList();
+    if (keysToDelete.isNotEmpty) {
+      await box.deleteAll(keysToDelete);
+    }
+  }
+
   Future<bool> isFileExists(String fileName) async {
     final box = Hive.box<FileHive>(_boxName);
     return box.values.any((file) => file.filename.toLowerCase() == fileName.toLowerCase());

@@ -12,6 +12,8 @@ class FileRepository {
 
   Future<void> deleteFile(int index) => _hiveService.deleteFile(index);
 
+  Future<void> deleteMultipleFiles(List<String> filePaths) => _hiveService.deleteMultipleFileByPaths(filePaths);
+
   Future<bool> isFileExists(String fileName) => _hiveService.isFileExists(fileName);
 
   Future<void> togglePin(String fileName) => _hiveService.togglePin(fileName);

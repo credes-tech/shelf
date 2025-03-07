@@ -36,11 +36,6 @@ class FileNotifier extends StateNotifier<List<FileModel>> {
     fetchFiles();
   }
 
-  void togglePinnedFilter() {
-    showOnlyPinned = !showOnlyPinned;
-    loadPinnedFiles();
-  }
-
   Future<void> pickAndSaveFile() async {
     String? filePath = await _filePickerService.pickDocFile();
     if (filePath != null) {
@@ -60,14 +55,22 @@ class FileNotifier extends StateNotifier<List<FileModel>> {
     return state[index].filePath;
   }
 
-  Future<void> deleteFile(int index) async {
-    final fileToDelete = state[index].filePath;
-    await _fileRepo.deleteFile(index);
-    final file = File(fileToDelete);
-    if (await file.exists()) {
-      await file.delete();
+  Future<void> deleteFile(List<FileModel> docFiles) async {
+    final filePaths = docFiles.map((file) => file.filePath).toList();
+    await _fileRepo.deleteMultipleFiles(filePaths);
+    for (var doc in docFiles) {
+      final file = File(doc.filePath);
+      if (await file.exists()) {
+        await file.delete();
+      }
     }
-    state = List.from(state)..removeAt(index);
+    fetchFiles();
+  }
+
+  bool togglePinnedFilter() {
+    showOnlyPinned = !showOnlyPinned;
+    loadPinnedFiles();
+    return showOnlyPinned;
   }
 }
 

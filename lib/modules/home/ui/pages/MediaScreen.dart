@@ -348,6 +348,12 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
     bool isGranted = await PermissionService.requestMediaPermission();
     if (isGranted == true) {
       await ref.read(mediaProvider.notifier).pickAndSaveMedia();
+      if(isPinActive){
+        bool pinStatus = ref.read(mediaProvider.notifier).togglePinnedFilter();
+        setState(() {
+          isPinActive = pinStatus;
+        });
+      }
     } else {
       print("Permission denied");
     }
@@ -365,7 +371,6 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
   }
 
   int getSelectedSourceLength(String source, List<MediaModel> mediaList) {
-    print(source);
     switch (source) {
       case "All Files":
         return mediaList.length;
@@ -421,12 +426,24 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
   }
 
   addFile(MediaModel mediaFile) {
+    if(isPinActive){
+      bool pinStatus = ref.read(mediaProvider.notifier).onlyTogglePin();
+      setState(() {
+        isPinActive = pinStatus;
+      });
+    }
     setState(() {
       selectedMedia = List.from(selectedMedia)..add(mediaFile);
     });
   }
 
   removeFile(MediaModel mediaFile) {
+    if(isPinActive){
+      bool pinStatus = ref.read(mediaProvider.notifier).onlyTogglePin();
+      setState(() {
+        isPinActive = pinStatus;
+      });
+    }
     if (selectedMedia.length == 1) {
       clearSelection();
     } else {
