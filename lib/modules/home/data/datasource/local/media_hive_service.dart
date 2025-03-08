@@ -27,6 +27,17 @@ class MediaHiveService {
     await box.deleteAt(index);
   }
 
+  Future<void> deleteMultipleMediaByPaths(List<String> filePaths) async {
+    final box = Hive.box<MediaHive>(_boxName);
+    final keysToDelete = box.keys.where((key) {
+      final media = box.get(key);
+      return filePaths.contains(media?.filePath);
+    }).toList();
+    if (keysToDelete.isNotEmpty) {
+      await box.deleteAll(keysToDelete);
+    }
+  }
+
   Future<bool> isMediaExists(String fileName) async {
     final box = Hive.box<MediaHive>(_boxName);
     return box.values.any((media) => media.filename.toLowerCase() == fileName.toLowerCase());

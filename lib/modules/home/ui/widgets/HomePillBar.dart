@@ -8,13 +8,15 @@ class HomePillBar extends StatelessWidget {
     required this.source,
     required this.selectedSource,
     required this.activeColor,
-    required this.inactiveColor
+    required this.inactiveColor,
+    required this.onSelected,
   });
 
   final List<String> source;
   final int selectedSource;
   final Color activeColor;
   final Color inactiveColor;
+  final Function(int) onSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -26,14 +28,17 @@ class HomePillBar extends StatelessWidget {
         children: [
           Expanded(
             child: SizedBox(
-              height: 50,
+              height: 45,
               child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: source.length,
                   itemBuilder: (context, index) {
                     return HomePills(
                       text: source[index],
-                      color: (selectedSource==index) ? activeColor: inactiveColor,
+                      color: (selectedSource == index)
+                          ? activeColor
+                          : inactiveColor,
+                      onTap: () => onSelected(index),
                     );
                   }),
             ),

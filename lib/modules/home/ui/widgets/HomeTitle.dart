@@ -13,7 +13,7 @@ class HomeTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(left: AppSpacing.small),
+      margin: EdgeInsets.only(left: AppSpacing.xxSmall),
       child: Text(
         title,
         style: AppTextStyles.homeTitle,
