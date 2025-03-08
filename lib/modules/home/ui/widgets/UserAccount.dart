@@ -13,7 +13,7 @@ class UserAccount extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: () {
-        context.push("/home/profile");
+        // context.push("/home/profile");
       },
       icon: Icon(Icons.account_circle_rounded),
       color: Colors.black,

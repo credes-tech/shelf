@@ -75,13 +75,13 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                   Icons.close_rounded,
                   color: Colors.black,
                 )),
-          if (!isSubCategoryActive && !isMultiSelectActive)
-            IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.search_rounded,
-                  color: Colors.black,
-                )),
+          // if (!isSubCategoryActive && !isMultiSelectActive)
+          //   IconButton(
+          //       onPressed: () {},
+          //       icon: Icon(
+          //         Icons.search_rounded,
+          //         color: Colors.black,
+          //       )),
           if (!isSubCategoryActive && !isMultiSelectActive)
             Stack(
               children: [

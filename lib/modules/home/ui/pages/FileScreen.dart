@@ -73,13 +73,13 @@ class _FileScreenState extends ConsumerState<FileScreen> {
                   Icons.close_rounded,
                   color: Colors.black,
                 )),
-          if (!isSubCategoryActive && !isMultiSelectActive)
-            IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.search_rounded,
-                  color: Colors.black,
-                )),
+          // if (!isSubCategoryActive && !isMultiSelectActive)
+          //   IconButton(
+          //       onPressed: () {},
+          //       icon: Icon(
+          //         Icons.search_rounded,
+          //         color: Colors.black,
+          //       )),
           if (!isSubCategoryActive && !isMultiSelectActive)
             Stack(
               children: [

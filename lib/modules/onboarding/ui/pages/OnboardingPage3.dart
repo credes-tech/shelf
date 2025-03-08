@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:my_shelf_project/core/routes/routes.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/modules/onboarding/ui/widgets/OnboardCaption.dart';
 import 'package:my_shelf_project/modules/onboarding/ui/widgets/OnboardImage.dart';
@@ -16,6 +17,8 @@ class _OnboardingPage3State extends State<OnboardingPage3> {
   double topPosition = -250;
   double leftPosition = -250;
   double ovalSize = 650;
+
+
 
   @override
   void initState() {
@@ -36,13 +39,14 @@ class _OnboardingPage3State extends State<OnboardingPage3> {
     final String caption = 'Find what you need instantly with smart search, quick shortcuts, and multiple widgets.';
     final String imageURL = 'assets/vector/file3.png';
 
-    return GestureDetector(
-      onTap: () {
-        context.go("/onboarding/page1");
-      },
-      child: Scaffold(
-        backgroundColor: AppColors.onboardLightBlue,
-        body: Stack(
+    return Scaffold(
+      backgroundColor: AppColors.onboardLightBlue,
+      body: GestureDetector(
+        onTap: () async {
+          final value = await completeOnboarding();
+          context.go("/home/media");
+        },
+        child: Stack(
           clipBehavior: Clip.none,
           children: [
             AnimatedPositioned(
