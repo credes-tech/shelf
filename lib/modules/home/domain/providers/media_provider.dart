@@ -61,19 +61,27 @@ class MediaNotifier extends StateNotifier<List<MediaModel>> {
     return state[index].filePath;
   }
 
-  Future<void> deleteMedia(int index) async {
-    final fileToDelete = state[index].filePath;
-    await _mediaRepo.deleteMedia(index);
-    final file = File(fileToDelete);
-    if (await file.exists()) {
-      await file.delete();
+  Future<void> deleteMedia(List<MediaModel> mediaFiles) async {
+    final filePaths = mediaFiles.map((media) => media.filePath).toList();
+    await _mediaRepo.deleteMultipleMedia(filePaths);
+    for (var media in mediaFiles) {
+      final file = File(media.filePath);
+      if (await file.exists()) {
+        await file.delete();
+      }
     }
-    state = List.from(state)..removeAt(index);
+    fetchMedia();
   }
 
-  void togglePinnedFilter() {
+  bool togglePinnedFilter() {
     showOnlyPinned = !showOnlyPinned;
     loadPinnedFiles();
+    return showOnlyPinned;
+  }
+
+  bool onlyTogglePin() {
+    showOnlyPinned = !showOnlyPinned;
+    return showOnlyPinned;
   }
 }
 

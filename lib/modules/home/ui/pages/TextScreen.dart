@@ -89,178 +89,205 @@ class _TextScreenState extends ConsumerState<TextScreen> {
           ),
         ],
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
+      body: Stack(
         children: [
-          HomePillBar(
-              source: source,
-              selectedSource: selectedSource,
-              activeColor: AppColors.onboardDarkYellow,
-              inactiveColor: AppColors.onboardLightYellow),
-          Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.medium, vertical: AppSpacing.xSmall),
-            decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(20.0),
-                    bottomRight: Radius.circular(20.0))),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              HomePillBar(
+                source: source,
+                selectedSource: selectedSource,
+                activeColor: AppColors.onboardDarkYellow,
+                inactiveColor: AppColors.onboardLightYellow,
+                onSelected: (index) {
+                  setState(() {
+                    selectedSource = index; // Update selected pill
+                  });
+                },
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(
+                    horizontal: AppSpacing.medium, vertical: AppSpacing.xSmall),
+                decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(20.0),
+                        bottomRight: Radius.circular(20.0))),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-
-                    HomeToggler(
-                      initialValue: textPinnedNotifier,
-                      onChanged: (textPinnedNotifier) {
-                        print("text Pinned Notifier $textPinnedNotifier");
-                        ref.read(textProvider.notifier).togglePinned();
-                      },
-                      color: AppColors.onboardDarkYellow,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        HomeToggler(
+                          initialValue: textPinnedNotifier,
+                          onChanged: (textPinnedNotifier) {
+                            print("text Pinned Notifier $textPinnedNotifier");
+                            ref.read(textProvider.notifier).togglePinned();
+                          },
+                          color: AppColors.onboardDarkYellow,
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text("Quick Access", style: AppTextStyles.pinLabelText),
+                      ],
                     ),
-                    SizedBox(width: 5,),
-                    Text("Quick Access",style: AppTextStyles.pinLabelText),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.push('/home/texts/new');
+                      },
+                      style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.only(
+                              left: AppSpacing.medium,
+                              right: AppSpacing.xSmall,
+                              top: AppSpacing.xSmall,
+                              bottom: AppSpacing.xSmall),
+                          backgroundColor: AppColors.onboardDarkYellow),
+                      child: Row(
+                        children: [
+                          Text("Add New", style: AppTextStyles.homePinned),
+                          SizedBox(width: 8),
+                          Icon(Icons.add_circle_rounded,
+                              size: 30, color: AppColors.onboardLightYellow)
+                        ],
+                      ),
+                    )
                   ],
                 ),
-                ElevatedButton(
+              ),
+              textList.isEmpty
+                  ? HomeCard(
+                icon: Icons.add,
+                description: "Tap Add New button to add new Note",
+                title: "No Notes found",
+                iconColor: AppColors.onboardDarkYellow,
+              )
+                  : Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.medium),
+                    child: StaggeredGrid.count(
+                      crossAxisCount: 2, // 2 columns
+                      mainAxisSpacing: 1,
+                      crossAxisSpacing: 1,
+                      children: textList.reversed
+                          .toList()
+                          .asMap()
+                          .entries
+                          .map((value) {
+                        int index = textList.length - value.key - 1;
+                        var data = value.value;
+                        return StaggeredGridTile.fit(
+                          crossAxisCellCount: 1,
+                          child: GestureDetector(
+                            onLongPress: () => selectPressedNote(index),
+                            onDoubleTap: () => setToPinned(index),
+                            child: (isPressed[index] ?? false)
+                                ? Container(
+                              height: 125,
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                  BorderRadius.circular(20.0),
+                                  color: AppColors.onboardLightYellow),
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: AppSpacing.xxSmall,
+                                  vertical: AppSpacing.xSmall),
+                              child: Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.start,
+                                crossAxisAlignment:
+                                CrossAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  IconButton(
+                                      onPressed: () {
+                                        ShareService.shareNote(
+                                            data.description);
+                                      },
+                                      icon: Icon(
+                                        Icons.ios_share,
+                                        color: Colors.black,
+                                      )),
+                                  IconButton(
+                                      onPressed: () =>
+                                          onTapDeleteBtn(index),
+                                      icon: Icon(
+                                        Icons.delete,
+                                        color: Colors.black,
+                                      )),
+                                  IconButton(
+                                      onPressed: () =>
+                                          _toggleOption(index),
+                                      icon: Icon(
+                                        Icons.close_rounded,
+                                        color: Colors.black,
+                                      ))
+                                ],
+                              ),
+                            )
+                                : Stack(
+                              children: [
+                                NotesCard(
+                                  title: data.heading,
+                                  description: data.description,
+                                  onTap: () {
+                                    context.push(
+                                        '/home/texts/note/$index');
+                                  },
+                                ),
+                                if (data.isPinned)
+                                  Positioned(
+                                    top: 10,
+                                    right: 10,
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.white,
+                                      radius: 10,
+                                      child: Icon(
+                                        Icons.stars_rounded,
+                                        size: 20,
+                                        color:
+                                        AppColors.onboardDarkYellow,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: EdgeInsets.only(right: AppSpacing.large, bottom: 25),
+              child: SizedBox(
+                width: 55,
+                height: 55,
+                child: FloatingActionButton(
                   onPressed: () {
                     context.push('/home/texts/new');
                   },
-                  style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.only(
-                          left: AppSpacing.medium,
-                          right: AppSpacing.xSmall,
-                          top: AppSpacing.xSmall,
-                          bottom: AppSpacing.xSmall),
-                      backgroundColor: AppColors.onboardDarkYellow),
-                  child: Row(
-                    children: [
-                      Text("Add New", style: AppTextStyles.homePinned),
-                      SizedBox(width: 8),
-                      Icon(
-                        Icons.add_circle_rounded,
-                        size: 30,
-                        color: AppColors.onboardLightYellow
-                      )
-                    ],
-                  ),
-                )
-              ],
+                  backgroundColor: AppColors.onboardLightYellow,
+                  elevation: 0,
+                  shape: CircleBorder(),
+                  child: Icon(Icons.add_circle_rounded, size: 25, color: AppColors.navBarYellow),
+                ),
+              ),
             ),
           ),
-          textList.isEmpty
-              ? HomeCard(
-                  icon: Icons.add,
-                  description: "Tap Add New button to add new Note",
-                  title: "No Notes found",
-                  iconColor: AppColors.onboardDarkYellow,
-                )
-              : Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.medium),
-                      child: StaggeredGrid.count(
-                        crossAxisCount: 2, // 2 columns
-                        mainAxisSpacing: 1,
-                        crossAxisSpacing: 1,
-                        children: textList.reversed
-                            .toList()
-                            .asMap()
-                            .entries
-                            .map((value) {
-                          int index = textList.length - value.key - 1;
-                          var data = value.value;
-                          return StaggeredGridTile.fit(
-                            crossAxisCellCount: 1,
-                            child: GestureDetector(
-                              onLongPress: () => selectPressedNote(index),
-                              onDoubleTap: () => setToPinned(index),
-                              child: (isPressed[index] ?? false)
-                                  ? Container(
-                                      height: 125,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(20.0),
-                                          color: AppColors.onboardLightYellow),
-                                      margin: EdgeInsets.symmetric(
-                                          horizontal: AppSpacing.xxSmall,
-                                          vertical: AppSpacing.xSmall),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          IconButton(
-                                              onPressed: () {
-                                                ShareService.shareNote(
-                                                    data.description);
-                                              },
-                                              icon: Icon(
-                                                Icons.ios_share,
-                                                color: Colors.black,
-                                              )),
-                                          IconButton(
-                                              onPressed: () =>
-                                                  onTapDeleteBtn(index),
-                                              icon: Icon(
-                                                Icons.delete,
-                                                color: Colors.black,
-                                              )),
-                                          IconButton(
-                                              onPressed: () =>
-                                                  _toggleOption(index),
-                                              icon: Icon(
-                                                Icons.close_rounded,
-                                                color: Colors.black,
-                                              ))
-                                        ],
-                                      ),
-                                    )
-                                  : Stack(
-                                      children: [
-                                        NotesCard(
-                                          title: data.heading,
-                                          description: data.description,
-                                          onTap: () {
-                                            context.push(
-                                                '/home/texts/note/$index');
-                                          },
-                                        ),
-                                        if (data.isPinned)
-                                          Positioned(
-                                            top: 10,
-                                            right: 10,
-                                            child: CircleAvatar(
-                                              backgroundColor: Colors.white,
-                                              radius: 10,
-                                              child: Icon(
-                                                Icons.stars_rounded,
-                                                size: 20,
-                                                color:
-                                                    AppColors.onboardDarkYellow,
-                                              ),
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                ),
         ],
       ),
     );

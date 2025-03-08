@@ -5,9 +5,11 @@ import 'package:my_shelf_project/core/utils/FileValidator.dart';
 
 class FilePickerService {
 
-  static Future<String?> getFilePath() async {
+  static Future<String?> getFilePath(List<String> allowedFormat) async {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
         allowMultiple: false,
+        allowedExtensions: allowedFormat
       );
       if (result != null) {
         return result.files.single.path!;
@@ -17,7 +19,8 @@ class FilePickerService {
   }
 
   Future<String?> pickAudioFile() async {
-    String? audioFilePath = await getFilePath();
+    List<String> allowedFormat = ['mp3', 'wav', 'aac', 'm4a', 'flac', 'ogg'];
+    String? audioFilePath = await getFilePath(allowedFormat);
     if(FileValidator.isValidAudioFile(audioFilePath!) && !(await FileValidator.isDuplicateAudioFile(audioFilePath))){
       String? audioPath = await saveFileToLocalStorage(audioFilePath,"Audio");
       return audioPath;
@@ -26,7 +29,8 @@ class FilePickerService {
   }
 
   Future<String?> pickMediaFile() async {
-    String? mediaFilePath = await getFilePath();
+    List<String> allowedFormat = ["jpg", "png", "gif", "webp", "mp4", "mov", "mkv"];
+    String? mediaFilePath = await getFilePath(allowedFormat);
     if(FileValidator.isValidMediaFile(mediaFilePath!) && !(await FileValidator.isDuplicateMediaFile(mediaFilePath))){
       String? mediaPath = await saveFileToLocalStorage(mediaFilePath,"Media");
       return mediaPath;
@@ -35,7 +39,8 @@ class FilePickerService {
   }
 
   Future<String?> pickDocFile() async {
-    String? docFilePath = await getFilePath();
+    List<String> allowedFormat = ['pdf'];
+    String? docFilePath = await getFilePath(allowedFormat);
     if(FileValidator.isValidDocFile(docFilePath!) && !(await FileValidator.isDuplicateDocFile(docFilePath))){
       String? filePath = await saveFileToLocalStorage(docFilePath,"Files");
       return filePath;

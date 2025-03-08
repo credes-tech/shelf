@@ -60,10 +60,16 @@ class _ChatScreenState extends State<ChatScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           HomePillBar(
-              source: source,
-              selectedSource: selectedSource,
-              activeColor: AppColors.onboardDarkGreen,
-              inactiveColor: AppColors.onboardLightGreen),
+            source: source,
+            selectedSource: selectedSource,
+            activeColor: AppColors.onboardDarkGreen,
+            inactiveColor: AppColors.onboardLightGreen,
+            onSelected: (index) {
+              setState(() {
+                selectedSource = index; // Update selected pill
+              });
+            },
+          ),
           Container(
             margin: EdgeInsets.symmetric(
                 horizontal: AppSpacing.large, vertical: AppSpacing.medium),
