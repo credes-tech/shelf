@@ -17,6 +17,7 @@ import 'package:my_shelf_project/modules/home/ui/widgets/HomeToggler.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/SubCategoryDivider.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/SubCategoryToggler.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/UserAccount.dart';
+import 'package:open_filex/open_filex.dart';
 
 class FileScreen extends ConsumerStatefulWidget {
   const FileScreen({super.key});
@@ -200,14 +201,8 @@ class _FileScreenState extends ConsumerState<FileScreen> {
                               itemBuilder: (context, index) {
                                 final file = fileList[index];
                                 return GestureDetector(
-                                  onTap: () {
-                                    context.push(
-                                      '/home/file/view',
-                                      extra: {
-                                        'filePath': file.filePath,
-                                        'fileName': file.filename,
-                                      },
-                                    );
+                                  onTap: () async {
+                                    await OpenFilex.open(file.filePath);
                                   },
                                   onDoubleTap: () =>
                                       togglePinFile(file.filename),

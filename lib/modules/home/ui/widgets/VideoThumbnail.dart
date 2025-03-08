@@ -12,6 +12,7 @@ class VideoThumbnailView extends StatefulWidget {
   _VideoThumbnailViewState createState() => _VideoThumbnailViewState();
 }
 
+
 class _VideoThumbnailViewState extends State<VideoThumbnailView> {
   String? _thumbnailPath;
   bool _isLoading = true;
@@ -35,6 +36,11 @@ class _VideoThumbnailViewState extends State<VideoThumbnailView> {
       _thumbnailPath = thumbnail.path;
       _isLoading = false;
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override

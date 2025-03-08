@@ -6,6 +6,8 @@ import 'package:marquee/marquee.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 import 'package:my_shelf_project/modules/home/domain/models/file_model.dart';
+import 'package:pdf_render/pdf_render.dart';
+import 'package:pdf_render/pdf_render_widgets.dart';
 
 class FileCard extends StatelessWidget {
   const FileCard({
@@ -26,9 +28,19 @@ class FileCard extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Icon(Icons.picture_as_pdf,
-              size: 35, color: Colors.white),
-          SizedBox(height: 30),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height * 0.12,  // Adjust the thumbnail size
+              width: 100,
+              child: PdfDocumentLoader.openFile(
+                file.filePath,
+                pageNumber: 1,  // Load first page as thumbnail
+                pageBuilder: (context, textureBuilder, pageSize) => textureBuilder(),
+              ),
+            ),
+          ),
+          SizedBox(height: 7),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.0),
             child: SizedBox(
