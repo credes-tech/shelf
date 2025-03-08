@@ -37,21 +37,8 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
   bool isSubCategoryActive = false;
   final String emptyHeading = "No audio found!";
   final String emptyDescription = "Tap Add New button to save your files";
-  Duration _duration = Duration.zero;
-  Duration _position = Duration.zero;
-  bool _isSeeking = false;
   int selectedSource = 0;
-
-  Future<void> fetchAudioDuration(String filepath) async {
-    final player = AudioPlayer();
-    Duration? duration;
-    player.onDurationChanged.listen((d) {
-      duration = d;
-    });
-    await player.setSourceUrl(filepath);
-    await Future.delayed(const Duration(milliseconds: 100));
-    await player.dispose();
-  }
+  int _currentAudioIndex = -1;
 
   @override
   void initState() {
@@ -75,14 +62,56 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
 
   void _playAudio(AudioModel audio) async {
     ref.read(audioPlayerControllerProvider.notifier).play(audio.filePath);
+    final audioList = ref.read(audioProvider);
+    final index = audioList.indexOf(audio);
     String filePath = audio.filePath;
     setState(() {
       _isPlaying.updateAll((key, value) => false);
       _isPlaying[filePath] = true;
+      _currentAudioIndex = index;
     });
   }
 
-  void _togglePlayPause(BuildContext context, AudioModel audio) async {
+  void prevAudio() {
+    final audioList = ref.read(audioProvider);
+    if (_currentAudioIndex - 1 >= 0) {
+      AudioModel audio = audioList[_currentAudioIndex - 1];
+      setState(() {
+        _isPlaying.updateAll((key, value) => false);
+        _isPlaying[audio.filePath] = true;
+        _currentAudioIndex -= 1;
+      });
+    } else {
+      AudioModel audio = audioList[audioList.length - 1];
+      setState(() {
+        _isPlaying.updateAll((key, value) => false);
+        _isPlaying[audio.filePath] = true;
+        _currentAudioIndex = audioList.length - 1;
+      });
+    }
+  }
+
+  void nextAudio() async {
+    final audioList = ref.read(audioProvider); // Get the audio list
+    if (_currentAudioIndex < audioList.length - 1) {
+      AudioModel audio = audioList[_currentAudioIndex + 1];
+      setState(() {
+        _isPlaying.updateAll((key, value) => false);
+        _isPlaying[audio.filePath] = true;
+        _currentAudioIndex += 1;
+      });
+    } else {
+      AudioModel audio = audioList[0];
+      setState(() {
+        _isPlaying.updateAll((key, value) => false);
+        _isPlaying[audio.filePath] = true;
+        _currentAudioIndex = 0;
+      });
+    }
+  }
+
+  void _togglePlayPause(
+      BuildContext context, AudioModel audio, int index) async {
     if (_isPlaying.containsKey(audio.filePath) &&
         _isPlaying[audio.filePath] == true) {
       _pauseAudio(audio);
@@ -94,9 +123,16 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
         builder: (BuildContext context) {
           return MusicPlayerCard(
             audio: audio,
+            onNext: nextAudio,
+            onPrev: prevAudio,
+            onPlay: (audio) => _playAudio(audio),
+            onPause: (audio) => _pauseAudio(audio),
           );
         },
       );
+      if (result == null) {
+        _pauseAudio(audio);
+      }
     }
   }
 
@@ -127,6 +163,8 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     // final controller = ref.watch(audioPlayerControllerProvider);
 
     final audioList = ref.watch(audioProvider);
+    final audioDurations = ref.read(audioProvider.notifier).audioDurations;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -159,36 +197,35 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
         ),
         titleSpacing: 0.0,
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.search_rounded),
-            color: Colors.black,
-          ),
-          IconButton(
-            onPressed: () async {
-              await ref.read(audioProvider.notifier).togglePinnedFilter();
-
-              pinController();
-            },
-            icon: Icon(
-              isPinActive ? Icons.star_rounded : Icons.star_border_rounded,
-            ),
-            color: Colors.black,
-          ),
+          // IconButton(
+          //   onPressed: () {},
+          //   icon: Icon(Icons.search_rounded),
+          //   color: Colors.black,
+          // ),
+          // IconButton(
+          //   onPressed: () async {
+          //     await ref.read(audioProvider.notifier).togglePinnedFilter();
+          //     pinController();
+          //   },
+          //   icon: Icon(
+          //     isPinActive ? Icons.star_rounded : Icons.star_border_rounded,
+          //   ),
+          //   color: Colors.black,
+          // ),
           Padding(
             padding: EdgeInsets.only(right: AppSpacing.medium),
             child: PopupMenuButton<String>(
               key: _popupKey,
               icon: SvgPicture.asset('assets/svg/menu.svg', width: 28),
-              color: AppColors.onboardDarkOrange,
+              color: AppColors.onboardLightOrange,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30)),
               elevation: 1,
               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                 _buildPopupMenuItem(
-                    "Menu Option 1", Icons.bar_chart_rounded, Colors.black),
+                    "List View", Icons.bar_chart_rounded, Colors.black),
                 _buildPopupMenuItem(
-                    "Menu Option 2", Icons.bar_chart_rounded, Colors.black)
+                    "Grid View", Icons.bar_chart_rounded, Colors.black)
               ],
             ),
           ),
@@ -300,10 +337,13 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                         height: 69,
                                         child: Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.start,
+                                              MainAxisAlignment.spaceBetween,
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           children: [
+                                            SizedBox(
+                                              width: 5,
+                                            ),
                                             Column(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.center,
@@ -319,14 +359,10 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                                           ? 0.6
                                                           : 0.7),
                                                   child: AudioText(
-                                                      audio: audio,
-                                                      duration: ref
-                                                              .read(
-                                                                  audioProvider
-                                                                      .notifier)
-                                                              .getDuration(audio
-                                                                  .filePath) ??
-                                                          Duration.zero),
+                                                    audio: audio,
+                                                    duration:
+                                                        audioDurations[index],
+                                                  ),
                                                 )
                                               ],
                                             ),
@@ -349,7 +385,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                                                 : SizedBox(),
                                             IconButton(
                                               onPressed: () => _togglePlayPause(
-                                                  context, audio),
+                                                  context, audio, index),
                                               icon: Icon(
                                                 (_isPlaying[audio.filePath] ==
                                                         true)

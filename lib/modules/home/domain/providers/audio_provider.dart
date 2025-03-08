@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
@@ -17,20 +18,40 @@ class AudioNotifier extends StateNotifier<List<AudioModel>> {
     fetchAudios();
   }
 
-  void fetchAudios() {
+  void fetchAudios() async {
     final audios = _audioRepo.fetchAllAudio().map((hiveAudio) {
       return AudioModel.fromHiveModel(hiveAudio);
     }).toList();
     state = audios;
-    loadAllDurations(audios);
+    await loadAllDurations(audios);
+  }
+
+  AudioModel loadNextAudio(AudioModel audio) {
+    final audioList = state;
+    final idx = audioList.indexOf(audio);
+    log('$idx');
+    if (audioList.length > idx + 1) {
+      return audioList[idx + 1];
+    }
+    return audioList[0];
+  }
+
+  AudioModel loadPrevAudio(AudioModel audio) {
+    final audioList = state;
+    final idx = audioList.indexOf(audio);
+    log('$idx');
+    if (idx - 1 >= 0) {
+      return audioList[idx - 1];
+    }
+    return audioList[audioList.length - 1];
   }
 
   Future<void> loadAllDurations(List<AudioModel> audioList) async {
+    log('this function is repeating');
     for (int index = 0; index < audioList.length; index++) {
+      log('the index is $index and ${audioList.length}');
       final audio = audioList[index];
-      print(
-          "Index $index -> file path is ${audio.filePath} and ${audio.filename}");
-
+      log('the audio is getting printed ${audio.filename}');
       if (!audioDurations.containsKey(audio.filePath)) {
         audioDurations[audio.filePath] =
             await _fetchAudioDuration(audio.filePath);

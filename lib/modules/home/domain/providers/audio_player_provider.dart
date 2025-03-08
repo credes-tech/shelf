@@ -33,9 +33,10 @@ class AudioPlayerController extends ChangeNotifier {
         _audioPlayer.seek(Duration.zero);
         _audioPlayer.resume();
         isPlaying = true;
+      } else {
+        isPlaying = false;
+        position = Duration.zero;
       }
-      isPlaying = false;
-      position = Duration.zero;
       notifyListeners();
     });
     _audioPlayer.onPlayerStateChanged.listen((state) {
@@ -80,14 +81,11 @@ class AudioPlayerController extends ChangeNotifier {
 
   void pause() {
     _audioPlayer.pause();
-    // isPlaying = false;
     notifyListeners();
   }
 
   void seekTo(Duration newPosition) {
-    log('printing to check if the seek is working or not $newPosition');
     _audioPlayer.seek(newPosition);
-
     notifyListeners();
   }
 
