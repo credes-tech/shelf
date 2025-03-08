@@ -72,6 +72,11 @@ class FileNotifier extends StateNotifier<List<FileModel>> {
     loadPinnedFiles();
     return showOnlyPinned;
   }
+
+  bool onlyTogglePin() {
+    showOnlyPinned = !showOnlyPinned;
+    return showOnlyPinned;
+  }
 }
 
 final fileProvider =

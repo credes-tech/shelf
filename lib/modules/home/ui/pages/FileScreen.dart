@@ -13,10 +13,9 @@ import 'package:my_shelf_project/modules/home/ui/widgets/HomeCard.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomePillBar.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
-import 'package:my_shelf_project/modules/home/ui/widgets/HomeToggler.dart';
-import 'package:my_shelf_project/modules/home/ui/widgets/SubCategoryDivider.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/SubCategoryToggler.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/UserAccount.dart';
+import 'package:open_filex/open_filex.dart';
 
 class FileScreen extends ConsumerStatefulWidget {
   const FileScreen({super.key});
@@ -54,7 +53,7 @@ class _FileScreenState extends ConsumerState<FileScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                HomeTitle(title: 'Documents'),
+                HomeTitle(title: 'Files'),
                 SubCategoryToggler(isSubCategoryActive: isSubCategoryActive)
               ]),
         ),
@@ -108,7 +107,7 @@ class _FileScreenState extends ConsumerState<FileScreen> {
                   right: AppSpacing.medium, left: AppSpacing.small),
               child: PopupMenuButton<String>(
                 icon: SvgPicture.asset('assets/svg/menu.svg', width: 28),
-                color: AppColors.onboardLightBlue,
+                color: AppColors.onboardLightPink,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30)),
                 elevation: 1,
@@ -161,13 +160,12 @@ class _FileScreenState extends ConsumerState<FileScreen> {
                               itemCount: getSelectedSourceLength(
                                   source[selectedSource], fileList),
                               gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 3,
                                 childAspectRatio: 0.8,
                               ),
                               itemBuilder: (context, index) {
-                                final selectedFileList =
-                                getSelectedSourceItems(
+                                final selectedFileList = getSelectedSourceItems(
                                     source[selectedSource], fileList);
                                 final file = selectedFileList[index];
                                 return GestureDetector(
@@ -182,7 +180,7 @@ class _FileScreenState extends ConsumerState<FileScreen> {
                                     },
                                     onDoubleTap: () =>
                                         togglePinFile(file.filename),
-                                    child: FileCard(file: file));
+                                    child: FileCard(file: file, isSelected: false));
                               },
                             ),
                           ),
@@ -200,22 +198,23 @@ class _FileScreenState extends ConsumerState<FileScreen> {
                               itemBuilder: (context, index) {
                                 final file = fileList[index];
                                 return GestureDetector(
-                                  onTap: () {
-                                    context.push(
-                                      '/home/file/view',
-                                      extra: {
-                                        'filePath': file.filePath,
-                                        'fileName': file.filename,
-                                      },
-                                    );
-                                  },
+                                  key: ValueKey(file.filePath),
+                                  onTap: () => isMultiSelectActive
+                                      ? selectedFiles.contains(file)
+                                          ? removeFile(file)
+                                          : addFile(file)
+                                      : openFile(file.filePath),
                                   onDoubleTap: () =>
                                       togglePinFile(file.filename),
+                                  onLongPress: () => !isMultiSelectActive
+                                      ? manageMultipleFiles(file)
+                                      : null,
                                   child: Stack(
                                     children: [
                                       AspectRatio(
                                           aspectRatio: 0.8,
-                                          child: FileCard(file: file)),
+                                          child: FileCard(file: file,isSelected:
+                                          selectedFiles.contains(file))),
                                       if (file.isPinned)
                                         Positioned(
                                             top: 10,
@@ -297,6 +296,12 @@ class _FileScreenState extends ConsumerState<FileScreen> {
     bool isGranted = await PermissionService.requestFilePermission();
     if (isGranted == true) {
       await ref.read(fileProvider.notifier).pickAndSaveFile();
+      if(isPinActive){
+        bool pinStatus = ref.read(fileProvider.notifier).togglePinnedFilter();
+        setState(() {
+          isPinActive = pinStatus;
+        });
+      }
     } else {
       print("Permission denied");
     }
@@ -344,6 +349,45 @@ class _FileScreenState extends ConsumerState<FileScreen> {
     setState(() {
       isSubCategoryActive = !isSubCategoryActive;
     });
+  }
+
+  openFile(String filePath) async {
+    await OpenFilex.open(filePath);
+  }
+
+  manageMultipleFiles(FileModel docFile) {
+    setState(() {
+      isMultiSelectActive = true;
+    });
+    addFile(docFile);
+  }
+
+  addFile(FileModel docFile) {
+    if (isPinActive) {
+      bool pinStatus = ref.read(fileProvider.notifier).onlyTogglePin();
+      setState(() {
+        isPinActive = pinStatus;
+      });
+    }
+    setState(() {
+      selectedFiles = List.from(selectedFiles)..add(docFile);
+    });
+  }
+
+  removeFile(FileModel docFile) {
+    if (isPinActive) {
+      bool pinStatus = ref.read(fileProvider.notifier).onlyTogglePin();
+      setState(() {
+        isPinActive = pinStatus;
+      });
+    }
+    if (selectedFiles.length == 1) {
+      clearSelection();
+    } else {
+      setState(() {
+        selectedFiles = List.from(selectedFiles)..remove(docFile);
+      });
+    }
   }
 
   void clearSelection() {
