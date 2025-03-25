@@ -48,7 +48,7 @@ class FileCard extends StatelessWidget {
                 padding: EdgeInsets.symmetric(
                     horizontal: AppSpacing.small, vertical: AppSpacing.xxSmall),
                 child: SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.03,
+                  height: MediaQuery.of(context).size.height * 0.02,
                   width: MediaQuery.of(context).size.width * 0.2,
                   child: Marquee(
                     text: file.filename,
