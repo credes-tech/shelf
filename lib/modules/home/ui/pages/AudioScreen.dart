@@ -20,6 +20,7 @@ import 'package:my_shelf_project/modules/home/ui/widgets/HomePillBar.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeToggler.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/MusicPlayerCard.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/SubCategoryToggler.dart';
 
 class AudioScreen extends ConsumerStatefulWidget {
   const AudioScreen({super.key});
@@ -29,7 +30,7 @@ class AudioScreen extends ConsumerStatefulWidget {
 
 class _AudioScreenState extends ConsumerState<AudioScreen> {
   final GlobalKey _popupKey = GlobalKey();
-  final List<String> source = ['Recordings', 'Audio Files'];
+  final List<String> source = ['All Audios', 'Recently Added'];
   final AudioPlayer _audioPlayer = AudioPlayer();
   final Map<String, bool> _isPlaying = {};
   final Map<String, bool> _isOpen = {};
@@ -164,7 +165,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
 
     final audioList = ref.watch(audioProvider);
     final audioDurations = ref.read(audioProvider.notifier).audioDurations;
-
+    final pinnedAudios = getPinnedAudios(audioList);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -185,13 +186,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               HomeTitle(title: 'Audio'),
-              Icon(
-                isSubCategoryActive
-                    ? Icons.arrow_drop_up_rounded
-                    : Icons.arrow_drop_down_rounded,
-                size: 25,
-                color: Colors.black,
-              )
+              SubCategoryToggler(isSubCategoryActive: isSubCategoryActive),
             ],
           ),
         ),
@@ -202,33 +197,48 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
           //   icon: Icon(Icons.search_rounded),
           //   color: Colors.black,
           // ),
-          // IconButton(
-          //   onPressed: () async {
-          //     await ref.read(audioProvider.notifier).togglePinnedFilter();
-          //     pinController();
-          //   },
-          //   icon: Icon(
-          //     isPinActive ? Icons.star_rounded : Icons.star_border_rounded,
-          //   ),
-          //   color: Colors.black,
-          // ),
-          Padding(
-            padding: EdgeInsets.only(right: AppSpacing.medium),
-            child: PopupMenuButton<String>(
-              key: _popupKey,
-              icon: SvgPicture.asset('assets/svg/menu.svg', width: 28),
-              color: AppColors.onboardLightOrange,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
-              elevation: 1,
-              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                _buildPopupMenuItem(
-                    "List View", Icons.bar_chart_rounded, Colors.black),
-                _buildPopupMenuItem(
-                    "Grid View", Icons.bar_chart_rounded, Colors.black)
+          if (!isSubCategoryActive)
+            Stack(
+              children: [
+                IconButton(
+                  onPressed: () async {
+                    await ref.read(audioProvider.notifier).togglePinnedFilter();
+                    pinController();
+                  },
+                  icon: Icon(
+                    isPinActive
+                        ? Icons.star_rounded
+                        : Icons.star_border_rounded,
+                    color: Colors.black,
+                  ),
+                ),
+                Positioned(
+                    bottom: 8,
+                    right: 8,
+                    child: Text(
+                      "${pinnedAudios.length}",
+                      style: AppTextStyles.pinCaption,
+                    ))
               ],
             ),
-          ),
+          if (!isSubCategoryActive)
+            Padding(
+              padding: EdgeInsets.only(right: AppSpacing.medium),
+              child: PopupMenuButton<String>(
+                key: _popupKey,
+                icon: SvgPicture.asset('assets/svg/menu.svg', width: 28),
+                color: AppColors.onboardLightOrange,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30)),
+                elevation: 1,
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  _buildPopupMenuItem(
+                      "List View", Icons.bar_chart_rounded, Colors.black),
+                  _buildPopupMenuItem(
+                      "Grid View", Icons.bar_chart_rounded, Colors.black)
+                ],
+              ),
+            ),
         ],
       ),
       body: Stack(
@@ -257,9 +267,12 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                       iconColor: AppColors.onboardDarkOrange)
                   : Expanded(
                       child: ListView.builder(
-                          itemCount: audioList.length,
+                          itemCount: getSelectedSourceLength(
+                              source[selectedSource], audioList),
                           itemBuilder: (context, index) {
-                            final audio = audioList[index];
+                            final selectedAudioList = getSelectedSourceItems(
+                                source[selectedSource], audioList);
+                            final audio = selectedAudioList[index];
                             return GestureDetector(
                               onLongPress: () => _toggleOption(audio.filePath),
                               onDoubleTap: () => togglePinAudio(
@@ -487,6 +500,10 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     ref.read(audioProvider.notifier).togglePin(fileName);
   }
 
+  List<AudioModel> getPinnedAudios(List<AudioModel> audioList) {
+    return audioList.where((audio) => audio.isPinned).toList();
+  }
+
   void pinController() {
     bool audioPinnedNotifier = ref.read(audioProvider.notifier).showOnlyPinned;
     setState(() {
@@ -494,92 +511,31 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     });
   }
 
-  // widget showAudioModal() {
-  //   return Column(
-  //     mainAxisAlignment: MainAxisAlignment.center,
-  //     children: [
-  //       SizedBox(
-  //         height: 20,
-  //       ),
-  //       SizedBox(
-  //         height: 30,
-  //         width: MediaQuery.of(context).size.width * 0.6,
-  //         child: AudioText(
-  //           audio: audio,
-  //         ),
-  //       ),
-  //       TweenAnimationBuilder<double>(
-  //         tween: Tween<double>(begin: 0, end: _position.inSeconds.toDouble()),
-  //         duration: Duration(milliseconds: 300), // Smooth transition effect
-  //         builder: (context, value, child) {
-  //           return Slider(
-  //             min: 0,
-  //             max: _duration.inSeconds.toDouble(),
-  //             value: _isSeeking ? value : _position.inSeconds.toDouble(),
-  //             onChanged: (newValue) {
-  //               setState(() {
-  //                 _isSeeking = true;
-  //               });
-  //             },
-  //             onChangeStart: (newValue) {
-  //               setState(() {
-  //                 _isSeeking = true;
-  //               });
-  //             },
-  //             onChangeEnd: (newValue) {
-  //               setState(() {
-  //                 _isSeeking = false;
-  //                 _seekTo(newValue);
-  //               });
-  //             },
-  //             activeColor: AppColors.onboardDarkOrange,
-  //             inactiveColor: Colors.white,
-  //             thumbColor: AppColors.onboardLightOrange,
-  //           );
-  //         },
-  //       ),
-  //       Row(
-  //         mainAxisAlignment: MainAxisAlignment.center,
-  //         crossAxisAlignment: CrossAxisAlignment.center,
-  //         children: [
-  //           IconButton(
-  //               onPressed: () => ShareService.shareFile(audio.filePath),
-  //               icon: Icon(
-  //                 Icons.ios_share,
-  //                 color: Colors.black,
-  //               )),
-  //           IconButton(
-  //               onPressed: _seekBackward,
-  //               icon: Icon(
-  //                 Icons.replay_10_rounded,
-  //                 color: Colors.black,
-  //               )),
-  //           IconButton(
-  //             onPressed: () => _togglePlayPause(audio.filePath),
-  //             icon: Icon(
-  //               Icons.pause_circle_filled_rounded,
-  //               size: 60,
-  //               color: AppColors.onboardDarkOrange,
-  //             ),
-  //           ),
-  //           IconButton(
-  //               onPressed: _seekForward,
-  //               icon: Icon(
-  //                 Icons.forward_10_rounded,
-  //                 color: Colors.black,
-  //               )),
-  //           IconButton(
-  //               onPressed: () => onTapDeleteBtn(index),
-  //               icon: Icon(
-  //                 Icons.delete,
-  //                 color: Colors.black,
-  //               ))
-  //         ],
-  //       ),
-  //       SizedBox(
-  //         height: 10,
-  //       ),
-  //     ],
-  //   );
-  // }
+  List<AudioModel> getRecentlyAddedAudio(List<AudioModel> audioList) {
+    int minute = 2;
+    DateTime now = DateTime.now();
+    DateTime threshold = now.subtract(Duration(minutes: minute));
+    return audioList.where((audio) => audio.date.isAfter(threshold)).toList();
+  }
+
+  int getSelectedSourceLength(String source, List<AudioModel> audioList) {
+    switch (source) {
+      case "All Audios":
+        return audioList.length;
+      case "Recently Added":
+        return getRecentlyAddedAudio(audioList).length;
+    }
+    return audioList.length;
+  }
+
+  List<AudioModel> getSelectedSourceItems(
+      String source, List<AudioModel> audioList) {
+    switch (source) {
+      case "All Audios":
+        return audioList;
+      case "Recently Added":
+        return getRecentlyAddedAudio(audioList);
+    }
+    return audioList;
+  }
 }
