@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 Future<int> getAndroidSdkVersion() async {
@@ -95,15 +96,7 @@ class PermissionService {
     if (Platform.isAndroid) {
       int sdkInt = await getAndroidSdkVersion();
       if (sdkInt >= 33) {
-        // Android 13 and above
-        PermissionStatus fileStatus = await Permission.manageExternalStorage.request();
-        if (fileStatus.isGranted) {
-          return true;
-        } else if (fileStatus.isPermanentlyDenied) {
-          await openAppSettings();
-        } else {
-          return false;
-        }
+        return true;
       } else {
         // Android 12 and below
         var status = await PermissionService.requestStoragePermission();
