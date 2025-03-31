@@ -19,11 +19,16 @@ class AppColors {
   static const Color onboardLightBlue = Color(0xFF73C6D2);
   static const Color onboardDarkYellow = Color(0xFFDABA2C);
   static const Color onboardLightYellow = Color(0xFFFDCF00);
+  // static const Color onboardDarkGreen = Color(0xFF5CBD5A);
+  // static const Color onboardLightGreen = Color(0xFFC5E77F);
 
   static const Color navBarOrange = Color(0xFF824C0C);
   static const Color navBarYellow = Color(0xFF957D11);
   static const Color navBarBlue = Color(0xFF134C54);
   static const Color navBarPink = Color(0xFF845654);
+  static const Color navBarGreen = Color(0xFF54A252);
+
+  // static const Color navBarGreen = Color(0xFF5CBD5A);
 
   //ghostMode
   static const Color ghostModeRed = Color(0xFFEEEEEE);

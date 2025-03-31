@@ -18,42 +18,24 @@ class LinkHiveAdapter extends TypeAdapter<LinkHive> {
     };
     return LinkHive(
       url: fields[0] as String,
-      title: fields[1] as String,
-      description: fields[2] as String,
-      thumbnail: fields[3] as String,
-      category: fields[4] as String,
-      keywords: (fields[5] as List).cast<String>(),
-      usageFrequency: fields[6] as int,
-      lastAccess: fields[7] as DateTime,
-      suggestNextAccess: fields[8] as DateTime,
-      isPinned: fields[9] as bool,
+      isPinned: fields[2] as bool,
+      date: fields[4] as DateTime,
+      thumbnail: fields[1] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, LinkHive obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.url)
       ..writeByte(1)
-      ..write(obj.title)
-      ..writeByte(2)
-      ..write(obj.description)
-      ..writeByte(3)
       ..write(obj.thumbnail)
+      ..writeByte(2)
+      ..write(obj.isPinned)
       ..writeByte(4)
-      ..write(obj.category)
-      ..writeByte(5)
-      ..write(obj.keywords)
-      ..writeByte(6)
-      ..write(obj.usageFrequency)
-      ..writeByte(7)
-      ..write(obj.lastAccess)
-      ..writeByte(8)
-      ..write(obj.suggestNextAccess)
-      ..writeByte(9)
-      ..write(obj.isPinned);
+      ..write(obj.date);
   }
 
   @override

@@ -64,7 +64,9 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
   }
 
   void _playAudio(AudioModel audio) async {
-    ref.read(audioPlayerControllerProvider.notifier).play(audio.filePath);
+    ref
+        .read(audioPlayerControllerProvider.notifier)
+        .play(Uri.file(audio.filePath).toString());
     final audioList = ref.read(audioProvider);
     final index = audioList.indexOf(audio);
     String filePath = audio.filePath;
