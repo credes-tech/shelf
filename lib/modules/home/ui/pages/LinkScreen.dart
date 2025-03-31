@@ -7,7 +7,7 @@ import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 import 'package:my_shelf_project/modules/home/domain/models/link_model.dart';
-import 'package:my_shelf_project/modules/home/domain/models/link_model.dart';
+// import 'package:my_shelf_project/modules/home/domain/models/link_model.dart';
 import 'package:my_shelf_project/modules/home/domain/providers/link_provider.dart';
 // import 'package:my_shelf_project/modules/home/ui/widgets/LinkCard.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeCard.dart';
@@ -16,7 +16,7 @@ import 'package:my_shelf_project/modules/home/ui/widgets/HomePillBar.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/SubCategoryToggler.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/UserAccount.dart';
-import 'package:open_filex/open_filex.dart';
+// import 'package:open_filex/open_filex.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LinkScreen extends ConsumerStatefulWidget {
@@ -32,6 +32,7 @@ class _LinkScreenState extends ConsumerState<LinkScreen> {
   bool isSubCategoryActive = false;
   bool isPinActive = false;
   bool isMultiSelectActive = false;
+  bool urlError = false;
   List<LinkModel> selectedLinks = [];
 
   final TextEditingController _urlController = TextEditingController();
@@ -247,9 +248,9 @@ class _LinkScreenState extends ConsumerState<LinkScreen> {
 
   openLink(LinkModel link) async {
     if (!isMultiSelectActive) {
-      final Uri _url = Uri.parse(link.url);
-      if (!await launchUrl(_url)) {
-        throw Exception('Could not launch $_url');
+      final Uri url = Uri.parse(link.url);
+      if (!await launchUrl(url)) {
+        throw Exception('Could not launch $url');
       }
     }
   }
@@ -312,12 +313,12 @@ class _LinkScreenState extends ConsumerState<LinkScreen> {
   void onTapLinkBtn() async {
     showModalBottomSheet<void>(
       context: context,
-      isDismissible: false,
       backgroundColor: AppColors.onboardDarkGreen,
       builder: (BuildContext context) {
         return Container(
           height: 600,
           color: Colors.white,
+          padding: EdgeInsets.all(10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -325,8 +326,12 @@ class _LinkScreenState extends ConsumerState<LinkScreen> {
             children: [
               Padding(
                 padding: EdgeInsets.all(10),
-                child: TextField(
+                child: TextFormField(
                   controller: _urlController,
+                  decoration: InputDecoration(
+                    hintText: 'Enter Link',
+                    // errorStyle: TextStyle(color: Colors.red),
+                  ),
                   autofocus: true,
                   style: TextStyle(
                     color: Colors.black,
@@ -338,25 +343,36 @@ class _LinkScreenState extends ConsumerState<LinkScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ElevatedButton(
-                    // style: ButtonStyle(),
-                    child: const Text('Add Link'),
                     onPressed: () {
-                      ref
-                          .read(linkProvider.notifier)
-                          .addNewLink(_urlController.text);
-                      _urlController.text = "";
-                      Navigator.pop(context);
+                      if (_urlController.text.trim().isNotEmpty) {
+                        bool validURL =
+                            Uri.parse(_urlController.text).isAbsolute;
+                        if (validURL) {
+                          ref
+                              .read(linkProvider.notifier)
+                              .addNewLink(_urlController.text);
+                          Navigator.pop(context);
+                        }
+                      }
                     },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.onboardDarkGreen,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Add Link'),
                   ),
                   const SizedBox(
                     width: 20,
                   ),
                   ElevatedButton(
-                    child: const Text('Close'),
                     onPressed: () {
-                      _urlController.text = "";
                       Navigator.pop(context);
                     },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Close'),
                   ),
                 ],
               ),
@@ -364,7 +380,7 @@ class _LinkScreenState extends ConsumerState<LinkScreen> {
           ),
         );
       },
-    );
+    ).then((value) => _urlController.text = "");
   }
 
   List<LinkModel> getRecentlyAddedMedia(List<LinkModel> linkList) {
