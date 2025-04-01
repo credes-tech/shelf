@@ -20,6 +20,8 @@ class LinkHiveAdapter extends TypeAdapter<LinkHive> {
       url: fields[0] as String,
       isPinned: fields[2] as bool,
       date: fields[4] as DateTime,
+      title: fields[5] as String?,
+      description: fields[6] as String?,
       thumbnail: fields[1] as String?,
     );
   }
@@ -27,7 +29,7 @@ class LinkHiveAdapter extends TypeAdapter<LinkHive> {
   @override
   void write(BinaryWriter writer, LinkHive obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.url)
       ..writeByte(1)
@@ -35,7 +37,11 @@ class LinkHiveAdapter extends TypeAdapter<LinkHive> {
       ..writeByte(2)
       ..write(obj.isPinned)
       ..writeByte(4)
-      ..write(obj.date);
+      ..write(obj.date)
+      ..writeByte(5)
+      ..write(obj.title)
+      ..writeByte(6)
+      ..write(obj.description);
   }
 
   @override

@@ -21,10 +21,10 @@ class LinkNotifier extends StateNotifier<List<LinkModel>> {
     }).toList();
   }
 
-  Future<void> addNewLink(String url) async {
-    final newText = LinkModel(url: url, date: DateTime.now());
-    await _linkRepo.saveLink(newText.toHiveModel());
-    state = [...state, newText];
+  Future<void> addNewLink(LinkModel link) async {
+    // final newText = LinkModel(url: url, date: DateTime.now());
+    await _linkRepo.saveLink(link.toHiveModel());
+    state = [...state, link];
   }
 
   Future<void> loadPinnedLinks() async {

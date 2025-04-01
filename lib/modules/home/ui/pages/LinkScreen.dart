@@ -1,23 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
-import 'package:my_shelf_project/core/service/permission_service.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 import 'package:my_shelf_project/modules/home/domain/models/link_model.dart';
-// import 'package:my_shelf_project/modules/home/domain/models/link_model.dart';
 import 'package:my_shelf_project/modules/home/domain/providers/link_provider.dart';
-// import 'package:my_shelf_project/modules/home/ui/widgets/LinkCard.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeCard.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomePillBar.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/SubCategoryToggler.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/UserAccount.dart';
-// import 'package:open_filex/open_filex.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:metadata_fetch/metadata_fetch.dart';
 
 class LinkScreen extends ConsumerStatefulWidget {
   const LinkScreen({super.key});
@@ -34,7 +30,7 @@ class _LinkScreenState extends ConsumerState<LinkScreen> {
   bool isMultiSelectActive = false;
   bool urlError = false;
   List<LinkModel> selectedLinks = [];
-
+  final _addLinkformKey = GlobalKey<FormState>();
   final TextEditingController _urlController = TextEditingController();
 
   final String emptyHeading = "No Links found!";
@@ -42,7 +38,6 @@ class _LinkScreenState extends ConsumerState<LinkScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _urlController.dispose();
     super.dispose();
   }
@@ -202,14 +197,14 @@ class _LinkScreenState extends ConsumerState<LinkScreen> {
                                       linkCard(linkList, index),
                                       if (link.isPinned)
                                         Positioned(
-                                            top: 10,
-                                            right: 13,
+                                            top: 12,
+                                            right: 20,
                                             child: CircleAvatar(
                                               backgroundColor: Colors.white,
                                               radius: 10,
                                               child: Icon(
                                                 Icons.stars_rounded,
-                                                size: 20,
+                                                size: 27,
                                                 color:
                                                     AppColors.onboardDarkGreen,
                                               ),
@@ -256,11 +251,17 @@ class _LinkScreenState extends ConsumerState<LinkScreen> {
   }
 
   Widget linkCard(linkList, index) {
-    // if()
-    // bool delete = selectedLinks[linkList[index]].isPinned;
+    String title = linkList[index].title ?? "";
+    String description = linkList[index].description ?? "";
+    String thumbnail = linkList[index].thumbnail ?? "";
+    print("thumbnail is here $thumbnail");
+    title = title.length > 20 ? "${title.substring(0, 20)}..." : title;
+    description =
+        description.length > 35 ? "${description.substring(0, 35)}..." : title;
+
     return Container(
       width: double.maxFinite,
-      height: 40,
+      height: 70,
       padding: EdgeInsets.all(7),
       margin: EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -272,9 +273,34 @@ class _LinkScreenState extends ConsumerState<LinkScreen> {
         ),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Text(
-        linkList[index].url,
-        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10),
+        child: Row(
+          children: [
+            if (thumbnail.isNotEmpty)
+              Image.network(
+                thumbnail,
+                width: 20,
+                height: 20,
+              ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold),
+                ),
+                if (description.isNotEmpty)
+                  Text(
+                    description,
+                    style: TextStyle(color: AppColors.onboardDarkGreen),
+                  ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -310,73 +336,92 @@ class _LinkScreenState extends ConsumerState<LinkScreen> {
     });
   }
 
+  void addLinkBtn() async {
+    if (_addLinkformKey.currentState!.validate()) {
+      var data = await MetadataFetch.extract(_urlController.text);
+
+      LinkModel link = LinkModel(
+        url: _urlController.text,
+        date: DateTime.now(),
+        title: data != null ? data.title : "",
+        description: data != null ? data.description : "",
+        // thumbnail: data != null ? data.image : "",
+      );
+      // link.description = "";
+
+      // print(data);
+
+      ref.read(linkProvider.notifier).addNewLink(link);
+      Navigator.pop(context);
+    }
+  }
+
   void onTapLinkBtn() async {
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: AppColors.onboardDarkGreen,
       builder: (BuildContext context) {
-        return Container(
-          height: 600,
-          color: Colors.white,
-          padding: EdgeInsets.all(10),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: EdgeInsets.all(10),
-                child: TextFormField(
-                  controller: _urlController,
-                  decoration: InputDecoration(
-                    hintText: 'Enter Link',
-                    // errorStyle: TextStyle(color: Colors.red),
-                  ),
-                  autofocus: true,
-                  style: TextStyle(
-                    color: Colors.black,
+        return Form(
+          key: _addLinkformKey,
+          child: Container(
+            height: 600,
+            color: Colors.white,
+            padding: EdgeInsets.all(10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: TextFormField(
+                    controller: _urlController,
+                    validator: (value) {
+                      if (value != null &&
+                          (value.trim().isEmpty ||
+                              !Uri.parse(value).isAbsolute)) {
+                        return "Please provide a valid Url.";
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Enter Link',
+                    ),
+                    autofocus: true,
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
                   ),
                 ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_urlController.text.trim().isNotEmpty) {
-                        bool validURL =
-                            Uri.parse(_urlController.text).isAbsolute;
-                        if (validURL) {
-                          ref
-                              .read(linkProvider.notifier)
-                              .addNewLink(_urlController.text);
-                          Navigator.pop(context);
-                        }
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.onboardDarkGreen,
-                      foregroundColor: Colors.white,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ElevatedButton(
+                      onPressed: addLinkBtn,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.onboardDarkGreen,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text('Add Link'),
                     ),
-                    child: const Text('Add Link'),
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey,
-                      foregroundColor: Colors.white,
+                    const SizedBox(
+                      width: 20,
                     ),
-                    child: const Text('Close'),
-                  ),
-                ],
-              ),
-            ],
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text('Close'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       },

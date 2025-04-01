@@ -16,9 +16,18 @@ class LinkHive {
   @HiveField(4)
   final DateTime date;
 
-  LinkHive(
-      {required this.url,
-      required this.isPinned,
-      required this.date,
-      this.thumbnail});
+  @HiveField(5)
+  final String? title;
+
+  @HiveField(6)
+  final String? description;
+
+  LinkHive({
+    required this.url,
+    required this.isPinned,
+    required this.date,
+    this.title,
+    this.description,
+    this.thumbnail,
+  });
 }
