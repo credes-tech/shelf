@@ -15,8 +15,12 @@ class LinkRepository {
   Future<void> deleteMultipleLinks(List<String> filePaths) =>
       _hiveService.deleteMultipleLinkByPaths(filePaths);
 
+  Future<void> updateLinks(
+          String id, String title, String description, String thumbnail) =>
+      _hiveService.updateLinks(id, title, description, thumbnail);
+
   // Future<bool> isLinkExists(String fileName) =>
   //     _hiveService.isLinkExists(fileName);
 
-  Future<void> togglePin(String fileName) => _hiveService.togglePin(fileName);
+  Future<void> togglePin(String id) => _hiveService.togglePin(id);
 }

@@ -189,7 +189,7 @@ class _LinkScreenState extends ConsumerState<LinkScreen> {
                                           : addLink(link)
                                       : openLink(linkList[index]),
                                   onDoubleTap: () => !isMultiSelectActive
-                                      ? togglePinLink(link.url)
+                                      ? togglePinLink(link.id)
                                       : {},
                                   onLongPress: () => !isMultiSelectActive
                                       ? manageMultipleLinks(link)
@@ -306,7 +306,7 @@ class _LinkScreenState extends ConsumerState<LinkScreen> {
               width: 10,
             ),
             Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (title.isNotEmpty)
@@ -502,8 +502,8 @@ class _LinkScreenState extends ConsumerState<LinkScreen> {
     return linkList;
   }
 
-  void togglePinLink(String linkName) {
-    ref.read(linkProvider.notifier).togglePin(linkName);
+  void togglePinLink(String linkId) {
+    ref.read(linkProvider.notifier).togglePin(linkId);
   }
 
   toggleSubCategory() {

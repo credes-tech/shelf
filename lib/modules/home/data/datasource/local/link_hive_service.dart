@@ -18,6 +18,28 @@ class LinkHiveService {
     await box.add(link);
   }
 
+  Future<void> updateLinks(
+      String id, String title, String description, String thumbnail) async {
+    final box = Hive.box<LinkHive>(_boxName);
+    final index = box.values.toList().indexWhere((link) => link.id == id);
+
+    if (index != -1) {
+      final link = box.getAt(index);
+      if (link != null) {
+        final updatedLink = LinkHive(
+          id: link.id,
+          url: link.url,
+          thumbnail: thumbnail,
+          date: link.date,
+          title: title,
+          description: description,
+          isPinned: !link.isPinned,
+        );
+        await box.putAt(index, updatedLink);
+      }
+    }
+  }
+
   List<LinkHive> getAllLinks() {
     final box = Hive.box<LinkHive>(_boxName);
     return box.values.toList();
@@ -32,7 +54,7 @@ class LinkHiveService {
     final box = Hive.box<LinkHive>(_boxName);
     final keysToDelete = box.keys.where((key) {
       final link = box.get(key);
-      return linkUrls.contains(link?.url);
+      return linkUrls.contains(link?.id);
     }).toList();
     if (keysToDelete.isNotEmpty) {
       await box.deleteAll(keysToDelete);
@@ -45,9 +67,9 @@ class LinkHiveService {
   //       .any((link) => link.linkname.toLowerCase() == linkName.toLowerCase());
   // }
 
-  Future<void> togglePin(String url) async {
+  Future<void> togglePin(String id) async {
     final box = Hive.box<LinkHive>(_boxName);
-    final index = box.values.toList().indexWhere((link) => link.url == url);
+    final index = box.values.toList().indexWhere((link) => link.id == id);
 
     if (index != -1) {
       final link = box.getAt(index);
