@@ -12,6 +12,17 @@ class AudioHiveService {
     await Hive.openBox<AudioHive>(_boxName);
   }
 
+  Future<void> deleteMultipleAudios(List<String> audioPaths) async {
+    final box = Hive.box<AudioHive>(_boxName);
+    final keysToDelete = box.keys.where((key) {
+      final audio = box.get(key);
+      return audioPaths.contains(audio?.filePath);
+    }).toList();
+    if (keysToDelete.isNotEmpty) {
+      await box.deleteAll(keysToDelete);
+    }
+  }
+
   Future<void> saveAudio(AudioHive audio) async {
     final box = Hive.box<AudioHive>(_boxName);
     await box.add(audio);
@@ -29,12 +40,14 @@ class AudioHiveService {
 
   Future<bool> isAudioExists(String fileName) async {
     final box = Hive.box<AudioHive>(_boxName);
-    return box.values.any((audio) => audio.filename.toLowerCase() == fileName.toLowerCase());
+    return box.values
+        .any((audio) => audio.filename.toLowerCase() == fileName.toLowerCase());
   }
 
   Future<void> togglePin(String fileName) async {
     final box = Hive.box<AudioHive>(_boxName);
-    final index = box.values.toList().indexWhere((audio) => audio.filename == fileName);
+    final index =
+        box.values.toList().indexWhere((audio) => audio.filename == fileName);
 
     if (index != -1) {
       final audio = box.getAt(index);

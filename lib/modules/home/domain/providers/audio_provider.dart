@@ -109,6 +109,20 @@ class AudioNotifier extends StateNotifier<List<AudioModel>> {
     return state[index].filePath;
   }
 
+  Future<void> deleteAudios(List<AudioModel> selectedAudioList) async {
+    final audioPaths =
+        selectedAudioList.map((audio) => audio.filePath).toList();
+    await _audioRepo.deleteMultipleAudios(audioPaths);
+    for (var audio in selectedAudioList) {
+      final fileToDelete = audio.filePath;
+      final file = File(fileToDelete);
+      if (await file.exists()) {
+        await file.delete();
+      }
+    }
+    fetchAudios();
+  }
+
   Future<void> deleteAudio(int index) async {
     final fileToDelete = state[index].filePath;
     await _audioRepo.deleteAudio(index);

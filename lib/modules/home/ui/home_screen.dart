@@ -6,6 +6,7 @@ import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 import 'package:my_shelf_project/modules/home/ui/pages/AudioScreen.dart';
 import 'package:my_shelf_project/modules/home/ui/pages/ChatScreen.dart';
 import 'package:my_shelf_project/modules/home/ui/pages/FileScreen.dart';
+import 'package:my_shelf_project/modules/home/ui/pages/LinkScreen.dart';
 import 'package:my_shelf_project/modules/home/ui/pages/MediaScreen.dart';
 import 'package:my_shelf_project/modules/home/ui/pages/TextScreen.dart';
 
@@ -16,7 +17,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 0;
   late PageController _pageController;
 
   @override
@@ -30,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
     MediaScreen(),
     FileScreen(),
     TextScreen(),
+    LinkScreen(),
   ];
 
   final List<Color> _bottomNavColors = [
@@ -37,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
     AppColors.onboardLightBlue,
     AppColors.onboardLightPink,
     AppColors.onboardLightYellow,
+    AppColors.onboardLightGreen,
   ];
 
   final List<Color> _navBarColors = [
@@ -44,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
     AppColors.navBarBlue,
     AppColors.navBarPink,
     AppColors.navBarYellow,
+    AppColors.navBarGreen,
   ];
 
   void _onItemTapped(int index) {
@@ -137,6 +141,19 @@ class _HomeScreenState extends State<HomeScreen> {
                               width: 30),
                         ),
                         label: "Texts"),
+                    BottomNavigationBarItem(
+                        icon: Padding(
+                          padding: EdgeInsets.only(
+                              left: AppSpacing.xxSmall,
+                              bottom: AppSpacing.xxSmall,
+                              right: AppSpacing.xxSmall,
+                              top: AppSpacing.xSmall),
+                          child: SvgPicture.asset('assets/svg/link.svg',
+                              colorFilter: ColorFilter.mode(
+                                  _setColour(index: 4), BlendMode.srcIn),
+                              width: 30),
+                        ),
+                        label: "Link"),
                   ],
                   currentIndex: _selectedIndex,
                   selectedItemColor: _navBarColors[_selectedIndex],
