@@ -27,6 +27,12 @@ class LinkNotifier extends StateNotifier<List<LinkModel>> {
     state = [...state, link];
   }
 
+  Future<void> updateLink(
+      String id, String title, String description, String thumbnail) async {
+    await _linkRepo.updateLinks(id, title, description, thumbnail);
+    fetchLinks();
+  }
+
   Future<void> loadPinnedLinks() async {
     final allLinks = _linkRepo.fetchAllLink().map((hiveLink) {
       return LinkModel.fromHiveModel(hiveLink);
@@ -36,8 +42,8 @@ class LinkNotifier extends StateNotifier<List<LinkModel>> {
         : allLinks);
   }
 
-  void togglePin(String fileName) {
-    _linkRepo.togglePin(fileName);
+  void togglePin(String id) {
+    _linkRepo.togglePin(id);
     fetchLinks();
   }
 
@@ -45,8 +51,8 @@ class LinkNotifier extends StateNotifier<List<LinkModel>> {
     return state[index].url;
   }
 
-  Future<void> deleteLink(List<LinkModel> docLinks) async {
-    final linkPaths = docLinks.map((link) => link.url).toList();
+  Future<void> deleteLink(List<LinkModel> links) async {
+    final linkPaths = links.map((link) => link.id).toList();
     await _linkRepo.deleteMultipleLinks(linkPaths);
     fetchLinks();
   }
