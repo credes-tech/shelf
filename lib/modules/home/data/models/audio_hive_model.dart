@@ -22,12 +22,11 @@ class AudioHive {
   @HiveField(5)
   bool isPinned;
 
-  AudioHive({
-    required this.filename,
-    required this.fileType,
-    required this.fileSize,
-    required this.date,
-    required this.filePath,
-    required this.isPinned
-  });
+  AudioHive(
+      {required this.filename,
+      required this.fileType,
+      required this.fileSize,
+      required this.date,
+      required this.filePath,
+      required this.isPinned});
 }

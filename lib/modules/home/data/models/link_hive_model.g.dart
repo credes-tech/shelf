@@ -16,25 +16,29 @@ class LinkHiveAdapter extends TypeAdapter<LinkHive> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
+
     return LinkHive(
-      url: fields[0] as String,
-      isPinned: fields[2] as bool,
+      id: fields[0] as String?,
+      url: fields[1] as String,
       date: fields[4] as DateTime,
+      thumbnail: fields[2] as String?,
       title: fields[5] as String?,
       description: fields[6] as String?,
-      thumbnail: fields[1] as String?,
+      isPinned: fields[3] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, LinkHive obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
-      ..write(obj.url)
+      ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.thumbnail)
+      ..write(obj.url)
       ..writeByte(2)
+      ..write(obj.thumbnail)
+      ..writeByte(3)
       ..write(obj.isPinned)
       ..writeByte(4)
       ..write(obj.date)

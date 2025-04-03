@@ -53,6 +53,7 @@ class LinkHiveService {
       final link = box.getAt(index);
       if (link != null) {
         final updatedLink = LinkHive(
+          id: link.id,
           url: link.url,
           thumbnail: link.thumbnail,
           date: link.date,

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -252,17 +254,28 @@ class _LinkScreenState extends ConsumerState<LinkScreen> {
 
   Widget linkCard(linkList, index) {
     String title = linkList[index].title ?? "";
+    String url = linkList[index].url;
     String description = linkList[index].description ?? "";
     String thumbnail = linkList[index].thumbnail ?? "";
+    if (title.isNotEmpty) {
+      title = title.length > 20 ? "${title.substring(0, 20)}..." : title;
+    }
+    if (description.isNotEmpty) {
+      description = description.length > 30
+          ? "${description.substring(0, 30)}..."
+          : description;
+    }
+    if (url.isNotEmpty) {
+      url = url.length > 30 ? "${url.substring(0, 30)}..." : url;
+    }
     print("thumbnail is here $thumbnail");
-    title = title.length > 20 ? "${title.substring(0, 20)}..." : title;
-    description =
-        description.length > 35 ? "${description.substring(0, 35)}..." : title;
-
+    print("url is here $url");
+    print("description is here $description");
+    print("title is here $title");
     return Container(
       width: double.maxFinite,
       height: 70,
-      padding: EdgeInsets.all(7),
+      padding: EdgeInsets.all(4),
       margin: EdgeInsets.all(10),
       decoration: BoxDecoration(
         border: Border.all(
@@ -278,24 +291,40 @@ class _LinkScreenState extends ConsumerState<LinkScreen> {
         child: Row(
           children: [
             if (thumbnail.isNotEmpty)
-              Image.network(
-                thumbnail,
-                width: 20,
-                height: 20,
+              ClipOval(
+                child: Image.network(
+                  thumbnail,
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Icon(Icons.error, size: 40, color: Colors.red);
+                  },
+                ),
               ),
+            const SizedBox(
+              width: 10,
+            ),
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                ),
+                if (title.isNotEmpty)
+                  Text(
+                    title,
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
                 if (description.isNotEmpty)
                   Text(
                     description,
                     style: TextStyle(color: AppColors.onboardDarkGreen),
+                  ),
+                if (title.isEmpty && description.isEmpty)
+                  Text(
+                    url,
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
                   ),
               ],
             )
@@ -338,20 +367,37 @@ class _LinkScreenState extends ConsumerState<LinkScreen> {
 
   void addLinkBtn() async {
     if (_addLinkformKey.currentState!.validate()) {
-      var data = await MetadataFetch.extract(_urlController.text);
+      try {
+        var data = await MetadataFetch.extract(_urlController.text);
 
-      LinkModel link = LinkModel(
-        url: _urlController.text,
-        date: DateTime.now(),
-        title: data != null ? data.title : "",
-        description: data != null ? data.description : "",
-        // thumbnail: data != null ? data.image : "",
-      );
-      // link.description = "";
+        // Fallback values if metadata extraction fails
+        String title = data?.title ?? "";
+        String description = data?.description ?? "";
+        String thumbnail = data?.image ?? "";
 
-      // print(data);
+        LinkModel link = LinkModel(
+          url: _urlController.text,
+          date: DateTime.now(),
+          title: title,
+          description: description,
+          thumbnail: thumbnail,
+        );
 
-      ref.read(linkProvider.notifier).addNewLink(link);
+        ref.read(linkProvider.notifier).addNewLink(link);
+      } catch (e) {
+        // Handle errors (e.g., network issues, invalid URL)
+        print("Error fetching metadata: $e");
+
+        LinkModel link = LinkModel(
+          url: _urlController.text,
+          date: DateTime.now(),
+          title: "",
+          description: "",
+          thumbnail: "",
+        );
+
+        ref.read(linkProvider.notifier).addNewLink(link);
+      }
       Navigator.pop(context);
     }
   }
