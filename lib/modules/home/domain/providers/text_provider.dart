@@ -10,10 +10,11 @@ class TextNotifier extends StateNotifier<List<TextModel>> {
     fetchTexts();
   }
 
-  void togglePinned() {
+  bool togglePinned() {
     print("toggle pinned workinbg");
     showOnlyPinned = !showOnlyPinned;
     loadPinnedFiles();
+    return showOnlyPinned;
   }
 
   void setTogglePin(int index) async {
@@ -25,7 +26,7 @@ class TextNotifier extends StateNotifier<List<TextModel>> {
     final allTexts = _textRepository.fetchAllTexts().map((hiveText) {
       return TextModel.fromHiveModel(hiveText);
     }).toList();
-    print("showOnlyPinned $showOnlyPinned");
+    // print("showOnlyPinned $showOnlyPinned");
     state = (showOnlyPinned
         ? allTexts.where((texts) => texts.isPinned).toList()
         : allTexts);

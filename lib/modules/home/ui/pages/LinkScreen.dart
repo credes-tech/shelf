@@ -268,10 +268,10 @@ class _LinkScreenState extends ConsumerState<LinkScreen> {
     if (url.isNotEmpty) {
       url = url.length > 30 ? "${url.substring(0, 30)}..." : url;
     }
-    print("thumbnail is here $thumbnail");
-    print("url is here $url");
-    print("description is here $description");
-    print("title is here $title");
+    // print("thumbnail is here $thumbnail");
+    // print("url is here $url");
+    // print("description is here $description");
+    // print("title is here $title");
     return Container(
       width: double.maxFinite,
       height: 70,

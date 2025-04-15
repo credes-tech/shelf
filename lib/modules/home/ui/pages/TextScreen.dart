@@ -14,6 +14,8 @@ import 'package:my_shelf_project/modules/home/ui/widgets/HomeTitle.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeToggler.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/NotesCard.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/SubCategoryToggler.dart';
+import 'package:my_shelf_project/modules/home/ui/widgets/UserAccount.dart';
 
 class TextScreen extends ConsumerStatefulWidget {
   const TextScreen({super.key});
@@ -24,6 +26,9 @@ class TextScreen extends ConsumerStatefulWidget {
 
 class _TextScreenState extends ConsumerState<TextScreen> {
   final List<String> source = ['Passwords', 'Notes'];
+  bool isSubCategoryActive = false;
+  bool isPinActive = false;
+  bool isMultiSelectActive = false;
   // bool isPressed = false;
   final Map<int, bool> isPressed = {};
   final Map<int, bool> isPinned = {};
@@ -57,6 +62,35 @@ class _TextScreenState extends ConsumerState<TextScreen> {
 
   void loadPinnedFiles() {}
 
+  pinController() {
+    bool pinStatus = ref.read(textProvider.notifier).togglePinned();
+    setState(() {
+      isPinActive = pinStatus;
+    });
+  }
+
+  void deleteTexts() async {
+    // await ref.read(linkProvider.notifier).deleteLink(selectedLinks);
+    // clearSelection();
+  }
+  void clearSelection() {
+    // setState(() {
+    //   isMultiSelectActive = false;
+    //   selectedLinks.clear();
+    // });
+  }
+  toggleSubCategory() {
+    if (isPinActive) {
+      pinController();
+    }
+    if (isMultiSelectActive) {
+      return;
+    }
+    setState(() {
+      isSubCategoryActive = !isSubCategoryActive;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final textList = ref.watch(textProvider);
@@ -66,27 +100,77 @@ class _TextScreenState extends ConsumerState<TextScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: AppColors.background,
-        title: HomeTitle(title: 'Texts'),
+        title: GestureDetector(
+          onTap: toggleSubCategory,
+          child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                HomeTitle(title: 'Texts'),
+                SubCategoryToggler(isSubCategoryActive: isSubCategoryActive)
+              ]),
+        ),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: AppSpacing.xSmall),
+          child: UserAccount(),
+        ),
         actions: [
-          Padding(
-            padding: EdgeInsets.only(right: AppSpacing.medium),
-            child: PopupMenuButton<String>(
-              icon: SvgPicture.asset('assets/svg/menu.svg', width: 28),
-              color: AppColors.onboardDarkYellow,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
-              elevation: 1,
-              onSelected: (value) {
-                print("Selected: $value");
-              },
-              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                _buildPopupMenuItem(
-                    "Add Text", Icons.text_fields_rounded, Colors.black),
-                _buildPopupMenuItem(
-                    "Filter Text", Icons.filter_alt_rounded, Colors.black)
+          if (isMultiSelectActive)
+            IconButton(
+                onPressed: deleteTexts,
+                icon: Icon(
+                  Icons.delete_rounded,
+                  color: Colors.black,
+                )),
+          if (isMultiSelectActive)
+            IconButton(
+                onPressed: clearSelection,
+                icon: Icon(
+                  Icons.close_rounded,
+                  color: Colors.black,
+                )),
+          if (!isSubCategoryActive && !isMultiSelectActive)
+            Stack(
+              children: [
+                IconButton(
+                  onPressed: () => pinController(),
+                  icon: Icon(
+                    isPinActive
+                        ? Icons.star_rounded
+                        : Icons.star_border_rounded,
+                    color: Colors.black,
+                  ),
+                ),
+                Positioned(
+                    bottom: 8,
+                    right: 8,
+                    child: Text(
+                      // "${pinnedLinks.length}",
+                      "",
+                      style: AppTextStyles.pinCaption,
+                    ))
               ],
             ),
-          ),
+          if (!isSubCategoryActive && !isMultiSelectActive)
+            Padding(
+              padding: EdgeInsets.only(right: AppSpacing.medium),
+              child: PopupMenuButton<String>(
+                icon: SvgPicture.asset('assets/svg/menu.svg', width: 28),
+                color: AppColors.onboardDarkYellow,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30)),
+                elevation: 1,
+                onSelected: (value) {
+                  print("Selected: $value");
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  _buildPopupMenuItem(
+                      "Add Text", Icons.text_fields_rounded, Colors.black),
+                  _buildPopupMenuItem(
+                      "Filter Text", Icons.filter_alt_rounded, Colors.black)
+                ],
+              ),
+            ),
         ],
       ),
       body: Stack(
@@ -95,17 +179,18 @@ class _TextScreenState extends ConsumerState<TextScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              HomePillBar(
-                source: source,
-                selectedSource: selectedSource,
-                activeColor: AppColors.onboardDarkYellow,
-                inactiveColor: AppColors.onboardLightYellow,
-                onSelected: (index) {
-                  setState(() {
-                    selectedSource = index; // Update selected pill
-                  });
-                },
-              ),
+              if (isSubCategoryActive)
+                HomePillBar(
+                  source: source,
+                  selectedSource: selectedSource,
+                  activeColor: AppColors.onboardDarkYellow,
+                  inactiveColor: AppColors.onboardLightYellow,
+                  onSelected: (index) {
+                    setState(() {
+                      selectedSource = index; // Update selected pill
+                    });
+                  },
+                ),
               Container(
                 padding: EdgeInsets.symmetric(
                     horizontal: AppSpacing.medium, vertical: AppSpacing.xSmall),
@@ -118,155 +203,156 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        HomeToggler(
-                          initialValue: textPinnedNotifier,
-                          onChanged: (textPinnedNotifier) {
-                            print("text Pinned Notifier $textPinnedNotifier");
-                            ref.read(textProvider.notifier).togglePinned();
-                          },
-                          color: AppColors.onboardDarkYellow,
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Text("Quick Access", style: AppTextStyles.pinLabelText),
-                      ],
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        context.push('/home/texts/new');
-                      },
-                      style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.only(
-                              left: AppSpacing.medium,
-                              right: AppSpacing.xSmall,
-                              top: AppSpacing.xSmall,
-                              bottom: AppSpacing.xSmall),
-                          backgroundColor: AppColors.onboardDarkYellow),
-                      child: Row(
-                        children: [
-                          Text("Add New", style: AppTextStyles.homePinned),
-                          SizedBox(width: 8),
-                          Icon(Icons.add_circle_rounded,
-                              size: 30, color: AppColors.onboardLightYellow)
-                        ],
-                      ),
-                    )
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.start,
+                    //   crossAxisAlignment: CrossAxisAlignment.start,
+                    //   children: [
+                    //     HomeToggler(
+                    //       initialValue: textPinnedNotifier,
+                    //       onChanged: (textPinnedNotifier) {
+                    //         print("text Pinned Notifier $textPinnedNotifier");
+                    //         ref.read(textProvider.notifier).togglePinned();
+                    //       },
+                    //       color: AppColors.onboardDarkYellow,
+                    //     ),
+                    //     SizedBox(
+                    //       width: 5,
+                    //     ),
+                    //     Text("Quick Access", style: AppTextStyles.pinLabelText),
+                    //   ],
+                    // ),
+                    // ElevatedButton(
+                    //   onPressed: () {
+                    //     context.push('/home/texts/new');
+                    //   },
+                    //   style: ElevatedButton.styleFrom(
+                    //       padding: EdgeInsets.only(
+                    //           left: AppSpacing.medium,
+                    //           right: AppSpacing.xSmall,
+                    //           top: AppSpacing.xSmall,
+                    //           bottom: AppSpacing.xSmall),
+                    //       backgroundColor: AppColors.onboardDarkYellow),
+                    //   child: Row(
+                    //     children: [
+                    //       Text("Add New", style: AppTextStyles.homePinned),
+                    //       SizedBox(width: 8),
+                    //       Icon(Icons.add_circle_rounded,
+                    //           size: 30, color: AppColors.onboardLightYellow)
+                    //     ],
+                    //   ),
+                    // )
                   ],
                 ),
               ),
               textList.isEmpty
                   ? HomeCard(
-                icon: Icons.add,
-                description: "Tap Add New button to add new Note",
-                title: "No Notes found",
-                iconColor: AppColors.onboardDarkYellow,
-              )
+                      icon: Icons.add,
+                      description: "Tap Add New button to add new Note",
+                      title: "No Notes found",
+                      iconColor: AppColors.onboardDarkYellow,
+                    )
                   : Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.medium),
-                    child: StaggeredGrid.count(
-                      crossAxisCount: 2, // 2 columns
-                      mainAxisSpacing: 1,
-                      crossAxisSpacing: 1,
-                      children: textList.reversed
-                          .toList()
-                          .asMap()
-                          .entries
-                          .map((value) {
-                        int index = textList.length - value.key - 1;
-                        var data = value.value;
-                        return StaggeredGridTile.fit(
-                          crossAxisCellCount: 1,
-                          child: GestureDetector(
-                            onLongPress: () => selectPressedNote(index),
-                            onDoubleTap: () => setToPinned(index),
-                            child: (isPressed[index] ?? false)
-                                ? Container(
-                              height: 125,
-                              decoration: BoxDecoration(
-                                  borderRadius:
-                                  BorderRadius.circular(20.0),
-                                  color: AppColors.onboardLightYellow),
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: AppSpacing.xxSmall,
-                                  vertical: AppSpacing.xSmall),
-                              child: Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.start,
-                                crossAxisAlignment:
-                                CrossAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  IconButton(
-                                      onPressed: () {
-                                        ShareService.shareNote(
-                                            data.description);
-                                      },
-                                      icon: Icon(
-                                        Icons.ios_share,
-                                        color: Colors.black,
-                                      )),
-                                  IconButton(
-                                      onPressed: () =>
-                                          onTapDeleteBtn(index),
-                                      icon: Icon(
-                                        Icons.delete,
-                                        color: Colors.black,
-                                      )),
-                                  IconButton(
-                                      onPressed: () =>
-                                          _toggleOption(index),
-                                      icon: Icon(
-                                        Icons.close_rounded,
-                                        color: Colors.black,
-                                      ))
-                                ],
-                              ),
-                            )
-                                : Stack(
-                              children: [
-                                NotesCard(
-                                  title: data.heading,
-                                  description: data.description,
-                                  onTap: () {
-                                    context.push(
-                                        '/home/texts/note/$index');
-                                  },
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.medium),
+                          child: StaggeredGrid.count(
+                            crossAxisCount: 2, // 2 columns
+                            mainAxisSpacing: 1,
+                            crossAxisSpacing: 1,
+                            children: textList.reversed
+                                .toList()
+                                .asMap()
+                                .entries
+                                .map((value) {
+                              int index = textList.length - value.key - 1;
+                              var data = value.value;
+                              return StaggeredGridTile.fit(
+                                crossAxisCellCount: 1,
+                                child: GestureDetector(
+                                  onLongPress: () => selectPressedNote(index),
+                                  onDoubleTap: () => setToPinned(index),
+                                  child: (isPressed[index] ?? false)
+                                      ? Container(
+                                          height: 125,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(20.0),
+                                              color:
+                                                  AppColors.onboardLightYellow),
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: AppSpacing.xxSmall,
+                                              vertical: AppSpacing.xSmall),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              IconButton(
+                                                  onPressed: () {
+                                                    ShareService.shareNote(
+                                                        data.description);
+                                                  },
+                                                  icon: Icon(
+                                                    Icons.ios_share,
+                                                    color: Colors.black,
+                                                  )),
+                                              IconButton(
+                                                  onPressed: () =>
+                                                      onTapDeleteBtn(index),
+                                                  icon: Icon(
+                                                    Icons.delete,
+                                                    color: Colors.black,
+                                                  )),
+                                              IconButton(
+                                                  onPressed: () =>
+                                                      _toggleOption(index),
+                                                  icon: Icon(
+                                                    Icons.close_rounded,
+                                                    color: Colors.black,
+                                                  ))
+                                            ],
+                                          ),
+                                        )
+                                      : Stack(
+                                          children: [
+                                            NotesCard(
+                                              title: data.heading,
+                                              description: data.description,
+                                              onTap: () {
+                                                context.push(
+                                                    '/home/texts/note/$index');
+                                              },
+                                            ),
+                                            if (data.isPinned)
+                                              Positioned(
+                                                top: 10,
+                                                right: 10,
+                                                child: CircleAvatar(
+                                                  backgroundColor: Colors.white,
+                                                  radius: 10,
+                                                  child: Icon(
+                                                    Icons.stars_rounded,
+                                                    size: 20,
+                                                    color: AppColors
+                                                        .onboardDarkYellow,
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
                                 ),
-                                if (data.isPinned)
-                                  Positioned(
-                                    top: 10,
-                                    right: 10,
-                                    child: CircleAvatar(
-                                      backgroundColor: Colors.white,
-                                      radius: 10,
-                                      child: Icon(
-                                        Icons.stars_rounded,
-                                        size: 20,
-                                        color:
-                                        AppColors.onboardDarkYellow,
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
+                              );
+                            }).toList(),
                           ),
-                        );
-                      }).toList(),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
             ],
           ),
           Align(
@@ -283,7 +369,8 @@ class _TextScreenState extends ConsumerState<TextScreen> {
                   backgroundColor: AppColors.onboardLightYellow,
                   elevation: 0,
                   shape: CircleBorder(),
-                  child: Icon(Icons.add_circle_rounded, size: 25, color: AppColors.navBarYellow),
+                  child: Icon(Icons.add_circle_rounded,
+                      size: 25, color: AppColors.navBarYellow),
                 ),
               ),
             ),
