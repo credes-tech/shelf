@@ -98,10 +98,12 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                             autofocus: true,
                           ),
                           QuillEditor.basic(
-                              controller: _controller,
-                              configurations: const QuillEditorConfigurations(
-                                autoFocus: true,
-                              ))
+                            controller: _controller,
+                            config: QuillEditorConfig(autoFocus: true),
+                            // configurations: const QuillEditorConfigurations(
+                            //   autoFocus: true,
+                            // ),
+                          )
                         ],
                       ),
                     ),
