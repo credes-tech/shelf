@@ -7,6 +7,7 @@ import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 import 'package:my_shelf_project/modules/home/domain/models/media_model.dart';
+import 'package:my_shelf_project/modules/home/domain/providers/fab_action_provider.dart';
 import 'package:my_shelf_project/modules/home/domain/providers/media_provider.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeCard.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
@@ -35,6 +36,14 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
 
   final String emptyHeading = "No media found!";
   final String emptyDescription = "Tap Add New button to save your files";
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      ref.read(fabActionProvider.notifier).state = () => onTapMediaBtn();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -297,28 +306,27 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
                                 height: 100,
                               ),
                             ],
-
                           ),
                         )),
             ],
           ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Padding(
-              padding: EdgeInsets.only(right: AppSpacing.large, bottom: 25),
-              child: SizedBox(
-                width: 55,
-                height: 55,
-                child: FloatingActionButton(
-                  onPressed: onTapMediaBtn,
-                  backgroundColor: AppColors.onboardLightBlue,
-                  elevation: 0,
-                  shape: CircleBorder(),
-                  child: Icon(Icons.add_circle_rounded, size: 25, color: AppColors.navBarBlue),
-                ),
-              ),
-            ),
-          ),
+          // Align(
+          //   alignment: Alignment.bottomRight,
+          //   child: Padding(
+          //     padding: EdgeInsets.only(right: AppSpacing.large, bottom: 25),
+          //     child: SizedBox(
+          //       width: 55,
+          //       height: 55,
+          //       child: FloatingActionButton(
+          //         onPressed: onTapMediaBtn,
+          //         backgroundColor: AppColors.onboardLightBlue,
+          //         elevation: 0,
+          //         shape: CircleBorder(),
+          //         child: Icon(Icons.add_circle_rounded, size: 25, color: AppColors.navBarBlue),
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
@@ -348,7 +356,7 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
     bool isGranted = await PermissionService.requestMediaPermission();
     if (isGranted == true) {
       await ref.read(mediaProvider.notifier).pickAndSaveMedia();
-      if(isPinActive){
+      if (isPinActive) {
         bool pinStatus = ref.read(mediaProvider.notifier).togglePinnedFilter();
         setState(() {
           isPinActive = pinStatus;
@@ -426,7 +434,7 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
   }
 
   addFile(MediaModel mediaFile) {
-    if(isPinActive){
+    if (isPinActive) {
       bool pinStatus = ref.read(mediaProvider.notifier).onlyTogglePin();
       setState(() {
         isPinActive = pinStatus;
@@ -438,7 +446,7 @@ class _MediaScreenState extends ConsumerState<MediaScreen> {
   }
 
   removeFile(MediaModel mediaFile) {
-    if(isPinActive){
+    if (isPinActive) {
       bool pinStatus = ref.read(mediaProvider.notifier).onlyTogglePin();
       setState(() {
         isPinActive = pinStatus;

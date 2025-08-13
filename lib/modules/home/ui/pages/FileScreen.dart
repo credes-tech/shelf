@@ -7,6 +7,7 @@ import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 import 'package:my_shelf_project/modules/home/domain/models/file_model.dart';
+import 'package:my_shelf_project/modules/home/domain/providers/fab_action_provider.dart';
 import 'package:my_shelf_project/modules/home/domain/providers/file_provider.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/FileCard.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeCard.dart';
@@ -34,6 +35,15 @@ class _FileScreenState extends ConsumerState<FileScreen> {
 
   final String emptyHeading = "No documents found!";
   final String emptyDescription = "Tap Add New button to save your files";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      ref.read(fabActionProvider.notifier).state = () => onTapFileBtn();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -180,7 +190,8 @@ class _FileScreenState extends ConsumerState<FileScreen> {
                                     },
                                     onDoubleTap: () =>
                                         togglePinFile(file.filename),
-                                    child: FileCard(file: file, isSelected: false));
+                                    child: FileCard(
+                                        file: file, isSelected: false));
                               },
                             ),
                           ),
@@ -213,8 +224,10 @@ class _FileScreenState extends ConsumerState<FileScreen> {
                                     children: [
                                       AspectRatio(
                                           aspectRatio: 0.8,
-                                          child: FileCard(file: file,isSelected:
-                                          selectedFiles.contains(file))),
+                                          child: FileCard(
+                                              file: file,
+                                              isSelected: selectedFiles
+                                                  .contains(file))),
                                       if (file.isPinned)
                                         Positioned(
                                             top: 10,
@@ -238,24 +251,24 @@ class _FileScreenState extends ConsumerState<FileScreen> {
                         ),
             ],
           ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Padding(
-              padding: EdgeInsets.only(right: AppSpacing.large, bottom: 25),
-              child: SizedBox(
-                width: 55,
-                height: 55,
-                child: FloatingActionButton(
-                  onPressed: onTapFileBtn,
-                  backgroundColor: AppColors.onboardLightPink,
-                  elevation: 0,
-                  shape: CircleBorder(),
-                  child: Icon(Icons.add_circle_rounded,
-                      size: 25, color: AppColors.navBarPink),
-                ),
-              ),
-            ),
-          ),
+          // Align(
+          //   alignment: Alignment.bottomRight,
+          //   child: Padding(
+          //     padding: EdgeInsets.only(right: AppSpacing.large, bottom: 25),
+          //     child: SizedBox(
+          //       width: 55,
+          //       height: 55,
+          //       child: FloatingActionButton(
+          //         onPressed: onTapFileBtn,
+          //         backgroundColor: AppColors.onboardLightPink,
+          //         elevation: 0,
+          //         shape: CircleBorder(),
+          //         child: Icon(Icons.add_circle_rounded,
+          //             size: 25, color: AppColors.navBarPink),
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
@@ -296,7 +309,7 @@ class _FileScreenState extends ConsumerState<FileScreen> {
     bool isGranted = await PermissionService.requestFilePermission();
     if (isGranted == true) {
       await ref.read(fileProvider.notifier).pickAndSaveFile();
-      if(isPinActive){
+      if (isPinActive) {
         bool pinStatus = ref.read(fileProvider.notifier).togglePinnedFilter();
         setState(() {
           isPinActive = pinStatus;

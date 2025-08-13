@@ -97,21 +97,25 @@ class _AddNewNoteState extends ConsumerState<AddNewNote> {
                 ),
                 SizedBox(height: 10),
                 Expanded(
-                  child: Column(
-                    children: [
-                      // QuillToolbar.simple(
-                      //     controller: _controller,
-                      //     configurations: const QuillSimpleToolbarConfigurations()),
-                      Expanded(
-                        child: QuillEditor.basic(
-                          controller: _controller,
-                          config: const QuillEditorConfig(),
-                          // configurations: const QuillEditorConfigurations(),
+                    child: QuillEditor.basic(
+                  controller: _controller,
+                  config: const QuillEditorConfig(
+                    customStyles: DefaultStyles(
+                      paragraph: DefaultTextBlockStyle(
+                        TextStyle(
+                          color: Colors.black, // Change text color to black
+                          fontSize: 16,
                         ),
+                        HorizontalSpacing.zero,
+                        VerticalSpacing.zero,
+                        VerticalSpacing.zero,
+                        null,
                       ),
-                    ],
+                    ),
                   ),
-                ),
+
+                  // configurations: const QuillEditorConfigurations(),
+                )),
               ],
             ),
           ),

@@ -4,7 +4,6 @@ import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 import 'package:my_shelf_project/modules/home/domain/models/file_model.dart';
-// import 'package:pdf_render/pdf_render_widgets.dart';
 import 'package:pdfx/pdfx.dart';
 
 class FileCard extends StatelessWidget {
@@ -37,15 +36,15 @@ class FileCard extends StatelessWidget {
               child: SizedBox(
                 height: MediaQuery.of(context).size.height * 0.14,
                 width: MediaQuery.of(context).size.width * 0.28,
-                child: PdfView(
+                child: GestureDetector(
+                  onTap: null,
+                  child: PdfView(
                     controller: PdfController(
-                        document: PdfDocument.openAsset(file.filePath))),
-                // child: PdfDocumentLoader.openFile(
-                //   file.filePath,
-                //   pageNumber: 1,
-                //   pageBuilder: (context, textureBuilder, pageSize) =>
-                //       textureBuilder(),
-                // ),
+                      document: PdfDocument.openFile(file.filePath),
+                      initialPage: 1,
+                    ),
+                  ),
+                ),
               ),
             ),
             Padding(

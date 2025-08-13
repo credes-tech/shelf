@@ -75,12 +75,14 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
               children: [
                 Expanded(
                   child: Card(
+                    color: Colors.white,
                     child: Padding(
                       padding: EdgeInsets.all(8),
                       child: Column(
                         children: [
                           TextField(
                             controller: _titleController,
+                            style: TextStyle(color: Colors.black),
                             cursorColor: AppColors.onboardLightYellow,
                             cursorWidth: 3,
                             cursorRadius: Radius.circular(20),
@@ -99,7 +101,21 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                           ),
                           QuillEditor.basic(
                             controller: _controller,
-                            config: QuillEditorConfig(autoFocus: true),
+                            config: const QuillEditorConfig(
+                              customStyles: DefaultStyles(
+                                paragraph: DefaultTextBlockStyle(
+                                  TextStyle(
+                                    color: Colors
+                                        .black, // Change text color to black
+                                    fontSize: 16,
+                                  ),
+                                  HorizontalSpacing.zero,
+                                  VerticalSpacing.zero,
+                                  VerticalSpacing.zero,
+                                  null,
+                                ),
+                              ),
+                            ),
                             // configurations: const QuillEditorConfigurations(
                             //   autoFocus: true,
                             // ),

@@ -7,6 +7,7 @@ import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 import 'package:my_shelf_project/modules/home/domain/models/link_model.dart';
+import 'package:my_shelf_project/modules/home/domain/providers/fab_action_provider.dart';
 import 'package:my_shelf_project/modules/home/domain/providers/link_provider.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeCard.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
@@ -37,6 +38,14 @@ class _LinkScreenState extends ConsumerState<LinkScreen> {
 
   final String emptyHeading = "No Links found!";
   final String emptyDescription = "Tap Add New button to Add new links";
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      ref.read(fabActionProvider.notifier).state = () => onTapLinkBtn();
+    });
+  }
 
   @override
   void dispose() {
@@ -220,24 +229,24 @@ class _LinkScreenState extends ConsumerState<LinkScreen> {
                         ),
             ],
           ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Padding(
-              padding: EdgeInsets.only(right: AppSpacing.large, bottom: 25),
-              child: SizedBox(
-                width: 55,
-                height: 55,
-                child: FloatingActionButton(
-                  onPressed: onTapLinkBtn,
-                  backgroundColor: AppColors.onboardLightGreen,
-                  elevation: 0,
-                  shape: CircleBorder(),
-                  child: Icon(Icons.add_circle_rounded,
-                      size: 25, color: AppColors.onboardDarkGreen),
-                ),
-              ),
-            ),
-          ),
+          // Align(
+          //   alignment: Alignment.bottomRight,
+          //   child: Padding(
+          //     padding: EdgeInsets.only(right: AppSpacing.large, bottom: 25),
+          //     child: SizedBox(
+          //       width: 55,
+          //       height: 55,
+          //       child: FloatingActionButton(
+          //         onPressed: onTapLinkBtn,
+          //         backgroundColor: AppColors.onboardLightGreen,
+          //         elevation: 0,
+          //         shape: CircleBorder(),
+          //         child: Icon(Icons.add_circle_rounded,
+          //             size: 25, color: AppColors.onboardDarkGreen),
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

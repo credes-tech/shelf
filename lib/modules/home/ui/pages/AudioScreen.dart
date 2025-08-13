@@ -13,6 +13,7 @@ import 'package:my_shelf_project/core/theme/app_text_styles.dart';
 import 'package:my_shelf_project/modules/home/domain/models/audio_model.dart';
 import 'package:my_shelf_project/modules/home/domain/providers/audio_player_provider.dart';
 import 'package:my_shelf_project/modules/home/domain/providers/audio_provider.dart';
+import 'package:my_shelf_project/modules/home/domain/providers/fab_action_provider.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/AudioText.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeCard.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
@@ -48,6 +49,8 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     super.initState();
     Future.delayed(Duration.zero, () {
       ref.read(audioProvider.notifier).fetchAudios();
+      ref.read(fabActionProvider.notifier).state =
+          () => onTapAudioBtn(context, ref);
     });
     final playerController = ref.read(audioPlayerControllerProvider.notifier);
     playerController.initializePlayerListeners();
@@ -313,24 +316,24 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                     ),
             ],
           ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Padding(
-              padding: EdgeInsets.only(right: AppSpacing.large, bottom: 25),
-              child: SizedBox(
-                width: 55,
-                height: 55,
-                child: FloatingActionButton(
-                  onPressed: () => onTapAudioBtn(context),
-                  backgroundColor: AppColors.onboardLightOrange,
-                  elevation: 0,
-                  shape: CircleBorder(),
-                  child: Icon(Icons.add_circle_rounded,
-                      size: 25, color: AppColors.navBarOrange),
-                ),
-              ),
-            ),
-          ),
+          // Align(
+          //   alignment: Alignment.bottomRight,
+          //   child: Padding(
+          //     padding: EdgeInsets.only(right: AppSpacing.large, bottom: 25),
+          //     child: SizedBox(
+          //       width: 55,
+          //       height: 55,
+          //       child: FloatingActionButton(
+          //         onPressed: () => onTapAudioBtn(context),
+          //         backgroundColor: AppColors.onboardLightOrange,
+          //         elevation: 0,
+          //         shape: CircleBorder(),
+          //         child: Icon(Icons.add_circle_rounded,
+          //             size: 25, color: AppColors.navBarOrange),
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
@@ -462,9 +465,9 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     );
   }
 
-  void onTapAudioBtn(BuildContext context) async {
+  Future<void> onTapAudioBtn(BuildContext context, WidgetRef ref) async {
     bool isGranted = await PermissionService.requestAudioPermission();
-    if (isGranted == true) {
+    if (isGranted) {
       await ref.read(audioProvider.notifier).pickAndSaveAudio();
     } else {
       print("Permission denied");

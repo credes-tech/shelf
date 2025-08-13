@@ -6,6 +6,7 @@ import 'package:my_shelf_project/core/service/share_service.dart';
 import 'package:my_shelf_project/core/theme/app_colors.dart';
 import 'package:my_shelf_project/core/theme/app_spacing.dart';
 import 'package:my_shelf_project/core/theme/app_text_styles.dart';
+import 'package:my_shelf_project/modules/home/domain/providers/fab_action_provider.dart';
 import 'package:my_shelf_project/modules/home/domain/providers/text_provider.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeCard.dart';
 import 'package:my_shelf_project/modules/home/ui/widgets/HomeMenuItem.dart';
@@ -29,6 +30,16 @@ class _TextScreenState extends ConsumerState<TextScreen> {
   final Map<int, bool> isPinned = {};
   // final Map<String, bool> _isPlaying = {};
   int selectedSource = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      ref.read(fabActionProvider.notifier).state = () => onTapAddTextBtn();
+    });
+    // ref.read(fabActionProvider.notifier).state = () => onTapAddTextBtn();
+  }
 
   void selectPressedNote(int index) {
     setState(() {
@@ -161,136 +172,141 @@ class _TextScreenState extends ConsumerState<TextScreen> {
               ),
               textList.isEmpty
                   ? HomeCard(
-                icon: Icons.add,
-                description: "Tap Add New button to add new Note",
-                title: "No Notes found",
-                iconColor: AppColors.onboardDarkYellow,
-              )
+                      icon: Icons.add,
+                      description: "Tap Add New button to add new Note",
+                      title: "No Notes found",
+                      iconColor: AppColors.onboardDarkYellow,
+                    )
                   : Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.medium),
-                    child: StaggeredGrid.count(
-                      crossAxisCount: 2, // 2 columns
-                      mainAxisSpacing: 1,
-                      crossAxisSpacing: 1,
-                      children: textList.reversed
-                          .toList()
-                          .asMap()
-                          .entries
-                          .map((value) {
-                        int index = textList.length - value.key - 1;
-                        var data = value.value;
-                        return StaggeredGridTile.fit(
-                          crossAxisCellCount: 1,
-                          child: GestureDetector(
-                            onLongPress: () => selectPressedNote(index),
-                            onDoubleTap: () => setToPinned(index),
-                            child: (isPressed[index] ?? false)
-                                ? Container(
-                              height: 125,
-                              decoration: BoxDecoration(
-                                  borderRadius:
-                                  BorderRadius.circular(20.0),
-                                  color: AppColors.onboardLightYellow),
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: AppSpacing.xxSmall,
-                                  vertical: AppSpacing.xSmall),
-                              child: Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.start,
-                                crossAxisAlignment:
-                                CrossAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  IconButton(
-                                      onPressed: () {
-                                        ShareService.shareNote(
-                                            data.description);
-                                      },
-                                      icon: Icon(
-                                        Icons.ios_share,
-                                        color: Colors.black,
-                                      )),
-                                  IconButton(
-                                      onPressed: () =>
-                                          onTapDeleteBtn(index),
-                                      icon: Icon(
-                                        Icons.delete,
-                                        color: Colors.black,
-                                      )),
-                                  IconButton(
-                                      onPressed: () =>
-                                          _toggleOption(index),
-                                      icon: Icon(
-                                        Icons.close_rounded,
-                                        color: Colors.black,
-                                      ))
-                                ],
-                              ),
-                            )
-                                : Stack(
-                              children: [
-                                NotesCard(
-                                  title: data.heading,
-                                  description: data.description,
-                                  onTap: () {
-                                    context.push(
-                                        '/home/texts/note/$index');
-                                  },
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.medium),
+                          child: StaggeredGrid.count(
+                            crossAxisCount: 2, // 2 columns
+                            mainAxisSpacing: 1,
+                            crossAxisSpacing: 1,
+                            children: textList.reversed
+                                .toList()
+                                .asMap()
+                                .entries
+                                .map((value) {
+                              int index = textList.length - value.key - 1;
+                              var data = value.value;
+                              return StaggeredGridTile.fit(
+                                crossAxisCellCount: 1,
+                                child: GestureDetector(
+                                  onLongPress: () => selectPressedNote(index),
+                                  onDoubleTap: () => setToPinned(index),
+                                  child: (isPressed[index] ?? false)
+                                      ? Container(
+                                          height: 125,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(20.0),
+                                              color:
+                                                  AppColors.onboardLightYellow),
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: AppSpacing.xxSmall,
+                                              vertical: AppSpacing.xSmall),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              IconButton(
+                                                  onPressed: () {
+                                                    ShareService.shareNote(
+                                                        data.description);
+                                                  },
+                                                  icon: Icon(
+                                                    Icons.ios_share,
+                                                    color: Colors.black,
+                                                  )),
+                                              IconButton(
+                                                  onPressed: () =>
+                                                      onTapDeleteBtn(index),
+                                                  icon: Icon(
+                                                    Icons.delete,
+                                                    color: Colors.black,
+                                                  )),
+                                              IconButton(
+                                                  onPressed: () =>
+                                                      _toggleOption(index),
+                                                  icon: Icon(
+                                                    Icons.close_rounded,
+                                                    color: Colors.black,
+                                                  ))
+                                            ],
+                                          ),
+                                        )
+                                      : Stack(
+                                          children: [
+                                            NotesCard(
+                                              title: data.heading,
+                                              description: data.description,
+                                              onTap: () {
+                                                context.push(
+                                                    '/home/texts/note/$index');
+                                              },
+                                            ),
+                                            if (data.isPinned)
+                                              Positioned(
+                                                top: 10,
+                                                right: 10,
+                                                child: CircleAvatar(
+                                                  backgroundColor: Colors.white,
+                                                  radius: 10,
+                                                  child: Icon(
+                                                    Icons.stars_rounded,
+                                                    size: 20,
+                                                    color: AppColors
+                                                        .onboardDarkYellow,
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
                                 ),
-                                if (data.isPinned)
-                                  Positioned(
-                                    top: 10,
-                                    right: 10,
-                                    child: CircleAvatar(
-                                      backgroundColor: Colors.white,
-                                      radius: 10,
-                                      child: Icon(
-                                        Icons.stars_rounded,
-                                        size: 20,
-                                        color:
-                                        AppColors.onboardDarkYellow,
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
+                              );
+                            }).toList(),
                           ),
-                        );
-                      }).toList(),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
             ],
           ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Padding(
-              padding: EdgeInsets.only(right: AppSpacing.large, bottom: 25),
-              child: SizedBox(
-                width: 55,
-                height: 55,
-                child: FloatingActionButton(
-                  onPressed: () {
-                    context.push('/home/texts/new');
-                  },
-                  backgroundColor: AppColors.onboardLightYellow,
-                  elevation: 0,
-                  shape: CircleBorder(),
-                  child: Icon(Icons.add_circle_rounded, size: 25, color: AppColors.navBarYellow),
-                ),
-              ),
-            ),
-          ),
+          // Align(
+          //   alignment: Alignment.bottomRight,
+          //   child: Padding(
+          //     padding: EdgeInsets.only(right: AppSpacing.large, bottom: 25),
+          //     child: SizedBox(
+          //       width: 55,
+          //       height: 55,
+          //       child: FloatingActionButton(
+          //         onPressed: () {
+          //           context.push('/home/texts/new');
+          //         },
+          //         backgroundColor: AppColors.onboardLightYellow,
+          //         elevation: 0,
+          //         shape: CircleBorder(),
+          //         child: Icon(Icons.add_circle_rounded, size: 25, color: AppColors.navBarYellow),
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
+  }
+
+  void onTapAddTextBtn() {
+    context.push('/home/texts/new');
   }
 
   PopupMenuItem<String> _buildPopupMenuItem(
