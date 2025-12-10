@@ -27,9 +27,9 @@ void main() async {
 setupDependencies() async {
   await dotenv.load(fileName: ".env");
   await Hive.initFlutter();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
   Hive.registerAdapter(AudioHiveAdapter());
   Hive.registerAdapter(TextHiveAdapter());
   Hive.registerAdapter(MediaHiveAdapter());

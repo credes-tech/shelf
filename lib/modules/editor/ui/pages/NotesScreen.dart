@@ -99,27 +99,11 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                             ),
                             autofocus: true,
                           ),
-                          QuillEditor.basic(
-                            controller: _controller,
-                            config: const QuillEditorConfig(
-                              customStyles: DefaultStyles(
-                                paragraph: DefaultTextBlockStyle(
-                                  TextStyle(
-                                    color: Colors
-                                        .black, // Change text color to black
-                                    fontSize: 16,
-                                  ),
-                                  HorizontalSpacing.zero,
-                                  VerticalSpacing.zero,
-                                  VerticalSpacing.zero,
-                                  null,
-                                ),
-                              ),
-                            ),
-                            // configurations: const QuillEditorConfigurations(
-                            //   autoFocus: true,
-                            // ),
-                          )
+                          // QuillEditor.basic(
+                          //     controller: _controller,
+                          //     configurations: const QuillEditorConfigurations(
+                          //       autoFocus: true,
+                          //     ))
                         ],
                       ),
                     ),
