@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_quill/translations.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:my_shelf_project/core/routes/routes.dart';
 import 'core/theme/theme.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';

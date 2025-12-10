@@ -102,12 +102,12 @@ class _AddNewNoteState extends ConsumerState<AddNewNote> {
                       // QuillToolbar.simple(
                       //     controller: _controller,
                       //     configurations: const QuillSimpleToolbarConfigurations()),
-                      Expanded(
-                        child: QuillEditor.basic(
-                          controller: _controller,
-                          configurations: const QuillEditorConfigurations(),
-                        ),
-                      ),
+                      // Expanded(
+                      //   child: QuillEditor.basic(
+                      //     controller: _controller,
+                      //     configurations: const QuillEditorConfigurations(),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
